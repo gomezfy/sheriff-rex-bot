@@ -1,6 +1,0 @@
-DISPLAY_NAME=Sheriff Rex
-MAIN=src/index.ts
-MEMORY=1000
-VERSION=recommended
-LANGUAGE=node
-APPID=d407d41e-484a-4e64-b7e5-6e7b9e84e119
