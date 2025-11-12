@@ -1,0 +1,133 @@
+{
+  "stock": {
+    "wheat": 3200,
+    "honey": 8,
+    "cattle": 18
+  },
+  "treasury": 909790,
+  "prices": {
+    "wheat": {
+      "buy": 0.16,
+      "sell": 0.1
+    },
+    "honey": {
+      "buy": 38,
+      "sell": 25
+    },
+    "cattle": {
+      "buy": 6710,
+      "sell": 5000
+    }
+  },
+  "statistics": {
+    "hourly": {
+      "wheat": {
+        "sold": 0,
+        "bought": 0,
+        "revenue": 0
+      },
+      "honey": {
+        "sold": 0,
+        "bought": 0,
+        "revenue": 0
+      },
+      "cattle": {
+        "sold": 0,
+        "bought": 0,
+        "revenue": 0
+      }
+    },
+    "total": {
+      "wheat": {
+        "sold": 6200,
+        "bought": 3000,
+        "revenue": 620
+      },
+      "honey": {
+        "sold": 18,
+        "bought": 10,
+        "revenue": 450
+      },
+      "cattle": {
+        "sold": 18,
+        "bought": 0,
+        "revenue": 90000
+      }
+    },
+    "lastReset": "2025-11-12T03:02:06.682Z"
+  },
+  "transactions": [
+    {
+      "userId": "339772388566892546",
+      "type": "sell",
+      "resource": "wheat",
+      "amount": 6200,
+      "price": 0.1,
+      "total": 620,
+      "timestamp": "2025-11-11T02:14:51.873Z"
+    },
+    {
+      "userId": "339772388566892546",
+      "type": "sell",
+      "resource": "honey",
+      "amount": 17,
+      "price": 25,
+      "total": 425,
+      "timestamp": "2025-11-11T02:15:05.552Z"
+    },
+    {
+      "userId": "1082867940501749760",
+      "type": "buy",
+      "resource": "wheat",
+      "amount": 3000,
+      "price": 0.16,
+      "total": 480,
+      "timestamp": "2025-11-11T02:23:02.714Z"
+    },
+    {
+      "userId": "1082867940501749760",
+      "type": "buy",
+      "resource": "honey",
+      "amount": 10,
+      "price": 38,
+      "total": 380,
+      "timestamp": "2025-11-11T02:24:09.128Z"
+    },
+    {
+      "userId": "339772388566892546",
+      "type": "sell",
+      "resource": "honey",
+      "amount": 1,
+      "price": 25,
+      "total": 25,
+      "timestamp": "2025-11-11T02:25:14.957Z"
+    },
+    {
+      "userId": "339772388566892546",
+      "type": "sell",
+      "resource": "cattle",
+      "amount": 10,
+      "price": 5000,
+      "total": 50000,
+      "timestamp": "2025-11-11T03:43:00.962Z"
+    },
+    {
+      "userId": "339772388566892546",
+      "type": "sell",
+      "resource": "cattle",
+      "amount": 4,
+      "price": 5000,
+      "total": 20000,
+      "timestamp": "2025-11-11T14:37:00.231Z"
+    },
+    {
+      "userId": "997313362998333540",
+      "type": "sell",
+      "resource": "cattle",
+      "amount": 4,
+      "price": 5000,
+      "total": 20000,
+      "timestamp": "2025-11-11T14:37:29.296Z"
+    }
+  ]
+}

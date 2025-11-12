@@ -1,0 +1,129 @@
+COMANDOS DISPONIVEIS - Sheriff Rex Bot
+
+Total: 44 Comandos
+
+========================================
+AI (2 comandos)
+========================================
+
+/ai - Conversar com Sheriff Rex AI
+  Parametros: prompt (obrigatorio), model (opcional)
+  Descricao: Chat com assistente AI tematico de velho oeste
+
+/models - Listar modelos de AI disponiveis
+  Descricao: Ver todos os modelos OpenRouter disponiveis
+
+========================================
+Admin/Moderacao (12 comandos)
+========================================
+
+/addreward - Adicionar recompensa por nivel
+/admin - Painel de comandos administrativos
+/clear - Limpar mensagens do canal
+/clearwarns - Limpar avisos de um usuario
+/criaservidor - Criar canais e cargos automaticamente com IA
+/embedbuilder - Construtor de embeds personalizados
+/mute - Silenciar usuario
+/setlogs - Configurar canal de logs
+/unmute - Remover silenciamento
+/warn - Avisar usuario
+/warnings - Ver avisos de um usuario
+/welcome - Configurar mensagens de boas-vindas
+
+========================================
+Recompensas/Bounty (4 comandos)
+========================================
+
+/wanted - Colocar recompensa em alguem
+/bounties - Ver recompensas ativas
+/capture - Capturar procurado
+/clearbounty - Limpar recompensa
+
+========================================
+Economia (14 comandos)
+========================================
+
+/daily - Recompensa diaria
+/expedition - Expedicao ao deserto
+  Duracao: 3h ou 10h (solo/grupo)
+  Custo: 12-30 seals dependendo do tipo
+  Recompensas: prata, ouro, wheat, honey, XP
+
+/give - Transferir moedas/itens
+/leaderboard - Top 10 jogadores
+/territories - Sistema de territorios
+/middleman - Sistema de intermediario seguro
+/redeem - Resgatar codigos
+
+Comandos de Admin:
+/addbackpack - Adicionar upgrade de mochila
+/addgold - Adicionar ouro
+/addseal - Adicionar selos
+/addsilver - Adicionar prata
+/addtokens - Adicionar tokens
+/removegold - Remover ouro
+/setuptoken - Configurar sistema de tokens
+
+========================================
+Jogos/Gambling (4 comandos)
+========================================
+
+/dice - Duelo de dados PvP
+  Parametros: opponent, bet, guess (2-12)
+  Aposta minima: 10 tokens
+  Cooldown: 10 segundos
+
+/bankrob - Assalto ao banco cooperativo
+  Parametros: partner
+  Modo cooperativo (2 jogadores)
+  Sistema de punicao por falha
+
+/duel - Duelo PvP com apostas
+/roulette - Roleta de cassino
+
+========================================
+Guilda (1 comando)
+========================================
+
+/guilda - Sistema de guildas
+
+========================================
+Mineracao (1 comando)
+========================================
+
+/mine - Minerar ouro
+  Modos: Solo (90 min) ou Cooperativo (30 min)
+  Sistema de coleta de barras de ouro
+  Sistema de mochila: 100kg - 500kg
+  Boost de 50% para donos de Gold Mine Shares
+
+========================================
+Perfil (2 comandos)
+========================================
+
+/profile - Ver perfil com estatisticas
+/inventory - Ver inventario completo
+
+========================================
+Utilidades (3 comandos)
+========================================
+
+/help - Menu de ajuda
+/ping - Ver latencia do bot
+/poll - Criar enquete
+
+========================================
+RESUMO POR CATEGORIA
+========================================
+
+AI                  - 2 comandos
+Admin/Moderacao    - 12 comandos
+Bounty             - 4 comandos
+Economia           - 14 comandos
+Jogos              - 4 comandos
+Guilda             - 1 comando
+Mineracao          - 1 comando
+Perfil             - 2 comandos
+Utilidades         - 3 comandos
+
+TOTAL              - 44 comandos

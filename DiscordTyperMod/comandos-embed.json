@@ -1,0 +1,55 @@
+{
+  "title": "Comandos Disponiveis - Sheriff Rex Bot",
+  "description": "Lista completa dos 44 comandos organizados por categoria",
+  "color": 15105570,
+  "fields": [
+    {
+      "name": "AI (2 comandos)",
+      "value": "`/ai` - Conversar com Sheriff Rex AI\n`/models` - Listar modelos de AI disponiveis",
+      "inline": false
+    },
+    {
+      "name": "Admin/Moderacao (12 comandos)",
+      "value": "`/addreward` - Adicionar recompensa por nivel\n`/admin` - Painel de comandos administrativos\n`/clear` - Limpar mensagens do canal\n`/clearwarns` - Limpar avisos de um usuario\n`/criaservidor` - Criar canais e cargos com IA\n`/embedbuilder` - Construtor de embeds\n`/mute` - Silenciar usuario\n`/setlogs` - Configurar canal de logs\n`/unmute` - Remover silenciamento\n`/warn` - Avisar usuario\n`/warnings` - Ver avisos de um usuario\n`/welcome` - Configurar mensagens de boas-vindas",
+      "inline": false
+    },
+    {
+      "name": "Recompensas/Bounty (4 comandos)",
+      "value": "`/wanted` - Colocar recompensa em alguem\n`/bounties` - Ver recompensas ativas\n`/capture` - Capturar procurado\n`/clearbounty` - Limpar recompensa",
+      "inline": false
+    },
+    {
+      "name": "Economia (14 comandos)",
+      "value": "`/daily` - Recompensa diaria\n`/expedition` - Expedicao ao deserto (3h ou 10h)\n`/give` - Transferir moedas/itens\n`/leaderboard` - Top 10 jogadores\n`/territories` - Sistema de territorios\n`/middleman` - Sistema de intermediario seguro\n`/redeem` - Resgatar codigos\n`/addbackpack` - Adicionar upgrade de mochila (Admin)\n`/addgold` - Adicionar ouro (Admin)\n`/addseal` - Adicionar selos (Admin)\n`/addsilver` - Adicionar prata (Admin)\n`/addtokens` - Adicionar tokens (Admin)\n`/removegold` - Remover ouro (Admin)\n`/setuptoken` - Configurar tokens (Admin)",
+      "inline": false
+    },
+    {
+      "name": "Jogos/Gambling (4 comandos)",
+      "value": "`/dice` - Duelo de dados PvP\n`/bankrob` - Assalto ao banco cooperativo\n`/duel` - Duelo PvP com apostas\n`/roulette` - Roleta de cassino",
+      "inline": false
+    },
+    {
+      "name": "Guilda (1 comando)",
+      "value": "`/guilda` - Sistema de guildas",
+      "inline": true
+    },
+    {
+      "name": "Mineracao (1 comando)",
+      "value": "`/mine` - Minerar ouro (Solo 90min ou Cooperativo 30min)",
+      "inline": true
+    },
+    {
+      "name": "Perfil (2 comandos)",
+      "value": "`/profile` - Ver perfil com estatisticas\n`/inventory` - Ver inventario completo",
+      "inline": true
+    },
+    {
+      "name": "Utilidades (3 comandos)",
+      "value": "`/help` - Menu de ajuda\n`/ping` - Ver latencia do bot\n`/poll` - Criar enquete",
+      "inline": false
+    }
+  ],
+  "footer": {
+    "text": "Total: 44 comandos | Sheriff Rex Bot"
+  }
+}

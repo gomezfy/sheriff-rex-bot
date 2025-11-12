@@ -1,0 +1,33 @@
+{
+  "parties": {
+    "expedition_339772388566892546_1762913543162": {
+      "leader": "339772388566892546",
+      "members": [
+        "339772388566892546"
+      ],
+      "duration": 10800000,
+      "startTime": 1762913543162,
+      "endTime": 1762924343162,
+      "dmSent": {},
+      "guildId": "1424880033423687887",
+      "channelId": "1428718943564075100",
+      "rewardsGiven": false
+    }
+  },
+  "1082867940501749760": {
+    "totalExpeditions": 5,
+    "lastExpedition": 1762876028330
+  },
+  "339772388566892546": {
+    "totalExpeditions": 3,
+    "lastExpedition": 1762818202323,
+    "activeExpedition": {
+      "partyId": "expedition_339772388566892546_1762913543162",
+      "isLeader": true
+    }
+  },
+  "997313362998333540": {
+    "totalExpeditions": 1,
+    "lastExpedition": 1762551306664
+  }
+}

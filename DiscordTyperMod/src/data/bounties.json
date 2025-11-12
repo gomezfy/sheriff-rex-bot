@@ -1,0 +1,44 @@
+[
+  {
+    "targetId": "1426344797421047838",
+    "targetTag": "_redgirl2",
+    "totalAmount": 8000,
+    "contributors": [
+      {
+        "id": "1426734768111747284",
+        "tag": "🚨 Sheriff",
+        "amount": 8000
+      }
+    ],
+    "createdAt": 1762839972538,
+    "updatedAt": 1762839972538
+  },
+  {
+    "targetId": "1425264215454777364",
+    "targetTag": "redgirl_2",
+    "totalAmount": 100000,
+    "contributors": [
+      {
+        "id": "1082867940501749760",
+        "tag": "sampson46",
+        "amount": 100000
+      }
+    ],
+    "createdAt": 1762904554212,
+    "updatedAt": 1762904554212
+  },
+  {
+    "targetId": "339772388566892546",
+    "targetTag": "gomezfy_",
+    "totalAmount": 200000,
+    "contributors": [
+      {
+        "id": "1082867940501749760",
+        "tag": "sampson46",
+        "amount": 200000
+      }
+    ],
+    "createdAt": 1762904602899,
+    "updatedAt": 1762904602899
+  }
+]

@@ -1,0 +1,28 @@
+{
+  "SHERIFF-BACKPACK_500-MHNM04RU-AFKD62": {
+    "productId": "backpack_500",
+    "productName": "Ultimate Backpack",
+    "tokens": 0,
+    "coins": 0,
+    "vip": false,
+    "background": false,
+    "backpack": 500,
+    "createdAt": 1762444589610,
+    "createdBy": "339772388566892546",
+    "redeemed": true,
+    "redeemedBy": "1082867940501749760",
+    "redeemedAt": 1762444637486
+  },
+  "SHERIFF-BACKPACK_500-MHTYIQRS-RGNE2K": {
+    "productId": "backpack_500",
+    "productName": "Ultimate Backpack",
+    "tokens": 0,
+    "coins": 0,
+    "vip": false,
+    "background": false,
+    "backpack": 500,
+    "createdAt": 1762828410377,
+    "createdBy": "339772388566892546",
+    "redeemed": false
+  }
+}

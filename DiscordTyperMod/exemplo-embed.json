@@ -1,0 +1,25 @@
+{
+  "title": "🤠 Teste de Importação",
+  "description": "Este é um embed de teste!\n\nSe você está vendo isso, significa que a importação funcionou perfeitamente! 🎉",
+  "color": "#5865F2",
+  "thumbnail": "https://cdn.discordapp.com/emojis/1234567890123456789.png",
+  "fields": [
+    {
+      "name": "✅ Campo 1",
+      "value": "Valor do primeiro campo",
+      "inline": true
+    },
+    {
+      "name": "✅ Campo 2",
+      "value": "Valor do segundo campo",
+      "inline": true
+    },
+    {
+      "name": "📝 Campo 3",
+      "value": "Este campo ocupa a linha inteira",
+      "inline": false
+    }
+  ],
+  "footerText": "Embed importado com sucesso! 🚀",
+  "timestamp": true
+}

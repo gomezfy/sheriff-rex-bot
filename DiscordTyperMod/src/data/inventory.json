@@ -1,0 +1,50 @@
+{
+  "339772388566892546": {
+    "items": {
+      "silver": 80533,
+      "seal": 978,
+      "saloon_token": 5026,
+      "gold": 17,
+      "diamond": 1
+    },
+    "weight": 25.205,
+    "maxWeight": 500
+  },
+  "997313362998333540": {
+    "items": {
+      "silver": 1614000
+    },
+    "weight": 161.4,
+    "maxWeight": 500
+  },
+  "1082867940501749760": {
+    "items": {
+      "seal": 360,
+      "silver": 2046188,
+      "saloon_token": 4999,
+      "wheat": 23489,
+      "honey": 62,
+      "cattle": 14,
+      "gold": 32,
+      "diamond": 1
+    },
+    "weight": 265.614,
+    "maxWeight": 500
+  },
+  "1426344797421047838": {
+    "items": {
+      "silver": 50,
+      "saloon_token": 5
+    },
+    "weight": 0.005,
+    "maxWeight": 100
+  },
+  "1035158628920995860": {
+    "items": {
+      "silver": 550,
+      "saloon_token": 5
+    },
+    "weight": 0.055,
+    "maxWeight": 100
+  }
+}

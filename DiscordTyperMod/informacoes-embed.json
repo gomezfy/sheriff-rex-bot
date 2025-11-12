@@ -1,0 +1,33 @@
+{
+  "title": "SHERIFF REX BOT",
+  "description": "Seu xerife digital no Velho Oeste",
+  "color": 15105570,
+  "thumbnail": {
+    "url": "https://i.postimg.cc/Y0r3VL1L/IMG-2995.png"
+  },
+  "fields": [
+    {
+      "name": "Sobre",
+      "value": "Bot tematico de Velho Oeste com economia, jogos e moderacao completa",
+      "inline": false
+    },
+    {
+      "name": "Economia",
+      "value": "Saloon Tokens\nSilver Coins\nGold Bars\nTerritories",
+      "inline": true
+    },
+    {
+      "name": "Jogos",
+      "value": "Dice\nDuel\nRoulette\nBank Robbery\nMineracao",
+      "inline": true
+    },
+    {
+      "name": "Primeiros Passos",
+      "value": "/help - Ver comandos\n/daily - Recompensa diaria\n/profile - Seu perfil\n/mine - Minerar ouro",
+      "inline": false
+    }
+  ],
+  "footer": {
+    "text": "44 Comandos Disponiveis"
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "1425264215454777364": {
+    "type": "solo",
+    "startTime": 1762490279019,
+    "endTime": 1762495679019,
+    "claimed": false,
+    "goldAmount": 1,
+    "partnerId": null,
+    "boosted": false,
+    "notified": true
+  },
+  "339772388566892546": {
+    "type": "solo",
+    "startTime": 1762912982312,
+    "endTime": 1762915682312,
+    "claimed": false,
+    "goldAmount": 3,
+    "partnerId": null,
+    "boosted": true,
+    "notified": true
+  },
+  "827160283634073601": {
+    "type": "coop",
+    "startTime": 1762714516547,
+    "endTime": 1762716316547,
+    "claimed": false,
+    "goldAmount": 2,
+    "partnerId": "339772388566892546",
+    "boosted": false,
+    "notified": true
+  },
+  "1082867940501749760": {
+    "type": "solo",
+    "startTime": 1762897050886,
+    "endTime": 1762902450886,
+    "claimed": true,
+    "goldAmount": 3,
+    "partnerId": null,
+    "boosted": false,
+    "notified": true
+  },
+  "1426344797421047838": {
+    "type": "solo",
+    "startTime": 1762839716877,
+    "endTime": 1762845116877,
+    "claimed": false,
+    "goldAmount": 3,
+    "partnerId": null,
+    "boosted": false,
+    "notified": true
+  },
+  "1035158628920995860": {
+    "type": "solo",
+    "startTime": 1762841373581,
+    "endTime": 1762846773581,
+    "claimed": false,
+    "goldAmount": 2,
+    "partnerId": null,
+    "boosted": false,
+    "notified": true
+  }
+}

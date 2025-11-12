@@ -1,0 +1,49 @@
+{
+  "title": "SHERIFF REX BOT - DIRETRIZES OFICIAIS",
+  "description": "Howdy, parceiro! Siga estas diretrizes para aproveitar ao maximo sua experiencia no Velho Oeste!",
+  "color": 15105570,
+  "image": {
+    "url": "https://i.postimg.cc/Sx0TrRnm/IMG-3240.png"
+  },
+  "fields": [
+    {
+      "name": "PROPOSITO DO BOT",
+      "value": "Mini jogos e apostas\nSistema economico com moedas\nMineracao cooperativa\nCaca a recompensas\nFerramentas de moderacao\nAssistente AI tematico",
+      "inline": false
+    },
+    {
+      "name": "COMANDOS PRINCIPAIS",
+      "value": "/help - Ver todos os comandos\n/daily - Recompensa diaria\n/profile - Seu perfil\n/mine - Minerar ouro\n/dice - Jogar dados\n/expedition - Explorar deserto",
+      "inline": false
+    },
+    {
+      "name": "USO PROIBIDO",
+      "value": "Usar bugs ou exploits\nCriar multiplas contas\nUsar bots/automacao\nSpam de comandos\nConteudo ofensivo\nAssediar usuarios",
+      "inline": false
+    },
+    {
+      "name": "SISTEMA ECONOMICO",
+      "value": "Saloon Tokens - Moeda premium\nSilver Coins - Moeda secundaria\nGold Bars - Recurso valioso\n\nUma conta por jogador\nJogue limpo e respeite cooldowns\nUse /middleman para trocas seguras",
+      "inline": false
+    },
+    {
+      "name": "PUNICOES PROGRESSIVAS",
+      "value": "1. Advertencia (/warn)\n2. Mute Temporario (/mute)\n3. Kick (expulsao)\n4. Ban (permanente)\n\nTodas as punicoes sao registradas. Use /warnings para ver seus avisos.",
+      "inline": false
+    },
+    {
+      "name": "SEGURANCA",
+      "value": "Nunca compartilhe tokens imprudentemente\nUse /middleman para trocas\nDesconfie de ofertas suspeitas\nReporte scammers aos moderadores",
+      "inline": true
+    },
+    {
+      "name": "COMUNIDADE",
+      "value": "Trate outros com respeito\nJogue de forma justa\nAjude novos membros\nParticipe de eventos\nSugira melhorias",
+      "inline": true
+    }
+  ],
+  "footer": {
+    "text": "Usar o bot = concordar com as regras | Moderadores tem palavra final"
+  },
+  "timestamp": "2025-11-08T00:00:00.000Z"
+}

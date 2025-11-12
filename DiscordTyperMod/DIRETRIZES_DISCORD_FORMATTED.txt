@@ -1,0 +1,177 @@
+# <:cowboy:1432998101613936763> **SHERIFF REX BOT - DIRETRIZES OFICIAIS**
+
+## <:scroll:1432998123340304488> **Bem-vindo ao Velho Oeste!**
+
+Howdy, parceiro! Sheriff Rex é seu xerife digital. Siga estas diretrizes para aproveitar ao máximo sua experiência!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## <:dart:1432998107481641041> **PROPÓSITO DO BOT**
+
+<:dice:1080278191089086655> **Mini jogos e apostas** para entretenimento
+<:moneybag:1432998118164660405> **Sistema econômico** com moedas e tokens  
+<:pickaxe:1432998121268580362> **Mineração cooperativa** para trabalho em equipe
+<:revolver:1432998120224067606> **Caça a recompensas** para adicionar emoção
+<:balance:1432998093510676521> **Ferramentas de moderação** para manter a paz
+<:sparkles:1432998133729726577> **Assistente AI** com personalidade western
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## <:check:1432998099617316874> **USO PERMITIDO**
+
+### <:info:1432998115115405436> **Comandos Gerais**
+`/help` - Ver todos os comandos disponíveis
+`/ping` - Verificar latência do bot
+`/profile` - Ver seu perfil e estatísticas
+`/inventory` - Verificar seu inventário
+`/leaderboard` - Ver ranking dos melhores jogadores
+
+### <:dice:1080278191089086655> **Jogos e Entretenimento**
+`/dice` - Jogar dados contra outro jogador
+`/duel` - Desafiar alguém para um duelo
+`/roulette` - Testar a sorte na roleta
+`/bankrob` - Assaltar o banco com um parceiro
+`/mine` - Minerar ouro (solo ou cooperativo)
+`/expedition` - Explorar o deserto
+
+### <:moneybag:1432998118164660405> **Economia**
+`/daily` - Coletar recompensa diária
+`/give` - Transferir moedas para outro usuário
+`/territories` - Sistema de territórios
+`/redeem` - Resgatar códigos promocionais
+
+### <:revolver:1432998120224067606> **Recompensas**
+`/wanted` - Colocar recompensa em alguém
+`/bounties` - Ver recompensas ativas
+`/capture` - Capturar um procurado
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## <:cross:1432998106492047370> **USO PROIBIDO**
+
+### <:cancel:1432998098296242219> **Exploração e Fraude**
+<:cancel:1432998098296242219> Usar bugs ou exploits para ganhar vantagens
+<:cancel:1432998098296242219> Criar múltiplas contas (multi-accounting)
+<:cancel:1432998098296242219> Usar bots ou automação
+<:cancel:1432998098296242219> Manipular o sistema econômico
+
+### <:cancel:1432998098296242219> **Spam e Abuso**
+<:cancel:1432998098296242219> Usar comandos de forma excessiva
+<:cancel:1432998098296242219> Flood de comandos
+<:cancel:1432998098296242219> Abusar dos jogos para irritar outros
+<:cancel:1432998098296242219> Usar comandos em canais inadequados
+
+### <:cancel:1432998098296242219> **Conteúdo Inadequado**
+<:cancel:1432998098296242219> Criar embeds com conteúdo ofensivo
+<:cancel:1432998098296242219> Enquetes inapropriadas
+<:cancel:1432998098296242219> Assediar usuários com recompensas
+<:cancel:1432998098296242219> Gerar conteúdo tóxico com AI
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## <:gem:1432998111654973521> **SISTEMA ECONÔMICO**
+
+### <:diamond:1432998109126070283> **Moedas**
+<:saloon_token:1432998129778819174> **Saloon Tokens** - Moeda premium
+<:silver_coin:1432998131871649913> **Silver Coins** - Moeda secundária
+<:gold_bar:1432998114230534185> **Gold Bars** - Recurso valioso
+
+### <:balance:1432998093510676521> **Fair Play**
+<:check:1432998099617316874> Uma conta por jogador
+<:check:1432998099617316874> Jogue limpo
+<:check:1432998099617316874> Respeite cooldowns
+<:check:1432998099617316874> Use `/middleman` para trocas seguras
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## <:warning:1432998138377142302> **SISTEMA DE MODERAÇÃO**
+
+### <:alarm:1432998091925225613> **Punições Progressivas**
+**1.** Advertência (`/warn`)
+**2.** Mute Temporário <:mute:1432998119171166310> (`/mute`)
+**3.** Kick (expulsão)
+**4.** Ban (permanente)
+
+### <:scroll:1432998123340304488> **Registro**
+• Todas as punições são registradas
+• Use `/warnings` para ver seus avisos
+• Logs de moderação são transparentes
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## <:gift:1432998112753881179> **GUIA RÁPIDO**
+
+### <:star:1432998134576840794> **Para Iniciantes**
+```
+1. /daily - Recompensa diária
+2. /profile - Suas estatísticas
+3. /help - Todos os comandos
+4. /mine - Minerar ouro
+5. /expedition - Expedição ao deserto
+```
+
+### <:moneybag:1432998118164660405> **Para Ganhar Recursos**
+```
+/daily - Recompensa diária
+/mine - Mineração
+/expedition - Expedições
+/dice - Aposte contra jogadores
+/territories - Conquiste territórios
+```
+
+### <:dart:1432998107481641041> **Para Diversão**
+```
+/duel - Duelar com amigos
+/bankrob - Assaltar o banco
+/roulette - Testar a sorte
+/wanted - Colocar recompensas
+/ai - Conversar com Sheriff Rex
+```
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## <:lock:1432998117418078290> **SEGURANÇA**
+
+### <:lock:1432998117418078290> **Proteja Sua Conta**
+<:check:1432998099617316874> Nunca compartilhe tokens imprudentemente
+<:check:1432998099617316874> Use `/middleman` para trocas
+<:check:1432998099617316874> Desconfie de ofertas "boas demais"
+<:check:1432998099617316874> Reporte scammers aos moderadores
+
+### <:alarm:1432998091925225613> **Reporte Problemas**
+Se encontrar bugs, exploits, comportamento suspeito ou conteúdo inapropriado:
+**➜ Entre em contato com moderadores!**
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## <:cowboys:1432998103526674444> **COMUNIDADE**
+
+### <:star:1432998134576840794> **Seja Respeitoso**
+• Trate outros com respeito
+• Jogue de forma justa
+• Ajude novos membros
+• Mantenha ambiente amigável
+
+### <:sparkles:1432998133729726577> **Contribua**
+• Participe de eventos
+• Sugira melhorias
+• Reporte bugs
+• Compartilhe feedback
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## <:scroll:1432998123340304488> **NOTA FINAL**
+
+> *"No oeste, a palavra de um homem vale ouro. Jogue limpo, respeite as regras, e todos se divertem!"*
+> **— Sheriff Rex** <:cowboy:1432998101613936763>
+
+**Lembre-se:**
+• Estas diretrizes podem ser atualizadas
+• Desconhecimento não isenta de punição
+• Usar o bot = concordar com as regras
+• Moderadores têm palavra final
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+**Versão 1.0.0** | 45 Comandos Ativos
+**Divirta-se no velho oeste! 🌵**
