@@ -12,18 +12,23 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "discord-bot"
+args = "preview"
 
 [[workflows.workflow]]
-name = "discord-bot"
+name = "preview"
 author = "agent"
-
-[workflows.workflow.metadata]
-outputType = "console"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npm run build && npm run start:shard"
+args = "node preview/server.js"
+waitForPort = 5000
+
+[workflows.workflow.metadata]
+outputType = "webview"
 
 [nix]
 channel = "stable-25_05"
+
+[[ports]]
+localPort = 5000
+externalPort = 80
