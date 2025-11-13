@@ -4,6 +4,7 @@ import { Client, Partials, Collection, Events, MessageFlags } from "discord.js";
 import fs from "fs";
 import path from "path";
 import Logger from "./utils/logger";
+import logger from "./utils/consoleLogger";
 import {
   sanitizeErrorForLogging,
   validateEnvironment,
@@ -37,44 +38,53 @@ import {
 } from "./utils/punishmentManager";
 import { canGainXp } from "./utils/messageThrottler";
 
+// Display startup banner
+logger.startup("Initializing Sheriff Rex Bot");
+
 // Try to load .env file if it exists (for local development)
 const envPath = path.join(process.cwd(), ".env");
 if (fs.existsSync(envPath)) {
-  console.log("📄 Loading .env file...");
+  logger.info("Loading .env file");
   dotenv.config({ path: envPath });
 } else {
-  console.log("📦 Using system environment variables (production mode)");
+  logger.info("Using system environment variables (production mode)");
 }
 
-// Debug: Log which variables are present (without exposing values)
-console.log("🔍 Environment check:");
-console.log("  - DISCORD_TOKEN:", process.env.DISCORD_TOKEN ? "✅ Present" : "❌ Missing");
-console.log("  - DISCORD_CLIENT_ID:", process.env.DISCORD_CLIENT_ID ? "✅ Present" : "❌ Missing");
-console.log("  - CLIENT_ID:", process.env.CLIENT_ID ? "✅ Present" : "❌ Missing");
+// Check environment variables
+logger.section("Environment Check");
+logger.table({
+  "DISCORD_TOKEN": !!process.env.DISCORD_TOKEN,
+  "DISCORD_CLIENT_ID": !!process.env.DISCORD_CLIENT_ID,
+  "CLIENT_ID": !!process.env.CLIENT_ID,
+  "DATABASE_URL": !!process.env.DATABASE_URL,
+  "NODE_ENV": process.env.NODE_ENV || "development",
+});
 
 // Validate environment variables before starting
-console.log("🔐 Validating environment variables...");
+logger.info("Validating environment variables");
 try {
   validateEnvironment();
-  console.log("📊 Environment info:", getSafeEnvironmentInfo());
+  logger.success("Environment validation passed");
+  logger.debug("Environment info: " + JSON.stringify(getSafeEnvironmentInfo()));
 } catch (error) {
-  console.error("❌ Environment validation failed:", error);
+  logger.error("Environment validation failed", error);
   process.exit(1);
 }
 
 // Production mode - reduce console logs
 const isProduction = process.env.NODE_ENV === "production";
-const logInfo = (msg: string) => !isProduction && console.log(msg);
 
-logInfo("🔄 Inicializando sistema de dados...");
+logger.section("Database Initialization");
+logger.info("Initializing database system");
 initializeDatabase();
+logger.success("Database system ready");
 
 // Detect low memory environment
 const isLowMemory =
   process.env.LOW_MEMORY === "true" ||
   (process.env.MEMORY_LIMIT && parseInt(process.env.MEMORY_LIMIT) < 100);
 
-console.log(`🎯 Memory mode: ${isLowMemory ? "LOW MEMORY" : "PRODUCTION"}`);
+logger.info(`Memory mode: ${isLowMemory ? "LOW MEMORY" : "PRODUCTION"}`);
 
 // Production-optimized client configuration
 const client = new Client({
@@ -125,6 +135,7 @@ const commandCategories = fs.readdirSync(commandsPath).filter((item) => {
   return fs.statSync(itemPath).isDirectory();
 });
 
+logger.section("Loading Commands");
 let commandCount = 0;
 for (const category of commandCategories) {
   const categoryPath = path.join(commandsPath, category);
@@ -146,14 +157,16 @@ for (const category of commandCategories) {
       if ("data" in command && "execute" in command) {
         client.commands.set(command.data.name, command);
         commandCount++;
+        logger.debug(`Loaded command: /${command.data.name} (${category})`);
       }
     } catch (error: any) {
-      console.error(`❌ Error loading command ${file}:`, error.message);
+      logger.error(`Failed to load command ${file}`, error);
     }
   }
 }
-console.log(`✅ Loaded ${commandCount} commands`);
+logger.success(`Loaded ${commandCount} commands from ${commandCategories.length} categories`);
 
+logger.section("Loading Events");
 const eventsPath = path.join(__dirname, "events");
 const eventFiles = fs
   .readdirSync(eventsPath)
@@ -173,11 +186,12 @@ for (const file of eventFiles) {
       client.on(event.name, (...args: any[]) => event.execute(...args));
     }
     eventCount++;
+    logger.debug(`Loaded event: ${event.name}${event.once ? ' (once)' : ''}`);
   } catch (error: any) {
-    console.error(`❌ Error loading event ${file}:`, error.message);
+    logger.error(`Failed to load event ${file}`, error);
   }
 }
-console.log(`✅ Loaded ${eventCount} events`);
+logger.success(`Loaded ${eventCount} events`);
 
 /**
  * Ensures an interaction is deferred to prevent timeout errors
@@ -207,13 +221,13 @@ client.on(Events.InteractionCreate, async (interaction) => {
   const command = client.commands.get(interaction.commandName);
 
   if (!command) {
-    console.error(`Command ${interaction.commandName} not found.`);
+    logger.warn(`Command ${interaction.commandName} not found`);
     return;
   }
 
   // Prevent double execution
   if ((interaction as any)._handled) {
-    logInfo(`Interaction already handled for ${interaction.commandName}`);
+    logger.debug(`Interaction already handled for ${interaction.commandName}`);
     return;
   }
   (interaction as any)._handled = true;
@@ -305,7 +319,7 @@ client.on(Events.MessageCreate, async (message) => {
     const xpResult = addXp(message.author.id, xpAmount);
 
     if (xpResult.leveledUp) {
-      logInfo(
+      logger.debug(
         `${message.author.tag} has leveled up to level ${xpResult.newLevel}!`,
       );
     }

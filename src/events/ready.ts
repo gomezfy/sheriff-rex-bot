@@ -1,16 +1,22 @@
 import { Events, Client, ActivityType } from "discord.js";
 import { backupManager } from "../utils/backupManager";
+import logger from "../utils/consoleLogger";
 
 export = {
   name: Events.ClientReady,
   once: true,
   execute(client: Client): void {
-    console.log(`✅ Bot online as ${client.user?.tag}`);
-    console.log(`📊 Servers: ${client.guilds.cache.size}`);
-    console.log(`👥 Users: ${client.users.cache.size}`);
+    // Display beautiful ready message
+    logger.ready(
+      client.user?.tag || "Unknown",
+      client.guilds.cache.size,
+      client.users.cache.size
+    );
 
     // Start automatic backups
+    logger.info("Starting automatic backup system");
     backupManager.startAutomaticBackups();
+    logger.success("Backup system initialized");
 
     const statusActivities = [
       { name: "Mantendo a paz no Velho Oeste 🤠", type: ActivityType.Watching },
@@ -58,7 +64,7 @@ export = {
     updateStatus();
     setInterval(updateStatus, 60000);
 
-    console.log("🚀 Bot ready for use!");
-    console.log("🔄 Status rotation active - changes every 60 seconds");
+    logger.info("Status rotation active (changes every 60 seconds)");
+    logger.divider();
   },
 };
