@@ -9,6 +9,7 @@ import {
   getCrossEmoji,
 } from "./customEmojis";
 import logger from "./consoleLogger";
+import { tUser } from "./i18n";
 
 interface DailyRewardState {
   lastGlobalRun?: number;
@@ -95,27 +96,16 @@ async function grantRewardToUser(
       try {
         const user = await client.users.fetch(userId);
         const embed = new EmbedBuilder()
-          .setColor("#FF0000")
-          .setTitle(
-            `${getCrossEmoji()} Recompensas Diárias - Inventário Cheio`,
-          )
+          .setColor("#FF6B6B")
+          .setTitle(tUser(userId, "auto_daily_inventory_full_title"))
           .setDescription(
-            `Você receberia suas recompensas diárias, mas seu inventário está muito cheio!\n\n**Libere espaço e use \`/daily\` para reclamar manualmente.**`,
-          )
-          .addFields(
-            {
-              name: "📦 Espaço Necessário",
-              value: `~${totalNeededWeight.toFixed(2)}kg`,
-              inline: true,
-            },
-            {
-              name: "📦 Espaço Disponível",
-              value: `${(maxWeight - currentWeight).toFixed(2)}kg`,
-              inline: true,
-            },
+            tUser(userId, "auto_daily_inventory_full_desc", {
+              needed: totalNeededWeight.toFixed(2),
+              available: (maxWeight - currentWeight).toFixed(2),
+            }),
           )
           .setFooter({
-            text: "Venda ou organize itens para liberar espaço",
+            text: tUser(userId, "auto_daily_inventory_full_footer"),
           })
           .setTimestamp();
 
@@ -146,26 +136,21 @@ async function grantRewardToUser(
     try {
       const user = await client.users.fetch(userId);
       const embed = new EmbedBuilder()
-        .setColor("#00FF00")
-        .setTitle(
-          `${getCheckEmoji()} Recompensas Diárias Recebidas!`,
-        )
+        .setColor("#FFD700")
+        .setTitle(tUser(userId, "auto_daily_reward_title"))
         .setDescription(
-          `🎁 Você recebeu suas recompensas diárias automáticas!\n\n**Volte amanhã às ${REWARD_HOUR}:00 para receber novamente!**`,
-        )
-        .addFields(
-          {
-            name: "💰 Recompensas",
-            value: [
-              `${getSaloonTokenEmoji()} **${REWARD_AMOUNTS.saloon_token}x** Saloon Tokens`,
-              `${getGoldBarEmoji()} **${REWARD_AMOUNTS.gold}x** Barras de Ouro`,
-              `🎟️ **${REWARD_AMOUNTS.seal}x** Selos`,
-            ].join("\n"),
-            inline: false,
-          },
+          tUser(userId, "auto_daily_reward_desc", {
+            token: getSaloonTokenEmoji(),
+            tokenAmount: REWARD_AMOUNTS.saloon_token,
+            gold: getGoldBarEmoji(),
+            goldAmount: REWARD_AMOUNTS.gold,
+            sealAmount: REWARD_AMOUNTS.seal,
+          }),
         )
         .setFooter({
-          text: "Sheriff Rex - Recompensas Diárias",
+          text: tUser(userId, "auto_daily_reward_footer", {
+            hour: REWARD_HOUR,
+          }),
         })
         .setTimestamp();
 

@@ -46,6 +46,26 @@ const translations: Record<string, Record<string, string>> = {
     daily_day: "dia",
     daily_days: "dias",
 
+    // Automatic Daily Rewards
+    auto_daily_reward_title: "🌟 Recompensas Diárias Entregues!",
+    auto_daily_reward_desc:
+      "*O xerife passou pela cidade e deixou um presente para você!*\n\n" +
+      "╭─────────────────╮\n" +
+      "│ {token} **{tokenAmount}** Saloon Tokens\n" +
+      "│ {gold} **{goldAmount}** Barras de Ouro\n" +
+      "│ 🎟️ **{sealAmount}** Selos\n" +
+      "╰─────────────────╯\n\n" +
+      "*Suas recompensas foram adicionadas ao inventário.*",
+    auto_daily_reward_footer:
+      "Próximas recompensas amanhã às {hour}:00 • Sheriff Rex",
+    auto_daily_inventory_full_title: "⚠️ Inventário Cheio!",
+    auto_daily_inventory_full_desc:
+      "*O xerife tentou entregar suas recompensas, mas sua mochila está lotada!*\n\n" +
+      "**📦 Espaço necessário:** ~{needed}kg\n" +
+      "**📦 Espaço disponível:** {available}kg\n\n" +
+      "*Venda ou organize itens para liberar espaço e receber suas recompensas.*",
+    auto_daily_inventory_full_footer: "Use /inventory para ver seus itens • Sheriff Rex",
+
     // Inventory Command
     inventory_private_title: "Inventário Privado",
     inventory_private_desc:
@@ -1490,6 +1510,26 @@ const translations: Record<string, Record<string, string>> = {
     daily_day: "day",
     daily_days: "days",
 
+    // Automatic Daily Rewards
+    auto_daily_reward_title: "🌟 Daily Rewards Delivered!",
+    auto_daily_reward_desc:
+      "*The sheriff passed through town and left a gift for you!*\n\n" +
+      "╭─────────────────╮\n" +
+      "│ {token} **{tokenAmount}** Saloon Tokens\n" +
+      "│ {gold} **{goldAmount}** Gold Bars\n" +
+      "│ 🎟️ **{sealAmount}** Seals\n" +
+      "╰─────────────────╯\n\n" +
+      "*Your rewards have been added to your inventory.*",
+    auto_daily_reward_footer:
+      "Next rewards tomorrow at {hour}:00 • Sheriff Rex",
+    auto_daily_inventory_full_title: "⚠️ Inventory Full!",
+    auto_daily_inventory_full_desc:
+      "*The sheriff tried to deliver your rewards, but your backpack is full!*\n\n" +
+      "**📦 Space needed:** ~{needed}kg\n" +
+      "**📦 Space available:** {available}kg\n\n" +
+      "*Sell or organize items to free up space and receive your rewards.*",
+    auto_daily_inventory_full_footer: "Use /inventory to see your items • Sheriff Rex",
+
     // Inventory Command
     inventory_private_title: "Private Inventory",
     inventory_private_desc:
@@ -2896,6 +2936,26 @@ const translations: Record<string, Record<string, string>> = {
     daily_day: "día",
     daily_days: "días",
 
+    // Automatic Daily Rewards
+    auto_daily_reward_title: "🌟 ¡Recompensas Diarias Entregadas!",
+    auto_daily_reward_desc:
+      "*¡El sheriff pasó por el pueblo y dejó un regalo para ti!*\n\n" +
+      "╭─────────────────╮\n" +
+      "│ {token} **{tokenAmount}** Fichas Saloon\n" +
+      "│ {gold} **{goldAmount}** Barras de Oro\n" +
+      "│ 🎟️ **{sealAmount}** Sellos\n" +
+      "╰─────────────────╯\n\n" +
+      "*Tus recompensas han sido agregadas a tu inventario.*",
+    auto_daily_reward_footer:
+      "Próximas recompensas mañana a las {hour}:00 • Sheriff Rex",
+    auto_daily_inventory_full_title: "⚠️ ¡Inventario Lleno!",
+    auto_daily_inventory_full_desc:
+      "*¡El sheriff intentó entregar tus recompensas, pero tu mochila está llena!*\n\n" +
+      "**📦 Espacio necesario:** ~{needed}kg\n" +
+      "**📦 Espacio disponible:** {available}kg\n\n" +
+      "*Vende u organiza objetos para liberar espacio y recibir tus recompensas.*",
+    auto_daily_inventory_full_footer: "Usa /inventory para ver tus objetos • Sheriff Rex",
+
     // Inventory Command
     inventory_private_title: "Inventario Privado",
     inventory_private_desc:
@@ -3450,6 +3510,26 @@ const translations: Record<string, Record<string, string>> = {
     daily_field_bonus: "Bonus",
     daily_day: "jour",
     daily_days: "jours",
+
+    // Automatic Daily Rewards
+    auto_daily_reward_title: "🌟 Récompenses Quotidiennes Livrées !",
+    auto_daily_reward_desc:
+      "*Le shérif est passé en ville et a laissé un cadeau pour vous !*\n\n" +
+      "╭─────────────────╮\n" +
+      "│ {token} **{tokenAmount}** Jetons Saloon\n" +
+      "│ {gold} **{goldAmount}** Barres d'Or\n" +
+      "│ 🎟️ **{sealAmount}** Sceaux\n" +
+      "╰─────────────────╯\n\n" +
+      "*Vos récompenses ont été ajoutées à votre inventaire.*",
+    auto_daily_reward_footer:
+      "Prochaines récompenses demain à {hour}:00 • Sheriff Rex",
+    auto_daily_inventory_full_title: "⚠️ Inventaire Plein !",
+    auto_daily_inventory_full_desc:
+      "*Le shérif a essayé de livrer vos récompenses, mais votre sac à dos est plein !*\n\n" +
+      "**📦 Espace nécessaire :** ~{needed}kg\n" +
+      "**📦 Espace disponible :** {available}kg\n\n" +
+      "*Vendez ou organisez des objets pour libérer de l'espace et recevoir vos récompenses.*",
+    auto_daily_inventory_full_footer: "Utilisez /inventory pour voir vos objets • Sheriff Rex",
 
     // Inventory Command
     inventory_private_title: "Inventaire Privé",

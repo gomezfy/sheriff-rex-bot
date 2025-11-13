@@ -4,9 +4,11 @@
 **Sheriff Rex** é um bot Discord completo em TypeScript com tema de faroeste (Wild West), oferecendo:
 - 46 comandos slash organizados em 8 categorias
 - Sistema de economia dual (Saloon Tokens + Silver Coins)
+- **🌟 Recompensas diárias automáticas** (60 tokens, 3 gold bars, 15 seals às 21:00)
 - Mini jogos e sistema de apostas
 - Sistema de mineração (solo e cooperativo)
 - Sistema de bounty hunting com pôsters visuais
+- Sistema de expedições em grupo (agora com convites públicos!)
 - Sistema de moderação completo
 - Perfis visuais personalizados com Canvas
 - Suporte multilíngue (PT-BR, EN-US, ES-ES, FR)
