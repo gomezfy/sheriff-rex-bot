@@ -29,7 +29,14 @@ const AVAILABLE_FRAMES: Frame[] = [
     price: 30,
     rarity: "rare",
   },
-  // Mais molduras podem ser adicionadas aqui
+  {
+    id: "rex_premium",
+    name: "🤠 Moldura Rex Premium",
+    description: "Moldura exclusiva do Sheriff Rex com cacto, chapéu de cowboy e logo Rex. Edição limitada!",
+    imageUrl: "https://i.postimg.cc/fb8h6vHS/result-IMG-3359.png",
+    price: 430,
+    rarity: "legendary",
+  },
 ];
 
 // Load user frames data
