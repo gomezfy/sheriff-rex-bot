@@ -45,6 +45,14 @@ const AVAILABLE_FRAMES: Frame[] = [
     price: 512,
     rarity: "legendary",
   },
+  {
+    id: "enchanted_west_higuma",
+    name: "Enquadramento do Oeste Encantado: Sussurros de Higuma",
+    description: "Esta moldura ornamentada evoca o espírito selvagem do Velho Oeste, fundido com toques mágicos do anime japonês, em um design metálico e vibrante que pulsa com cores intensas como o turquesa profundo das bordas, o dourado reluzente das curvas e o vermelho flamejante das flores entrelaçadas. Com uma espessura robusta de cerca de 30 pixels em cada lado, a estrutura em estilo western apresenta arabescos intricados de metal forjado, como se fossem relíquias de uma saloon abandonada no deserto, mas reimaginadas com um brilho plástico detalhado e texturas 4K que capturam reflexos sutis e sombras dramáticas.",
+    imageUrl: "https://i.postimg.cc/m2Pv25Rt/IMG-3365.jpg",
+    price: 1600,
+    rarity: "legendary",
+  },
 ];
 
 // Load user frames data
