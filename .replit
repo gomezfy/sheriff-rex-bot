@@ -1,4 +1,4 @@
-modules = ["python-3.11", "nodejs-20"]
+modules = ["nodejs-18"]
 [agent]
 expertMode = true
 
@@ -24,3 +24,6 @@ args = "npm run dev"
 
 [workflows.workflow.metadata]
 outputType = "console"
+
+[nix]
+channel = "stable-25_05"
