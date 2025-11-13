@@ -212,41 +212,32 @@ async function createProfileCard(
   ctx.fillText("Rex", 1450, 130);
   ctx.restore();
 
-  // Avatar circle (top left corner)
-  const avatarX = 180;
-  const avatarY = 180;
-  const avatarRadius = 130;
+  // Avatar square (top left corner)
+  const avatarSize = 260;
+  const avatarX = 50;
+  const avatarY = 50;
+  const avatarRadius = 20; // Rounded corners radius
 
   try {
     const avatarURL = user.displayAvatarURL({ extension: "png", size: 512 });
     const avatar = await loadImage(avatarURL);
 
-    // Black circle background
+    // Black square background
     ctx.fillStyle = "#000000";
-    ctx.beginPath();
-    ctx.arc(avatarX, avatarY, avatarRadius + 8, 0, Math.PI * 2);
+    roundRect(ctx, avatarX - 8, avatarY - 8, avatarSize + 16, avatarSize + 16, avatarRadius + 8);
     ctx.fill();
 
     // White inner border
     ctx.strokeStyle = "#FFFFFF";
     ctx.lineWidth = 4;
-    ctx.beginPath();
-    ctx.arc(avatarX, avatarY, avatarRadius + 4, 0, Math.PI * 2);
+    roundRect(ctx, avatarX - 4, avatarY - 4, avatarSize + 8, avatarSize + 8, avatarRadius + 4);
     ctx.stroke();
 
-    // Draw avatar (circular)
+    // Draw avatar (square with rounded corners)
     ctx.save();
-    ctx.beginPath();
-    ctx.arc(avatarX, avatarY, avatarRadius, 0, Math.PI * 2);
-    ctx.closePath();
+    roundRect(ctx, avatarX, avatarY, avatarSize, avatarSize, avatarRadius);
     ctx.clip();
-    ctx.drawImage(
-      avatar,
-      avatarX - avatarRadius,
-      avatarY - avatarRadius,
-      avatarRadius * 2,
-      avatarRadius * 2,
-    );
+    ctx.drawImage(avatar, avatarX, avatarY, avatarSize, avatarSize);
     ctx.restore();
   } catch (error) {
     console.error("Error loading avatar:", error);
