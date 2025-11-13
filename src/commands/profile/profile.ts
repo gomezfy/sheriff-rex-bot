@@ -228,17 +228,6 @@ async function createProfileCard(
     const avatarURL = user.displayAvatarURL({ extension: "png", size: 512 });
     const avatar = await loadImage(avatarURL);
 
-    // Black square background
-    ctx.fillStyle = "#000000";
-    roundRect(ctx, avatarX - 8, avatarY - 8, avatarSize + 16, avatarSize + 16, avatarRadius + 8);
-    ctx.fill();
-
-    // White inner border
-    ctx.strokeStyle = "#FFFFFF";
-    ctx.lineWidth = 4;
-    roundRect(ctx, avatarX - 4, avatarY - 4, avatarSize + 8, avatarSize + 8, avatarRadius + 4);
-    ctx.stroke();
-
     // Draw avatar (square with rounded corners)
     ctx.save();
     roundRect(ctx, avatarX, avatarY, avatarSize, avatarSize, avatarRadius);
