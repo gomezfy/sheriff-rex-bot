@@ -116,7 +116,7 @@ export default {
           .setStyle(ButtonStyle.Secondary),
         new ButtonBuilder()
           .setCustomId("change_frame")
-          .setLabel("🖼️ Trocar Moldura")
+          .setLabel("Trocar Moldura")
           .setStyle(ButtonStyle.Secondary),
       );
 
@@ -127,7 +127,7 @@ export default {
           .setStyle(ButtonStyle.Secondary),
         new ButtonBuilder()
           .setCustomId("shop_frames")
-          .setLabel("🖼️ Loja de Molduras")
+          .setLabel("Loja de Molduras")
           .setStyle(ButtonStyle.Primary),
       );
 
