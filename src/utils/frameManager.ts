@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import { ownsTerritory } from "./territoryManager";
 
 interface Frame {
   id: string;
@@ -8,6 +9,7 @@ interface Frame {
   imageUrl: string;
   price: number; // in saloon tokens
   rarity: "common" | "rare" | "epic" | "legendary";
+  requiresTerritory?: string; // optional territory requirement
 }
 
 interface UserFrames {
@@ -52,6 +54,15 @@ const AVAILABLE_FRAMES: Frame[] = [
     imageUrl: "https://i.postimg.cc/65zfg9F8/result-IMG-3365.png",
     price: 1600,
     rarity: "legendary",
+  },
+  {
+    id: "gold_mine_exclusive",
+    name: "⛏️ Moldura Exclusiva da Mina de Ouro",
+    description: "Moldura exclusiva reservada para investidores da Mina de Ouro. Apenas os verdadeiros magnatas do oeste selvagem podem usar esta moldura lendária!",
+    imageUrl: "https://i.postimg.cc/2StkHZw0/result-IMG-3367.png",
+    price: 0,
+    rarity: "legendary",
+    requiresTerritory: "gold_mine_shares",
   },
 ];
 
@@ -100,9 +111,32 @@ export function getAllFrames(): Frame[] {
   return AVAILABLE_FRAMES;
 }
 
+// Get all available frames for a specific user (considering territory requirements)
+export function getAvailableFramesForUser(userId: string): Frame[] {
+  return AVAILABLE_FRAMES.filter((frame) => {
+    // If no territory requirement, frame is available
+    if (!frame.requiresTerritory) return true;
+    
+    // Check if user owns the required territory
+    return ownsTerritory(userId, frame.requiresTerritory);
+  });
+}
+
 // Get frame by ID
 export function getFrameById(frameId: string): Frame | null {
   return AVAILABLE_FRAMES.find((f) => f.id === frameId) || null;
+}
+
+// Check if user can unlock a frame (has required territory)
+export function canUnlockFrame(userId: string, frameId: string): boolean {
+  const frame = getFrameById(frameId);
+  if (!frame) return false;
+  
+  // If no territory requirement, can unlock
+  if (!frame.requiresTerritory) return true;
+  
+  // Check if user owns the required territory
+  return ownsTerritory(userId, frame.requiresTerritory);
 }
 
 // Check if user owns a frame
@@ -115,6 +149,11 @@ export function userOwnsFrame(userId: string, frameId: string): boolean {
 export function purchaseFrame(userId: string, frameId: string): boolean {
   const frame = getFrameById(frameId);
   if (!frame) return false;
+
+  // Check if user can unlock this frame (territory requirement)
+  if (!canUnlockFrame(userId, frameId)) {
+    return false;
+  }
 
   const allUserFrames = loadUserFrames();
   if (!allUserFrames[userId]) {
@@ -140,6 +179,43 @@ export function purchaseFrame(userId: string, frameId: string): boolean {
 
   saveUserFrames(allUserFrames);
   return true;
+}
+
+// Unlock frame automatically when user gets required territory
+export function unlockFrameByTerritory(userId: string, territoryId: string): void {
+  // Find frames that require this territory
+  const framesToUnlock = AVAILABLE_FRAMES.filter(
+    (frame) => frame.requiresTerritory === territoryId
+  );
+
+  if (framesToUnlock.length === 0) return;
+
+  const allUserFrames = loadUserFrames();
+  if (!allUserFrames[userId]) {
+    allUserFrames[userId] = {
+      userId,
+      ownedFrames: [],
+      activeFrame: null,
+    };
+  }
+
+  let unlocked = false;
+  for (const frame of framesToUnlock) {
+    // Only add if not already owned
+    if (!allUserFrames[userId].ownedFrames.includes(frame.id)) {
+      allUserFrames[userId].ownedFrames.push(frame.id);
+      unlocked = true;
+      
+      // If first frame, set as active
+      if (allUserFrames[userId].ownedFrames.length === 1) {
+        allUserFrames[userId].activeFrame = frame.id;
+      }
+    }
+  }
+
+  if (unlocked) {
+    saveUserFrames(allUserFrames);
+  }
 }
 
 // Set active frame

@@ -33,6 +33,7 @@ import {
 import { t } from "../../utils/i18n";
 import { applyLocalizations } from "../../utils/commandLocalizations";
 import { getUserSilver, removeUserSilver } from "../../utils/dataManager";
+import { unlockFrameByTerritory } from "../../utils/frameManager";
 
 export default {
   data: applyLocalizations(
@@ -259,6 +260,9 @@ export default {
             flags: MessageFlags.Ephemeral,
           });
         }
+
+        // Unlock exclusive frames for this territory
+        unlockFrameByTerritory(userId, territory.id);
 
         // Success!
         const territoryName = getTerritoryTranslation(territory.id, "name");
