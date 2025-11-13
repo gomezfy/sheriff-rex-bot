@@ -430,15 +430,25 @@ async function createLeaderboardImage(
     }
   }
 
-  // Draw top 3 avatars in right panel
+  // Normalize data for top 3 avatars (works for all categories)
+  const topThreeEntries = isGuild
+    ? topGuilds.slice(0, 3).map((g) => ({
+        userId: g.guild.leaderId,
+        amount: g.score,
+        displayName: g.guild.name,
+        level: undefined,
+      }))
+    : topUsers.slice(0, 3);
+
+  // Draw top 3 avatars in right panel (adjusted for 260x260 avatars)
   const avatarPositions = [
-    { x: 1140, y: mainY + 120 }, // 1st
-    { x: 1140, y: mainY + 320 }, // 2nd
-    { x: 1140, y: mainY + 520 }, // 3rd
+    { x: 1140, y: mainY + 160 }, // 1st
+    { x: 1140, y: mainY + 370 }, // 2nd
+    { x: 1140, y: mainY + 580 }, // 3rd
   ];
 
-  for (let i = 0; i < Math.min(topUsers.length, 3); i++) {
-    const userData = topUsers[i];
+  for (let i = 0; i < topThreeEntries.length; i++) {
+    const userData = topThreeEntries[i];
     const pos = avatarPositions[i];
 
     let user;
@@ -447,9 +457,10 @@ async function createLeaderboardImage(
       const avatarURL = user.displayAvatarURL({ extension: "png", size: 256 });
       const avatar = await loadImage(avatarURL);
 
-      const avatarSize = 140;
+      const avatarSize = 260;
       const avatarX = pos.x - avatarSize / 2;
       const avatarY = pos.y - avatarSize / 2;
+      const avatarRadius = 20; // Rounded corners radius (same as profile.ts)
 
       // Glow effect
       const glowColor =
@@ -458,47 +469,23 @@ async function createLeaderboardImage(
           : i === 1
             ? "rgba(192, 192, 192, 0.4)"
             : "rgba(205, 127, 50, 0.4)";
-      drawGlowEffect(ctx, pos.x, pos.y, 85, glowColor);
+      drawGlowEffect(ctx, pos.x, pos.y, 140, glowColor);
 
-      // Draw avatar with circular mask
+      // Draw avatar with rounded square mask (same as profile.ts)
       ctx.save();
-      ctx.beginPath();
-      ctx.arc(pos.x, pos.y, avatarSize / 2, 0, Math.PI * 2);
-      ctx.closePath();
+      drawRoundedRect(ctx, avatarX, avatarY, avatarSize, avatarSize, avatarRadius);
       ctx.clip();
       ctx.drawImage(avatar, avatarX, avatarY, avatarSize, avatarSize);
       ctx.restore();
 
-      // Border with gradient
-      const borderColor = i === 0 ? "#FFD700" : i === 1 ? "#E8E8E8" : "#CD7F32";
-      const borderGradient = ctx.createLinearGradient(
-        avatarX,
-        avatarY,
-        avatarX + avatarSize,
-        avatarY + avatarSize,
-      );
-      borderGradient.addColorStop(0, borderColor);
-      borderGradient.addColorStop(
-        1,
-        i === 0 ? "#FFA500" : i === 1 ? "#C0C0C0" : "#B8733C",
-      );
-
-      ctx.strokeStyle = borderGradient;
-      ctx.lineWidth = 6;
-      ctx.beginPath();
-      ctx.arc(pos.x, pos.y, avatarSize / 2 + 4, 0, Math.PI * 2);
-      ctx.stroke();
-
-      // Draw frame overlay if user has an active frame
+      // Draw frame overlay if user has an active frame (300x300 centered over 260x260 avatar)
       const userFrameUrl = getActiveFrameUrl(userData.userId);
       if (userFrameUrl) {
         try {
           const frame = await loadImage(userFrameUrl);
-          // Frame is 300x300, avatar is 140x140, so we need to scale proportionally
-          const frameScale = avatarSize / 260; // 260 is the avatar size used in profile.ts
-          const frameSize = 300 * frameScale;
-          const frameX = pos.x - frameSize / 2;
-          const frameY = pos.y - frameSize / 2;
+          const frameSize = 300;
+          const frameX = avatarX - (frameSize - avatarSize) / 2;
+          const frameY = avatarY - (frameSize - avatarSize) / 2;
           ctx.drawImage(frame, frameX, frameY, frameSize, frameSize);
         } catch (error) {
           console.error("Error loading frame overlay:", error);
@@ -508,6 +495,9 @@ async function createLeaderboardImage(
       // Badge above avatar
       drawBadge(ctx, pos.x, avatarY - 35, i);
 
+      // Border color for text
+      const borderColor = i === 0 ? "#FFD700" : i === 1 ? "#E8E8E8" : "#CD7F32";
+
       // Username below avatar
       ctx.fillStyle = "#FFFFFF";
       ctx.font = "bold 22px Nunito-Bold";
@@ -515,22 +505,24 @@ async function createLeaderboardImage(
       const displayName = (user.username || "Unknown").substring(0, 18);
       ctx.fillText(displayName, pos.x, pos.y + avatarSize / 2 + 30);
 
-      // Amount
+      // Amount (formatted per category)
       ctx.fillStyle = borderColor;
       ctx.font = "bold 20px Nunito-Bold";
       ctx.textAlign = "center";
-      const amountStr = isXp
-        ? `Level ${userData.level}`
-        : `${userData.amount.toLocaleString()}`;
+      const amountStr = isGuild
+        ? `Nv ${topGuilds[i].guild.level}`
+        : isXp
+          ? `Level ${userData.level}`
+          : `${userData.amount.toLocaleString()}`;
       const textWidth = ctx.measureText(amountStr).width;
       ctx.fillText(
         amountStr,
-        pos.x - (isXp ? 0 : 10),
+        pos.x - (isXp || isGuild ? 0 : 10),
         pos.y + avatarSize / 2 + 55,
       );
 
-      // Draw emoji image
-      if (emojiImage && !isXp) {
+      // Draw emoji image (only for tokens/silver)
+      if (emojiImage && !isXp && !isGuild) {
         ctx.drawImage(
           emojiImage,
           pos.x + textWidth / 2 - 5,
