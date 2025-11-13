@@ -103,22 +103,22 @@ export default {
       const row1 = new ActionRowBuilder<ButtonBuilder>().addComponents(
         new ButtonBuilder()
           .setCustomId("edit_bio")
-          .setEmoji("✏️")
+          .setLabel(t(interaction, "profile_edit_bio"))
           .setStyle(ButtonStyle.Secondary),
         new ButtonBuilder()
           .setCustomId("edit_phrase")
-          .setEmoji("💬")
+          .setLabel("Editar Frase")
           .setStyle(ButtonStyle.Secondary),
         new ButtonBuilder()
           .setCustomId("change_background")
-          .setEmoji("🖼️")
+          .setLabel(t(interaction, "profile_change_bg"))
           .setStyle(ButtonStyle.Secondary),
       );
 
       const row2 = new ActionRowBuilder<ButtonBuilder>().addComponents(
         new ButtonBuilder()
           .setCustomId("shop_backgrounds")
-          .setEmoji("🛒")
+          .setLabel(t(interaction, "profile_shop_bg"))
           .setStyle(ButtonStyle.Secondary),
       );
 
