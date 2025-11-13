@@ -41,7 +41,7 @@ const AVAILABLE_FRAMES: Frame[] = [
     id: "western_classic",
     name: "💫 Moldura Western Clássica",
     description: "Moldura tradicional do oeste selvagem com detalhes rústicos e autênticos",
-    imageUrl: "https://i.postimg.cc/t4BLCNP0/result-IMG-3363.png",
+    imageUrl: "https://i.postimg.cc/pXHSx6mg/result-IMG-3364.png",
     price: 512,
     rarity: "legendary",
   },
