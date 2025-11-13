@@ -112,9 +112,7 @@ async function showBackgroundCarousel(
           ? tUser(interaction.user.id, "bg_shop_btn_owned")
           : bg.free
             ? tUser(interaction.user.id, "bg_shop_btn_claim")
-            : tUser(interaction.user.id, "bg_shop_btn_buy", {
-                price: bg.price.toString(),
-              }),
+            : "Comprar",
       )
       .setStyle(
         owned
