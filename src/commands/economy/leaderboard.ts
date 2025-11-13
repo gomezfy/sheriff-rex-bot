@@ -511,8 +511,11 @@ async function createLeaderboardImage(
           medalFiles[i],
         );
         const medalImage = await loadImage(medalPath);
-        const medalSize = 40;
-        ctx.drawImage(medalImage, avatarX + avatarSize - 15, avatarY - 10, medalSize, medalSize);
+        const medalSize = 50;
+        // Enable image smoothing for better quality
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(medalImage, avatarX + avatarSize - 20, avatarY - 15, medalSize, medalSize);
       } catch (error) {
         console.error(`Failed to load medal ${medalFiles[i]}:`, error);
       }
