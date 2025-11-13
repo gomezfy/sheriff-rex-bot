@@ -425,7 +425,7 @@ async function createLeaderboardImage(
 
       // Draw emoji image
       if (emojiImage && !isXp) {
-        ctx.drawImage(emojiImage, 835, y - 14, 24, 24);
+        ctx.drawImage(emojiImage, 835, y - 15, 30, 30);
       }
     }
   }
@@ -550,9 +550,9 @@ async function createLeaderboardImage(
         ctx.drawImage(
           emojiImage,
           pos.x + textWidth / 2 - 5,
-          pos.y + avatarSize / 2 + 40,
-          20,
-          20,
+          pos.y + avatarSize / 2 + 37,
+          26,
+          26,
         );
       }
     } catch (error) {
@@ -604,7 +604,7 @@ async function createLeaderboardImage(
       : `Total Wealth: ${total.toLocaleString()}`;
   ctx.fillText(totalText, 650, 880);
   if (emojiImage && !isXp && !isGuild) {
-    ctx.drawImage(emojiImage, 730, 866, 18, 18);
+    ctx.drawImage(emojiImage, 730, 863, 24, 24);
   }
   const countText = isGuild
     ? `• ${topGuilds.length} Guildas`
@@ -618,7 +618,7 @@ async function createLeaderboardImage(
       : `Your Rank: #${currentUserRank + 1} • ${currentUserAmount.toLocaleString()}`;
     ctx.fillText(yourRankText, 1330, 880);
     if (emojiImage && !isXp) {
-      ctx.drawImage(emojiImage, 1335, 866, 18, 18);
+      ctx.drawImage(emojiImage, 1335, 863, 24, 24);
     }
   } else {
     ctx.fillText(`Keep earning to join the leaderboard!`, 1350, 880);
