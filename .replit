@@ -1,4 +1,4 @@
-modules = ["nodejs-18"]
+modules = ["web", "nodejs-20"]
 [agent]
 expertMode = true
 
@@ -18,12 +18,12 @@ args = "discord-bot"
 name = "discord-bot"
 author = "agent"
 
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "npm run start:shard"
-
 [workflows.workflow.metadata]
 outputType = "console"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev"
 
 [nix]
 channel = "stable-25_05"
