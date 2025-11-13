@@ -501,8 +501,11 @@ async function createLeaderboardImage(
         }
       }
 
-      // Badge above avatar
-      drawBadge(ctx, pos.x, avatarY - 35, i);
+      // Medal emoji on top right corner of avatar
+      const medals = ["🥇", "🥈", "🥉"];
+      ctx.font = "48px Arial";
+      ctx.textAlign = "right";
+      ctx.fillText(medals[i], avatarX + avatarSize + 10, avatarY + 15);
 
       // Border color for text
       const borderColor = i === 0 ? "#FFD700" : i === 1 ? "#E8E8E8" : "#CD7F32";
