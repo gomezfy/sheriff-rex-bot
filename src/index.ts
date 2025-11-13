@@ -67,7 +67,7 @@ try {
   logger.success("Environment validation passed");
   logger.debug("Environment info: " + JSON.stringify(getSafeEnvironmentInfo()));
 } catch (error) {
-  logger.error("Environment validation failed", error);
+  logger.error("Environment validation failed", sanitizeErrorForLogging(error as Error));
   process.exit(1);
 }
 
@@ -160,7 +160,7 @@ for (const category of commandCategories) {
         logger.debug(`Loaded command: /${command.data.name} (${category})`);
       }
     } catch (error: any) {
-      logger.error(`Failed to load command ${file}`, error);
+      logger.error(`Failed to load command ${file}`, sanitizeErrorForLogging(error));
     }
   }
 }
@@ -188,7 +188,7 @@ for (const file of eventFiles) {
     eventCount++;
     logger.debug(`Loaded event: ${event.name}${event.once ? ' (once)' : ''}`);
   } catch (error: any) {
-    logger.error(`Failed to load event ${file}`, error);
+    logger.error(`Failed to load event ${file}`, sanitizeErrorForLogging(error));
   }
 }
 logger.success(`Loaded ${eventCount} events`);
@@ -530,37 +530,38 @@ client.on(Events.MessageCreate, async (message) => {
 });
 
 process.on("unhandledRejection", (error: Error) => {
-  console.error("❌ [UNHANDLED ERROR]:", error);
+  logger.error("[UNHANDLED REJECTION]", sanitizeErrorForLogging(error));
 });
 
 process.on("uncaughtException", (error: Error) => {
-  console.error("❌ [UNCAUGHT EXCEPTION]:", error);
+  logger.error("[UNCAUGHT EXCEPTION]", sanitizeErrorForLogging(error));
+  process.exit(1);
 });
 
 client.on("error", (error: Error) => {
-  console.error("❌ [CLIENT ERROR]:", error);
+  logger.error("[CLIENT ERROR]", sanitizeErrorForLogging(error));
 });
 
 client.on("warn", (info: string) => {
-  console.warn("⚠️  [WARNING]:", info);
+  logger.warn(`[CLIENT WARNING] ${info}`);
 });
 
 client.on("shardError", (error: Error) => {
-  console.error("❌ [SHARD ERROR]:", error);
+  logger.error("[SHARD ERROR]", sanitizeErrorForLogging(error));
 });
 
 const token = process.env.DISCORD_TOKEN;
 
 if (!token) {
-  console.error("❌ ERROR: Discord token not found!");
-  console.error("📝 Configure the DISCORD_TOKEN environment variable");
+  logger.error("Discord token not found!");
+  logger.error("Configure the DISCORD_TOKEN environment variable");
   process.exit(1);
 }
 
-console.log("🔐 Token found, attempting login...");
+logger.info("Token found, attempting login...");
 
 // Setup production optimizations
-console.log("⚡ Setting up production optimizations...");
+logger.section("Production Optimizations");
 setupGracefulShutdown(client);
 setupMemoryOptimization();
 setupPerformanceMonitoring(client);
@@ -588,70 +589,67 @@ if (process.env.ENABLE_HEALTH_CHECK === "true") {
 
       const healthPort = process.env.HEALTH_PORT || 3001;
       app.listen(healthPort, () => {
-        console.log(
-          `🏥 Health check endpoint: http://localhost:${healthPort}/health`,
-        );
+        logger.success(`Health check endpoint running on port ${healthPort}`);
       });
     })
     .catch((err) => {
-      console.error("❌ Failed to load health check server:", err);
+      logger.error("Failed to load health check server", sanitizeErrorForLogging(err as Error));
     });
 }
 
 client
   .login(token)
   .then(() => {
-    console.log("✅ Login successful!");
-    console.log("🤠 Sheriff Bot is ready!\n");
-    console.log("⚡ Production optimizations active");
-    console.log(`📊 Monitoring ${client.guilds.cache.size} guilds`);
-
+    logger.section("Bot Systems");
+    
     // Start automatic territory income system
+    logger.info("Starting territory income system");
     startAutomaticTerritoryIncome(client);
 
     // Start automatic mining notification system
+    logger.info("Starting mining notification system");
     startMiningNotifications(client);
 
     // Start automatic expedition checker system
+    logger.info("Starting expedition checker system");
     startExpeditionChecker(client);
 
     // Start warehouse statistics hourly reset
+    logger.info("Starting warehouse stats reset");
     startWarehouseStatsReset();
 
     // Start automatic mute expiration checker
+    logger.info("Starting mute expiration checker");
     const { checkExpiredMutes } = require("./utils/muteManager");
     setInterval(() => {
       const expiredKeys = checkExpiredMutes();
       if (expiredKeys.length > 0) {
-        console.log(`✅ ${expiredKeys.length} mute(s) expired and removed`);
+        logger.debug(`${expiredKeys.length} mute(s) expired and removed`);
       }
     }, 60000); // Check every minute
 
     healthCheck.markHealthy();
+    logger.success("All systems operational!");
   })
   .catch((error: Error) => {
-    console.error("❌ LOGIN ERROR:");
-    console.error("Details:", error.message);
+    const sanitizedError = sanitizeErrorForLogging(error);
+    logger.error("Login failed", sanitizedError);
     healthCheck.markUnhealthy(`Login failed: ${error.message}`);
 
     if (error.message.includes("token")) {
-      console.error("");
-      console.error("💡 SOLUTION:");
-      console.error("1. Verify the token is correct");
-      console.error(
-        "2. Generate a new token at: https://discord.com/developers/applications",
-      );
-      console.error("3. Configure DISCORD_TOKEN environment variable");
+      logger.divider();
+      logger.warn("TOKEN ERROR - Possible solutions:");
+      logger.info("1. Verify the token is correct");
+      logger.info("2. Generate a new token at: https://discord.com/developers/applications");
+      logger.info("3. Configure DISCORD_TOKEN environment variable");
     }
 
     if (error.message.includes("intents")) {
-      console.error("");
-      console.error("💡 SOLUTION:");
-      console.error("1. Access: https://discord.com/developers/applications");
-      console.error("2. Go to Bot > Privileged Gateway Intents");
-      console.error(
-        "3. Enable all options (Presence, Server Members, Message Content)",
-      );
+      logger.divider();
+      logger.warn("INTENTS ERROR - Possible solutions:");
+      logger.info("1. Access: https://discord.com/developers/applications");
+      logger.info("2. Go to Bot > Privileged Gateway Intents");
+      logger.info("3. Enable all options (Presence, Server Members, Message Content)");
     }
 
     process.exit(1);
