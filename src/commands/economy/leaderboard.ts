@@ -145,6 +145,10 @@ async function createLeaderboardImage(
   const canvas = createCanvas(1400, 900);
   const ctx = canvas.getContext("2d");
 
+  // Enable high-quality rendering for all elements
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+
   // Modern gradient background
   const bgGradient = ctx.createLinearGradient(0, 0, 1400, 900);
   bgGradient.addColorStop(0, "#0f0c29");
@@ -463,7 +467,7 @@ async function createLeaderboardImage(
     let user;
     try {
       user = await interaction.client.users.fetch(userData.userId);
-      const avatarURL = user.displayAvatarURL({ extension: "png", size: 256 });
+      const avatarURL = user.displayAvatarURL({ extension: "png", size: 512 });
       const avatar = await loadImage(avatarURL);
 
       const avatarSize = 120;
