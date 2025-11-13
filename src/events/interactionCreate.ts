@@ -41,6 +41,7 @@ import {
 import { tUser } from "../utils/i18n";
 import path from "path";
 import fs from "fs";
+import { getSaloonTokenEmoji } from "../utils/customEmojis";
 
 /**
  *
@@ -58,11 +59,13 @@ async function showBackgroundCarousel(
   const userTokens = getUserGold(interaction.user.id);
   const owned = userOwnsBackground(interaction.user.id, bg.id);
 
+  const saloonEmoji = getSaloonTokenEmoji();
+  
   const embed = new EmbedBuilder()
     .setColor(getRarityColor(bg.rarity))
     .setTitle(tUser(interaction.user.id, "bg_shop_title"))
     .setDescription(
-      `**${getRarityEmoji(bg.rarity)} ${bg.name}** - ${bg.rarity.toUpperCase()}\n\n${bg.description}\n\n**${tUser(interaction.user.id, "bg_shop_price")}:** ${bg.free ? tUser(interaction.user.id, "bg_shop_free") : `🎫 ${bg.price.toLocaleString()} ${tUser(interaction.user.id, "bg_shop_tokens")}`}\n**${tUser(interaction.user.id, "bg_shop_status")}:** ${owned ? tUser(interaction.user.id, "bg_shop_owned") : bg.free ? tUser(interaction.user.id, "bg_shop_available") : userTokens >= bg.price ? tUser(interaction.user.id, "bg_shop_can_purchase") : tUser(interaction.user.id, "bg_shop_not_enough")}\n\n**${tUser(interaction.user.id, "bg_shop_your_tokens")}:** 🎫 ${userTokens.toLocaleString()}`,
+      `**${getRarityEmoji(bg.rarity)} ${bg.name}** - ${bg.rarity.toUpperCase()}\n\n${bg.description}\n\n**${tUser(interaction.user.id, "bg_shop_price")}:** ${bg.free ? tUser(interaction.user.id, "bg_shop_free") : `${saloonEmoji} ${bg.price.toLocaleString()} ${tUser(interaction.user.id, "bg_shop_tokens")}`}\n**${tUser(interaction.user.id, "bg_shop_status")}:** ${owned ? tUser(interaction.user.id, "bg_shop_owned") : bg.free ? tUser(interaction.user.id, "bg_shop_available") : userTokens >= bg.price ? tUser(interaction.user.id, "bg_shop_can_purchase") : tUser(interaction.user.id, "bg_shop_not_enough")}\n\n**${tUser(interaction.user.id, "bg_shop_your_tokens")}:** ${saloonEmoji} ${userTokens.toLocaleString()}`,
     )
     .setFooter({
       text: tUser(interaction.user.id, "bg_shop_footer", {
@@ -99,7 +102,7 @@ async function showBackgroundCarousel(
   const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
     new ButtonBuilder()
       .setCustomId(`carousel_prev_${index}`)
-      .setEmoji("◀️")
+      .setLabel("◀")
       .setStyle(ButtonStyle.Secondary)
       .setDisabled(index === 0),
     new ButtonBuilder()
@@ -113,7 +116,6 @@ async function showBackgroundCarousel(
                 price: bg.price.toString(),
               }),
       )
-      .setEmoji(owned ? "✅" : bg.free ? "🎁" : "🛒")
       .setStyle(
         owned
           ? ButtonStyle.Secondary
@@ -126,7 +128,7 @@ async function showBackgroundCarousel(
       .setDisabled(owned || (bg.free === false && userTokens < bg.price)),
     new ButtonBuilder()
       .setCustomId(`carousel_next_${index}`)
-      .setEmoji("▶️")
+      .setLabel("▶")
       .setStyle(ButtonStyle.Secondary)
       .setDisabled(index === allBackgrounds.length - 1),
   );
