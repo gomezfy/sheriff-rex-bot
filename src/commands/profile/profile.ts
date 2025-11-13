@@ -236,6 +236,18 @@ async function createProfileCard(
     ctx.clip();
     ctx.drawImage(avatar, avatarX, avatarY, avatarSize, avatarSize);
     ctx.restore();
+
+    // Draw frame overlay (300x300 centered over 260x260 avatar)
+    try {
+      const frameURL = "https://i.postimg.cc/Nj3ZrzK7/result-0F9BE830-2CC5-4F60-BF94-6B37E629AF17.png";
+      const frame = await loadImage(frameURL);
+      const frameSize = 300;
+      const frameX = avatarX - (frameSize - avatarSize) / 2;
+      const frameY = avatarY - (frameSize - avatarSize) / 2;
+      ctx.drawImage(frame, frameX, frameY, frameSize, frameSize);
+    } catch (error) {
+      console.error("Error loading frame overlay:", error);
+    }
   } catch (error) {
     console.error("Error loading avatar:", error);
   }
