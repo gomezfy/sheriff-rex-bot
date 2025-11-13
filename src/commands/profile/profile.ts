@@ -72,7 +72,8 @@ export default {
       return;
     }
 
-    await interaction.deferReply();
+    const isInGuild = interaction.guild !== null;
+    await interaction.deferReply({ ephemeral: isInGuild });
 
     const targetUser = interaction.options.getUser("user") || interaction.user;
 
@@ -103,17 +104,14 @@ export default {
         new ButtonBuilder()
           .setCustomId("edit_bio")
           .setEmoji("✏️")
-          .setLabel(t(interaction, "profile_edit_bio"))
           .setStyle(ButtonStyle.Secondary),
         new ButtonBuilder()
           .setCustomId("edit_phrase")
           .setEmoji("💬")
-          .setLabel("Editar Frase")
           .setStyle(ButtonStyle.Secondary),
         new ButtonBuilder()
           .setCustomId("change_background")
           .setEmoji("🖼️")
-          .setLabel(t(interaction, "profile_change_bg"))
           .setStyle(ButtonStyle.Secondary),
       );
 
@@ -121,7 +119,6 @@ export default {
         new ButtonBuilder()
           .setCustomId("shop_backgrounds")
           .setEmoji("🛒")
-          .setLabel(t(interaction, "profile_shop_bg"))
           .setStyle(ButtonStyle.Secondary),
       );
 
