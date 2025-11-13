@@ -98,6 +98,7 @@ const translations: Record<string, Record<string, string>> = {
     profile_change_frame: "Trocar Moldura",
     profile_shop_bg: "Loja de Fundos",
     profile_shop_frames: "Loja de Molduras",
+    profile_show_public: "Exibir no Chat",
     profile_level: "Nível",
     profile_about_me: "Sobre Mim",
     profile_no_bio: "Nenhuma bio definida ainda...",
@@ -1577,6 +1578,7 @@ const translations: Record<string, Record<string, string>> = {
     profile_change_frame: "Change Frame",
     profile_shop_bg: "Shop Backgrounds",
     profile_shop_frames: "Shop Frames",
+    profile_show_public: "Show in Chat",
     profile_level: "Level",
     profile_about_me: "About Me",
     profile_no_bio: "No bio set yet...",
@@ -3016,8 +3018,12 @@ const translations: Record<string, Record<string, string>> = {
 
     // Profile Command
     profile_edit_bio: "Editar Bio",
+    profile_edit_phrase: "Editar Frase",
     profile_change_bg: "Cambiar Fondo",
+    profile_change_frame: "Cambiar Marco",
     profile_shop_bg: "Tienda de Fondos",
+    profile_shop_frames: "Tienda de Marcos",
+    profile_show_public: "Mostrar en Chat",
     profile_level: "Nivel",
     profile_about_me: "Sobre Mí",
     profile_no_bio: "Aún no hay biografía...",

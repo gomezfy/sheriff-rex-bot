@@ -124,7 +124,7 @@ Sistema separado para enviar logs como embeds para canais do Discord (não alter
 - `/clearbounty` - Limpar recompensa
 
 ### 👤 Profile (2 comandos)
-- `/profile` - Perfil visual com Canvas
+- `/profile` - Perfil visual com Canvas + botão "📢 Exibir no Chat" para compartilhar publicamente
 - `/inventory` - Inventário de itens
 
 ### 🏰 Guild (1 comando)
@@ -281,6 +281,16 @@ npm run format       # Formatar código
 - Modo low-memory para ambientes limitados
 - Sweepers automáticos para memória
 - Monitoramento de performance integrado
+
+## 📅 Mudanças Recentes
+
+### 13 de Novembro de 2025
+- ✅ Adicionado botão "📢 Exibir no Chat" ao comando `/profile`
+  - Permite que usuários compartilhem seu perfil publicamente no canal
+  - O `/profile` continua sendo efêmero (só o usuário vê)
+  - O botão envia uma cópia do perfil no chat para todos verem
+  - Implementado em `src/commands/profile/profile.ts` (função `createPublicProfile`)
+  - Handler adicionado em `src/events/interactionCreate.ts`
 
 ## 🎯 Próximos Passos
 

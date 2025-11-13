@@ -12,6 +12,7 @@ import {
   StringSelectMenuBuilder,
   StringSelectMenuOptionBuilder,
   AttachmentBuilder,
+  UserSelectMenuBuilder,
 } from "discord.js";
 import { setUserBio, setUserPhrase } from "../utils/profileManager";
 import {
@@ -401,6 +402,21 @@ export = {
           components: [row],
           flags: MessageFlags.Ephemeral,
         });
+      }
+
+      // Profile Show Public Button - Post profile in chat
+      if (interaction.customId === "profile_show_public") {
+        const profileModule = await import("../commands/profile/profile");
+        const { createPublicProfile } = profileModule as any;
+        
+        if (createPublicProfile) {
+          await createPublicProfile(interaction);
+        } else {
+          await interaction.reply({
+            content: "❌ Erro ao carregar perfil.",
+            flags: MessageFlags.Ephemeral,
+          });
+        }
       }
 
       // Warehouse buttons

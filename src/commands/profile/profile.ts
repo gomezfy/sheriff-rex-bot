@@ -7,6 +7,7 @@ import {
   ChatInputCommandInteraction,
   User,
   MessageFlags,
+  ButtonInteraction,
 } from "discord.js";
 import { getInventory } from "../../utils/inventoryManager";
 import { commandRateLimiter } from "../../utils/security";
@@ -131,9 +132,23 @@ export default {
           .setStyle(ButtonStyle.Primary),
       );
 
-      await interaction.editReply({ files: [card], components: [row1, row2] });
+      const row3 = new ActionRowBuilder<ButtonBuilder>().addComponents(
+        new ButtonBuilder()
+          .setCustomId("profile_show_public")
+          .setLabel(t(interaction, "profile_show_public"))
+          .setStyle(ButtonStyle.Success),
+      );
+
+      await interaction.editReply({ files: [card], components: [row1, row2, row3] });
     } else {
-      await interaction.editReply({ files: [card] });
+      const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+        new ButtonBuilder()
+          .setCustomId("profile_show_public")
+          .setLabel(t(interaction, "profile_show_public"))
+          .setStyle(ButtonStyle.Success),
+      );
+
+      await interaction.editReply({ files: [card], components: [row] });
     }
   },
 };
@@ -641,5 +656,41 @@ async function drawLineWithEmojis(
         currentX += ctx.measureText(part.value).width;
       }
     }
+  }
+}
+
+export async function createPublicProfile(interaction: ButtonInteraction): Promise<void> {
+  await interaction.deferReply({ ephemeral: true });
+
+  const user = interaction.user;
+  const inventory = getInventory(user.id);
+  const silver = inventory.items["silver"] || 0;
+  const saloonTokens = inventory.items["saloon_token"] || 0;
+  const xpData = getUserXp(user.id);
+  const profile = getUserProfile(user.id);
+
+  const card = await createProfileCard(
+    user,
+    {
+      silver,
+      saloonTokens,
+      xp: xpData.xp,
+      level: xpData.level,
+      bio: profile.bio,
+      background: profile.background,
+      phrase: profile.phrase,
+    },
+    interaction as any,
+  );
+
+  if (interaction.channel && 'send' in interaction.channel) {
+    await interaction.channel.send({ files: [card] });
+    await interaction.editReply({
+      content: "✅ Seu perfil foi exibido no chat!",
+    });
+  } else {
+    await interaction.editReply({
+      content: "❌ Não foi possível enviar o perfil no chat.",
+    });
   }
 }
