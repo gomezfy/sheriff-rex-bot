@@ -19,6 +19,7 @@ import {
   getCowboyEmoji,
   getCancelEmoji,
 } from "../../utils/customEmojis";
+import { getActiveFrameUrl } from "../../utils/frameManager";
 
 GlobalFonts.registerFromPath(
   path.join(process.cwd(), "assets", "fonts", "Nunito-Bold.ttf"),
@@ -487,6 +488,22 @@ async function createLeaderboardImage(
       ctx.beginPath();
       ctx.arc(pos.x, pos.y, avatarSize / 2 + 4, 0, Math.PI * 2);
       ctx.stroke();
+
+      // Draw frame overlay if user has an active frame
+      const userFrameUrl = getActiveFrameUrl(userData.userId);
+      if (userFrameUrl) {
+        try {
+          const frame = await loadImage(userFrameUrl);
+          // Frame is 300x300, avatar is 140x140, so we need to scale proportionally
+          const frameScale = avatarSize / 260; // 260 is the avatar size used in profile.ts
+          const frameSize = 300 * frameScale;
+          const frameX = pos.x - frameSize / 2;
+          const frameY = pos.y - frameSize / 2;
+          ctx.drawImage(frame, frameX, frameY, frameSize, frameSize);
+        } catch (error) {
+          console.error("Error loading frame overlay:", error);
+        }
+      }
 
       // Badge above avatar
       drawBadge(ctx, pos.x, avatarY - 35, i);
