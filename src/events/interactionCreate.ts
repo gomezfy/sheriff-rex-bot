@@ -75,13 +75,16 @@ async function showFrameCarousel(
   
   const embed = new EmbedBuilder()
     .setColor(getFrameRarityColor(frame.rarity) as any)
-    .setTitle("🖼️ Loja de Molduras")
+    .setTitle(tUser(interaction.user.id, "frame_shop_title"))
     .setDescription(
-      `**${getFrameRarityEmoji(frame.rarity)} ${frame.name}** - ${frame.rarity.toUpperCase()}\n\n${frame.description}\n\n**Preço:** ${saloonEmoji} ${frame.price.toLocaleString()} Saloon Tokens\n**Status:** ${owned ? "✅ Já possui" : userTokens >= frame.price ? "💰 Disponível para compra" : "❌ Tokens insuficientes"}\n\n**Seus tokens:** ${saloonEmoji} ${userTokens.toLocaleString()}`
+      `**${getFrameRarityEmoji(frame.rarity)} ${frame.name}** - ${frame.rarity.toUpperCase()}\n\n${frame.description}\n\n**${tUser(interaction.user.id, "frame_shop_price")}:** ${saloonEmoji} ${frame.price.toLocaleString()} ${tUser(interaction.user.id, "frame_shop_tokens")}\n**${tUser(interaction.user.id, "frame_shop_status")}:** ${owned ? tUser(interaction.user.id, "frame_shop_owned") : userTokens >= frame.price ? tUser(interaction.user.id, "frame_shop_available") : tUser(interaction.user.id, "frame_shop_not_enough")}\n\n**${tUser(interaction.user.id, "frame_shop_your_tokens")}:** ${saloonEmoji} ${userTokens.toLocaleString()}`
     )
     .setImage(frame.imageUrl)
     .setFooter({
-      text: `Moldura ${index + 1} de ${allFrames.length}`,
+      text: tUser(interaction.user.id, "frame_shop_footer", {
+        current: (index + 1).toString(),
+        total: allFrames.length.toString(),
+      }),
     })
     .setTimestamp();
 
@@ -93,7 +96,11 @@ async function showFrameCarousel(
       .setDisabled(index === 0),
     new ButtonBuilder()
       .setCustomId(`buy_frame_${frame.id}_${index}`)
-      .setLabel(owned ? "✅ Já possui" : "💰 Comprar")
+      .setLabel(
+        owned
+          ? tUser(interaction.user.id, "frame_shop_btn_owned")
+          : tUser(interaction.user.id, "frame_shop_btn_buy")
+      )
       .setStyle(
         owned
           ? ButtonStyle.Secondary

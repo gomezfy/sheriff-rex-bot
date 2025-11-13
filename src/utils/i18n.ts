@@ -93,8 +93,11 @@ const translations: Record<string, Record<string, string>> = {
 
     // Profile Command
     profile_edit_bio: "Editar Bio",
+    profile_edit_phrase: "Editar Frase",
     profile_change_bg: "Mudar Fundo",
+    profile_change_frame: "Trocar Moldura",
     profile_shop_bg: "Loja de Fundos",
+    profile_shop_frames: "Loja de Molduras",
     profile_level: "Nível",
     profile_about_me: "Sobre Mim",
     profile_no_bio: "Nenhuma bio definida ainda...",
@@ -116,6 +119,19 @@ const translations: Record<string, Record<string, string>> = {
     bg_shop_btn_owned: "Possui",
     bg_shop_btn_claim: "Resgatar",
     bg_shop_btn_buy: "{price} 🎫",
+
+    // Frame Shop
+    frame_shop_title: "🖼️ Loja de Molduras",
+    frame_shop_price: "Preço",
+    frame_shop_status: "Status",
+    frame_shop_tokens: "Saloon Tokens",
+    frame_shop_owned: "✅ Já possui",
+    frame_shop_available: "💰 Disponível para compra",
+    frame_shop_not_enough: "❌ Tokens insuficientes",
+    frame_shop_your_tokens: "Seus tokens",
+    frame_shop_footer: "Moldura {current} de {total}",
+    frame_shop_btn_owned: "✅ Já possui",
+    frame_shop_btn_buy: "💰 Comprar",
 
     mine_cooldown:
       "Você está cansado demais para minerar! Volte em: **{time}**",
@@ -1556,8 +1572,11 @@ const translations: Record<string, Record<string, string>> = {
 
     // Profile Command
     profile_edit_bio: "Edit Bio",
+    profile_edit_phrase: "Edit Phrase",
     profile_change_bg: "Change Background",
+    profile_change_frame: "Change Frame",
     profile_shop_bg: "Shop Backgrounds",
+    profile_shop_frames: "Shop Frames",
     profile_level: "Level",
     profile_about_me: "About Me",
     profile_no_bio: "No bio set yet...",
@@ -1579,6 +1598,19 @@ const translations: Record<string, Record<string, string>> = {
     bg_shop_btn_owned: "Owned",
     bg_shop_btn_claim: "Claim",
     bg_shop_btn_buy: "{price} 🎫",
+
+    // Frame Shop
+    frame_shop_title: "🖼️ Frame Shop",
+    frame_shop_price: "Price",
+    frame_shop_status: "Status",
+    frame_shop_tokens: "Saloon Tokens",
+    frame_shop_owned: "✅ Already owned",
+    frame_shop_available: "💰 Available for purchase",
+    frame_shop_not_enough: "❌ Not enough tokens",
+    frame_shop_your_tokens: "Your tokens",
+    frame_shop_footer: "Frame {current} of {total}",
+    frame_shop_btn_owned: "✅ Already owned",
+    frame_shop_btn_buy: "💰 Buy",
 
     mine_cooldown: "You're too tired to mine! Come back in: **{time}**",
     mine_title: "GOLD MINING",

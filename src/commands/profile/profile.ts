@@ -108,7 +108,7 @@ export default {
           .setStyle(ButtonStyle.Secondary),
         new ButtonBuilder()
           .setCustomId("edit_phrase")
-          .setLabel("Editar Frase")
+          .setLabel(t(interaction, "profile_edit_phrase"))
           .setStyle(ButtonStyle.Secondary),
         new ButtonBuilder()
           .setCustomId("change_background")
@@ -116,7 +116,7 @@ export default {
           .setStyle(ButtonStyle.Secondary),
         new ButtonBuilder()
           .setCustomId("change_frame")
-          .setLabel("Trocar Moldura")
+          .setLabel(t(interaction, "profile_change_frame"))
           .setStyle(ButtonStyle.Secondary),
       );
 
@@ -127,7 +127,7 @@ export default {
           .setStyle(ButtonStyle.Secondary),
         new ButtonBuilder()
           .setCustomId("shop_frames")
-          .setLabel("Loja de Molduras")
+          .setLabel(t(interaction, "profile_shop_frames"))
           .setStyle(ButtonStyle.Primary),
       );
 
