@@ -27,6 +27,7 @@ import {
 } from "../utils/backgroundManager";
 import {
   getAllFrames,
+  getAllFramesTranslated,
   getFrameById,
   userOwnsFrame,
   purchaseFrame,
@@ -66,7 +67,7 @@ async function showFrameCarousel(
   index: number,
   isUpdate: boolean = false,
 ): Promise<void> {
-  const allFrames = getAllFrames();
+  const allFrames = getAllFramesTranslated(interaction.user.id);
   const frame = allFrames[index];
   const inventory = getInventory(interaction.user.id);
   const userTokens = inventory.items["saloon_token"] || 0;

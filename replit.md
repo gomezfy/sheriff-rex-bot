@@ -285,12 +285,27 @@ npm run format       # Formatar código
 ## 📅 Mudanças Recentes
 
 ### 13 de Novembro de 2025
-- ✅ Adicionado botão "📢 Exibir no Chat" ao comando `/profile`
+- ✅ Adicionado botão "Exibir no Chat" ao comando `/profile`
   - Permite que usuários compartilhem seu perfil publicamente no canal
   - O `/profile` continua sendo efêmero (só o usuário vê)
   - O botão envia uma cópia do perfil no chat para todos verem
   - Implementado em `src/commands/profile/profile.ts` (função `createPublicProfile`)
   - Handler adicionado em `src/events/interactionCreate.ts`
+  - Traduzido automaticamente: PT-BR, EN-US, ES-ES
+  
+- ✅ Adicionadas traduções automáticas para a loja de molduras
+  - Nomes e descrições das molduras agora são traduzidos automaticamente
+  - Suporte para PT-BR, EN-US e ES-ES
+  - Sistema implementado em:
+    - `src/utils/frameManager.ts` - Nova função `getAllFramesTranslated(userId)`
+    - `src/utils/i18n.ts` - Chaves de tradução adicionadas
+    - `src/events/interactionCreate.ts` - Carrossel usa traduções
+  - Molduras traduzidas:
+    - 🌟 Moldura Dourada Western / Golden Western Frame / Marco Dorado Western
+    - 🤠 Moldura Rex Premium / Rex Premium Frame / Marco Rex Premium
+    - 💫 Moldura Western Clássica / Classic Western Frame / Marco Western Clásico
+    - Enquadramento do Oeste Encantado: Sussurros de Higuma
+    - ⛏️ Moldura Exclusiva da Mina de Ouro / Gold Mine Exclusive Frame / Marco Exclusivo de la Mina de Oro
 
 ## 🎯 Próximos Passos
 

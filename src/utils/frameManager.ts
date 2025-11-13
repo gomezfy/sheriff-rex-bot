@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { ownsTerritory } from "./territoryManager";
+import { tUser } from "./i18n";
 
 interface Frame {
   id: string;
@@ -21,50 +22,66 @@ interface UserFrames {
 const FRAMES_DATA_FILE = path.join(process.cwd(), "src/data/frames.json");
 const USER_FRAMES_FILE = path.join(process.cwd(), "src/data/user_frames.json");
 
-// Available frames in the shop
-const AVAILABLE_FRAMES: Frame[] = [
+// Available frames in the shop (base data without translations)
+const AVAILABLE_FRAMES_BASE: Omit<Frame, "name" | "description">[] = [
   {
     id: "golden_western",
-    name: "🌟 Moldura Dourada Western",
-    description: "Moldura elegante com detalhes dourados do velho oeste",
     imageUrl: "https://i.postimg.cc/Nj3ZrzK7/result-0F9BE830-2CC5-4F60-BF94-6B37E629AF17.png",
     price: 30,
     rarity: "rare",
   },
   {
     id: "rex_premium",
-    name: "🤠 Moldura Rex Premium",
-    description: "Moldura exclusiva do Sheriff Rex com cacto, chapéu de cowboy e logo Rex. Edição limitada!",
     imageUrl: "https://i.postimg.cc/fb8h6vHS/result-IMG-3359.png",
     price: 430,
     rarity: "legendary",
   },
   {
     id: "western_classic",
-    name: "💫 Moldura Western Clássica",
-    description: "Moldura tradicional do oeste selvagem com detalhes rústicos e autênticos",
     imageUrl: "https://i.postimg.cc/pXHSx6mg/result-IMG-3364.png",
     price: 512,
     rarity: "legendary",
   },
   {
     id: "enchanted_west_higuma",
-    name: "Enquadramento do Oeste Encantado: Sussurros de Higuma",
-    description: "Esta moldura ornamentada evoca o espírito selvagem do Velho Oeste, fundido com toques mágicos do anime japonês, em um design metálico e vibrante que pulsa com cores intensas como o turquesa profundo das bordas, o dourado reluzente das curvas e o vermelho flamejante das flores entrelaçadas. Com uma espessura robusta de cerca de 30 pixels em cada lado, a estrutura em estilo western apresenta arabescos intricados de metal forjado, como se fossem relíquias de uma saloon abandonada no deserto, mas reimaginadas com um brilho plástico detalhado e texturas 4K que capturam reflexos sutis e sombras dramáticas.",
     imageUrl: "https://i.postimg.cc/65zfg9F8/result-IMG-3365.png",
     price: 1600,
     rarity: "legendary",
   },
   {
     id: "gold_mine_exclusive",
-    name: "⛏️ Moldura Exclusiva da Mina de Ouro",
-    description: "Moldura exclusiva reservada para investidores da Mina de Ouro. Apenas os verdadeiros magnatas do oeste selvagem podem usar esta moldura lendária!",
     imageUrl: "https://i.postimg.cc/2StkHZw0/result-IMG-3367.png",
     price: 0,
     rarity: "legendary",
     requiresTerritory: "gold_mine_shares",
   },
 ];
+
+// Get frame translation key for name
+function getFrameNameKey(frameId: string): string {
+  return `frame_${frameId}_name`;
+}
+
+// Get frame translation key for description
+function getFrameDescKey(frameId: string): string {
+  return `frame_${frameId}_desc`;
+}
+
+// Get all frames with translations for a specific user
+export function getAllFramesTranslated(userId: string): Frame[] {
+  return AVAILABLE_FRAMES_BASE.map(base => ({
+    ...base,
+    name: tUser(userId, getFrameNameKey(base.id)),
+    description: tUser(userId, getFrameDescKey(base.id)),
+  }));
+}
+
+// Legacy: Get all frames (uses default Portuguese)
+const AVAILABLE_FRAMES: Frame[] = AVAILABLE_FRAMES_BASE.map(base => ({
+  ...base,
+  name: tUser("default", getFrameNameKey(base.id)),
+  description: tUser("default", getFrameDescKey(base.id)),
+}));
 
 // Load user frames data
 function loadUserFrames(): Record<string, UserFrames> {
