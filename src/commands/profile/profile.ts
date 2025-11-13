@@ -181,7 +181,7 @@ async function createProfileCard(
   if (!backgroundLoaded) {
     try {
       const defaultBgImage = await loadImage(
-        "https://i.postimg.cc/RZhF5hYv/IMG-3267.png",
+        "https://i.postimg.cc/RZzdB582/IMG-3354.png",
       );
       ctx.drawImage(defaultBgImage, 0, 0, 1536, 1024);
       backgroundLoaded = true;
