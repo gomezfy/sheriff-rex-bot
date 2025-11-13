@@ -20,6 +20,16 @@ export interface Background {
  */
 export const BACKGROUNDS: Background[] = [
   {
+    id: "default",
+    name: "Classic Western",
+    filename: "default.png",
+    price: 0,
+    description: "The classic western desert background",
+    rarity: "common",
+    free: true,
+    imageUrl: "https://i.postimg.cc/RZhF5hYv/IMG-3267.png",
+  },
+  {
     id: "arabe_ingles",
     name: "Árabe Inglês",
     filename: "arabe-ingles.png",
@@ -91,7 +101,8 @@ export function userOwnsBackground(
   }
 
   // Check if user has purchased this background
-  return profile.ownedBackgrounds?.includes(backgroundId) || false;
+  const owned = Array.isArray(profile.ownedBackgrounds) ? profile.ownedBackgrounds : [];
+  return owned.includes(backgroundId);
 }
 
 /**
@@ -100,7 +111,7 @@ export function userOwnsBackground(
  */
 export function getUserBackgrounds(userId: string): Background[] {
   const profile = getUserProfile(userId);
-  const owned = profile.ownedBackgrounds || [];
+  const owned = Array.isArray(profile.ownedBackgrounds) ? profile.ownedBackgrounds : [];
   return BACKGROUNDS.filter((bg) => bg.free || owned.includes(bg.id));
 }
 
