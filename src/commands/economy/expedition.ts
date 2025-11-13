@@ -607,178 +607,8 @@ export default {
           components: [row],
         });
       }
-      // Ignore interactions from other users
-      else if (
-        i.user.id !== userId &&
-        !i.customId.startsWith("expedition_join_")
-      ) {
-        await i.reply({
-          content: t(i, "expedition_not_your_button", {
-            cross: getCrossEmoji(),
-          }),
-          flags: [MessageFlags.Ephemeral],
-        });
-        return;
-      }
-      // Join party button
-      else if (i.customId.startsWith("expedition_join_")) {
-        const partyKey = i.customId.replace("expedition_join_", "");
-        const party = pendingParties.get(partyKey);
-
-        if (party && party.leader !== i.user.id) {
-          // Check if user already in party
-          if (party.members.has(i.user.id)) {
-            await i.reply({
-              content: t(i, "expedition_already_joined", {
-                cross: getCrossEmoji(),
-              }),
-              flags: [MessageFlags.Ephemeral],
-            });
-            return;
-          }
-
-          // Check party size limit
-          if (party.members.size >= 3) {
-            await i.reply({
-              content: t(i, "expedition_party_full", {
-                cross: getCrossEmoji(),
-              }),
-              flags: [MessageFlags.Ephemeral],
-            });
-            return;
-          }
-
-          // Check if user has active expedition
-          const joinerData: UserExpeditionData | undefined =
-            expeditionData[i.user.id];
-          if (joinerData?.activeExpedition) {
-            await i.reply({
-              content: t(i, "expedition_already_active", {
-                cross: getCrossEmoji(),
-              }),
-              flags: [MessageFlags.Ephemeral],
-            });
-            return;
-          }
-
-          // Check if user is on cooldown
-          if (joinerData?.lastExpedition) {
-            const timeSince = Date.now() - joinerData.lastExpedition;
-            const cooldownLeft = EXPEDITION_COOLDOWN - timeSince;
-            if (cooldownLeft > 0) {
-              await i.reply({
-                content: t(i, "expedition_on_cooldown", {
-                  cross: getCrossEmoji(),
-                  timeLeft: formatDuration(cooldownLeft),
-                }),
-                flags: [MessageFlags.Ephemeral],
-              });
-              return;
-            }
-          }
-
-          // Check if user has enough seals
-          const requiredSeals =
-            party.duration === EXPEDITION_DURATION_SHORT
-              ? SEAL_COST_3H
-              : SEAL_COST_10H_PARTY;
-          const userSeals = getItem(i.user.id, "seal");
-          if (userSeals < requiredSeals) {
-            await i.reply({
-              content: t(i, "expedition_insufficient_seals", {
-                cross: getCrossEmoji(),
-                current: userSeals,
-                required: requiredSeals,
-              }),
-              flags: [MessageFlags.Ephemeral],
-            });
-            return;
-          }
-
-          // Add to party
-          party.members.add(i.user.id);
-
-          await i.reply({
-            content: t(i, "expedition_joined_party", {
-              check: getCheckEmoji(),
-              leader: party.leader,
-              current: party.members.size,
-            }),
-            flags: [MessageFlags.Ephemeral],
-          });
-
-          // Update the main message to show new member
-          await updatePartyMessage(i, party, pendingParties);
-        }
-      }
-      // Start party expedition
-      else if (i.customId.startsWith("expedition_start_party_")) {
-        const partyKey = i.customId.replace("expedition_start_party_", "");
-        const party = pendingParties.get(partyKey);
-
-        if (!party) {
-          await i.reply({
-            content: `${getCrossEmoji()} **Grupo não encontrado!** A expedição pode já ter iniciado.`,
-            flags: [MessageFlags.Ephemeral],
-          });
-          return;
-        }
-
-        // Check if user is the leader
-        if (party.leader !== i.user.id) {
-          await i.reply({
-            content: `${getCrossEmoji()} **Apenas o líder pode iniciar a expedição!**\n\n👑 **Líder:** <@${party.leader}>\n\nAguarde o líder iniciar a expedição.`,
-            flags: [MessageFlags.Ephemeral],
-          });
-          return;
-        }
-
-        if (party && party.leader === i.user.id) {
-          // Validate party size for 10h expedition
-          if (
-            party.duration === EXPEDITION_DURATION_LONG &&
-            party.members.size < 2
-          ) {
-            await i.reply({
-              content: t(i, "expedition_need_min_players", {
-                cross: getCrossEmoji(),
-              }),
-              flags: [MessageFlags.Ephemeral],
-            });
-            return;
-          }
-
-          // Validate all members have enough seals
-          const sealCost =
-            party.duration === EXPEDITION_DURATION_SHORT
-              ? SEAL_COST_3H
-              : SEAL_COST_10H_PARTY;
-          for (const memberId of party.members) {
-            const memberSeals = getItem(memberId, "seal");
-            if (memberSeals < sealCost) {
-              await i.reply({
-                content: t(i, "expedition_insufficient_seals", {
-                  cross: getCrossEmoji(),
-                  current: memberSeals,
-                  required: sealCost,
-                }),
-                flags: [MessageFlags.Ephemeral],
-              });
-              return;
-            }
-          }
-
-          await startExpedition(
-            i,
-            party.leader,
-            Array.from(party.members),
-            party.duration,
-            expeditionData,
-          );
-          pendingParties.delete(partyKey);
-          secondCollector.stop();
-        }
-      }
+      // Note: Party join/start logic is now handled by the partyCollector
+      // created in showPartyInvite() on the public message
     });
 
     collector.on("end", () => {
@@ -798,17 +628,261 @@ async function showPartyInvite(
 ) {
   await interaction.deferUpdate();
 
+  const expeditionData: any = readData("expedition.json");
   const partyKey = `${leaderId}_${Date.now()}`;
+  
+  const durationText =
+    duration === EXPEDITION_DURATION_SHORT
+      ? t(interaction, "expedition_duration_3h_text")
+      : t(interaction, "expedition_duration_10h_text");
+  const minPlayers = duration === EXPEDITION_DURATION_LONG ? 2 : 1;
+  const membersList = `<@${leaderId}>`;
+
+  const joinButton = new ButtonBuilder()
+    .setCustomId(`expedition_join_${partyKey}`)
+    .setLabel(
+      t(interaction, "expedition_btn_join", { current: 1 }),
+    )
+    .setStyle(ButtonStyle.Success)
+    .setEmoji("✅");
+
+  const startButton = new ButtonBuilder()
+    .setCustomId(`expedition_start_party_${partyKey}`)
+    .setLabel(t(interaction, "expedition_btn_start_party"))
+    .setStyle(ButtonStyle.Primary)
+    .setEmoji("🗺️")
+    .setDisabled(minPlayers > 1);
+
+  const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+    joinButton,
+    startButton,
+  );
+
+  const embed = new EmbedBuilder()
+    .setColor("#00FF00")
+    .setTitle(
+      t(interaction, "expedition_party_title", {
+        cowboys: getCowboysEmoji(),
+        duration: durationText,
+      }),
+    )
+    .setDescription(
+      `${t(interaction, "expedition_party_forming", { leader: leaderId })}\n\n**${t(interaction, "expedition_party_members", { current: 1 })}**\n${membersList}`,
+    )
+    .addFields(
+      {
+        name: t(interaction, "expedition_duration"),
+        value: durationText,
+        inline: true,
+      },
+      {
+        name: t(interaction, "expedition_party_required"),
+        value: t(interaction, "expedition_party_required_players", {
+          min: minPlayers,
+        }),
+        inline: true,
+      },
+      {
+        name: t(interaction, "expedition_party_rewards_divided"),
+        value: t(interaction, "expedition_party_rewards_equally"),
+        inline: false,
+      },
+    )
+    .setFooter({ text: t(interaction, "expedition_party_footer") });
+
+  // Send a PUBLIC follow-up message so everyone can see and join
+  const publicMessage = await interaction.followUp({
+    embeds: [embed],
+    components: [row],
+    ephemeral: false,
+  });
+
+  // Send confirmation to leader (ephemeral)
+  await interaction.editReply({
+    content: `${getCheckEmoji()} **Lobby de expedição criado!**\n\nSeus amigos agora podem ver a mensagem abaixo e clicar em "Entrar" para se juntar à expedição.`,
+    embeds: [],
+    components: [],
+  });
+
   const party = {
     leader: leaderId,
     duration,
     members: new Set([leaderId]),
-    messageId: interaction.message.id,
-    message: interaction.message,
+    messageId: publicMessage.id,
+    message: publicMessage,
   };
   pendingParties.set(partyKey, party);
 
-  await updatePartyMessage(interaction, party, pendingParties, partyKey);
+  // Create collector on the public message for join/start buttons
+  const partyCollector = publicMessage.createMessageComponentCollector({
+    time: 600000, // 10 minutes
+  });
+
+  partyCollector.on("collect", async (i: any) => {
+    // Join party button
+    if (i.customId === `expedition_join_${partyKey}`) {
+      if (party.leader === i.user.id) {
+        await i.reply({
+          content: `${getCrossEmoji()} **Você já é o líder do grupo!**`,
+          flags: [MessageFlags.Ephemeral],
+        });
+        return;
+      }
+
+      // Check if user already in party
+      if (party.members.has(i.user.id)) {
+        await i.reply({
+          content: t(i, "expedition_already_joined", {
+            cross: getCrossEmoji(),
+          }),
+          flags: [MessageFlags.Ephemeral],
+        });
+        return;
+      }
+
+      // Check party size limit
+      if (party.members.size >= 3) {
+        await i.reply({
+          content: t(i, "expedition_party_full", {
+            cross: getCrossEmoji(),
+          }),
+          flags: [MessageFlags.Ephemeral],
+        });
+        return;
+      }
+
+      // Check if user has active expedition
+      const joinerData: UserExpeditionData | undefined =
+        expeditionData[i.user.id];
+      if (joinerData?.activeExpedition) {
+        await i.reply({
+          content: t(i, "expedition_already_active", {
+            cross: getCrossEmoji(),
+          }),
+          flags: [MessageFlags.Ephemeral],
+        });
+        return;
+      }
+
+      // Check if user is on cooldown
+      if (joinerData?.lastExpedition) {
+        const timeSince = Date.now() - joinerData.lastExpedition;
+        const cooldownLeft = EXPEDITION_COOLDOWN - timeSince;
+        if (cooldownLeft > 0) {
+          await i.reply({
+            content: t(i, "expedition_on_cooldown", {
+              cross: getCrossEmoji(),
+              timeLeft: formatDuration(cooldownLeft),
+            }),
+            flags: [MessageFlags.Ephemeral],
+          });
+          return;
+        }
+      }
+
+      // Check if user has enough seals
+      const requiredSeals =
+        party.duration === EXPEDITION_DURATION_SHORT
+          ? SEAL_COST_3H
+          : SEAL_COST_10H_PARTY;
+      const userSeals = getItem(i.user.id, "seal");
+      if (userSeals < requiredSeals) {
+        await i.reply({
+          content: t(i, "expedition_insufficient_seals", {
+            cross: getCrossEmoji(),
+            current: userSeals,
+            required: requiredSeals,
+          }),
+          flags: [MessageFlags.Ephemeral],
+        });
+        return;
+      }
+
+      // Add to party
+      party.members.add(i.user.id);
+
+      await i.reply({
+        content: t(i, "expedition_joined_party", {
+          check: getCheckEmoji(),
+          leader: party.leader,
+          current: party.members.size,
+        }),
+        flags: [MessageFlags.Ephemeral],
+      });
+
+      // Update the main message to show new member
+      await updatePartyMessage(i, party, pendingParties, partyKey);
+    }
+    // Start party expedition
+    else if (i.customId === `expedition_start_party_${partyKey}`) {
+      // Check if user is the leader
+      if (party.leader !== i.user.id) {
+        await i.reply({
+          content: `${getCrossEmoji()} **Apenas o líder pode iniciar a expedição!**\n\n👑 **Líder:** <@${party.leader}>\n\nAguarde o líder iniciar a expedição.`,
+          flags: [MessageFlags.Ephemeral],
+        });
+        return;
+      }
+
+      // Validate party size for 10h expedition
+      if (
+        party.duration === EXPEDITION_DURATION_LONG &&
+        party.members.size < 2
+      ) {
+        await i.reply({
+          content: t(i, "expedition_need_min_players", {
+            cross: getCrossEmoji(),
+          }),
+          flags: [MessageFlags.Ephemeral],
+        });
+        return;
+      }
+
+      // Validate all members have enough seals
+      const sealCost =
+        party.duration === EXPEDITION_DURATION_SHORT
+          ? SEAL_COST_3H
+          : SEAL_COST_10H_PARTY;
+      for (const memberId of party.members) {
+        const memberSeals = getItem(memberId, "seal");
+        if (memberSeals < sealCost) {
+          await i.reply({
+            content: t(i, "expedition_member_insufficient_seals", {
+              cross: getCrossEmoji(),
+              member: memberId,
+              required: sealCost,
+            }),
+            flags: [MessageFlags.Ephemeral],
+          });
+          return;
+        }
+      }
+
+      await startExpedition(
+        i,
+        party.leader,
+        Array.from(party.members),
+        party.duration,
+        expeditionData,
+      );
+      pendingParties.delete(partyKey);
+      partyCollector.stop();
+    }
+  });
+
+  partyCollector.on("end", () => {
+    // Disable buttons when collector expires
+    if (pendingParties.has(partyKey)) {
+      pendingParties.delete(partyKey);
+      const disabledJoin = ButtonBuilder.from(joinButton).setDisabled(true);
+      const disabledStart = ButtonBuilder.from(startButton).setDisabled(true);
+      const disabledRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
+        disabledJoin,
+        disabledStart,
+      );
+      publicMessage.edit({ components: [disabledRow] }).catch(() => {});
+    }
+  });
 }
 
 async function updatePartyMessage(
