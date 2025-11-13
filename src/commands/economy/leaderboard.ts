@@ -501,11 +501,21 @@ async function createLeaderboardImage(
         }
       }
 
-      // Medal emoji on top right corner of avatar
-      const medals = ["🥇", "🥈", "🥉"];
-      ctx.font = "48px Arial";
-      ctx.textAlign = "right";
-      ctx.fillText(medals[i], avatarX + avatarSize + 10, avatarY + 15);
+      // Medal image on top right corner of avatar
+      const medalFiles = ["gold_medal.png", "silver_medal.png", "bronze_medal.png"];
+      try {
+        const medalPath = path.join(
+          process.cwd(),
+          "assets",
+          "custom-emojis",
+          medalFiles[i],
+        );
+        const medalImage = await loadImage(medalPath);
+        const medalSize = 40;
+        ctx.drawImage(medalImage, avatarX + avatarSize - 15, avatarY - 10, medalSize, medalSize);
+      } catch (error) {
+        console.error(`Failed to load medal ${medalFiles[i]}:`, error);
+      }
 
       // Border color for text
       const borderColor = i === 0 ? "#FFD700" : i === 1 ? "#E8E8E8" : "#CD7F32";
