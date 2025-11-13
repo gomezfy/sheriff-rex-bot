@@ -432,13 +432,22 @@ async function createLeaderboardImage(
 
   // Normalize data for top 3 avatars (works for all categories)
   const topThreeEntries = isGuild
-    ? topGuilds.slice(0, 3).map((g) => ({
+    ? topGuilds.slice(0, 3).map((g, idx) => ({
         userId: g.guild.leaderId,
         amount: g.score,
-        displayName: g.guild.name,
-        level: undefined,
+        level: g.guild.level,
+        displayLabel: g.guild.name, // Show guild name
+        isGuildEntry: true,
+        guildIndex: idx,
       }))
-    : topUsers.slice(0, 3);
+    : topUsers.slice(0, 3).map((u) => ({
+        userId: u.userId,
+        amount: u.amount,
+        level: u.level,
+        displayLabel: null, // Will use user.username
+        isGuildEntry: false,
+        guildIndex: -1,
+      }));
 
   // Draw top 3 avatars in right panel (adjusted for 260x260 avatars)
   const avatarPositions = [
@@ -498,31 +507,33 @@ async function createLeaderboardImage(
       // Border color for text
       const borderColor = i === 0 ? "#FFD700" : i === 1 ? "#E8E8E8" : "#CD7F32";
 
-      // Username below avatar
+      // Display name below avatar (guild name for guilds, username for users)
       ctx.fillStyle = "#FFFFFF";
       ctx.font = "bold 22px Nunito-Bold";
       ctx.textAlign = "center";
-      const displayName = (user.username || "Unknown").substring(0, 18);
+      const displayName = userData.displayLabel
+        ? userData.displayLabel.substring(0, 18) // Guild name
+        : (user.username || "Unknown").substring(0, 18); // User name
       ctx.fillText(displayName, pos.x, pos.y + avatarSize / 2 + 30);
 
-      // Amount (formatted per category)
+      // Amount (formatted per category using normalized data)
       ctx.fillStyle = borderColor;
       ctx.font = "bold 20px Nunito-Bold";
       ctx.textAlign = "center";
-      const amountStr = isGuild
-        ? `Nv ${topGuilds[i].guild.level}`
+      const amountStr = userData.isGuildEntry
+        ? `Nv ${userData.level}` // Guild level
         : isXp
-          ? `Level ${userData.level}`
-          : `${userData.amount.toLocaleString()}`;
+          ? `Level ${userData.level}` // XP level
+          : `${userData.amount.toLocaleString()}`; // Tokens/Silver amount
       const textWidth = ctx.measureText(amountStr).width;
       ctx.fillText(
         amountStr,
-        pos.x - (isXp || isGuild ? 0 : 10),
+        pos.x - (isXp || userData.isGuildEntry ? 0 : 10),
         pos.y + avatarSize / 2 + 55,
       );
 
-      // Draw emoji image (only for tokens/silver)
-      if (emojiImage && !isXp && !isGuild) {
+      // Draw emoji image (only for tokens/silver, not XP or guilds)
+      if (emojiImage && !isXp && !userData.isGuildEntry) {
         ctx.drawImage(
           emojiImage,
           pos.x + textWidth / 2 - 5,
