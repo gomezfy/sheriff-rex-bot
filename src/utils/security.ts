@@ -203,6 +203,7 @@ export function isValidRedemptionCode(code: string): boolean {
 export function isValidDataFilename(filename: string): boolean {
   const allowedFiles = [
     "daily.json",
+    "daily-rewards.json",
     "economy.json",
     "economy.backup.json",
     "profiles.json",
