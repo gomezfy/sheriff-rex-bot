@@ -449,11 +449,11 @@ async function createLeaderboardImage(
         guildIndex: -1,
       }));
 
-  // Draw top 3 avatars in right panel (adjusted for 260x260 avatars)
+  // Draw top 3 avatars in right panel (adjusted for 120x120 avatars)
   const avatarPositions = [
-    { x: 1140, y: mainY + 160 }, // 1st
-    { x: 1140, y: mainY + 370 }, // 2nd
-    { x: 1140, y: mainY + 580 }, // 3rd
+    { x: 1140, y: mainY + 130 }, // 1st
+    { x: 1140, y: mainY + 320 }, // 2nd
+    { x: 1140, y: mainY + 510 }, // 3rd
   ];
 
   for (let i = 0; i < topThreeEntries.length; i++) {
@@ -466,10 +466,10 @@ async function createLeaderboardImage(
       const avatarURL = user.displayAvatarURL({ extension: "png", size: 256 });
       const avatar = await loadImage(avatarURL);
 
-      const avatarSize = 260;
+      const avatarSize = 120;
       const avatarX = pos.x - avatarSize / 2;
       const avatarY = pos.y - avatarSize / 2;
-      const avatarRadius = 20; // Rounded corners radius (same as profile.ts)
+      const avatarRadius = 10; // Rounded corners radius
 
       // Glow effect
       const glowColor =
@@ -478,7 +478,7 @@ async function createLeaderboardImage(
           : i === 1
             ? "rgba(192, 192, 192, 0.4)"
             : "rgba(205, 127, 50, 0.4)";
-      drawGlowEffect(ctx, pos.x, pos.y, 140, glowColor);
+      drawGlowEffect(ctx, pos.x, pos.y, 80, glowColor);
 
       // Draw avatar with rounded square mask (same as profile.ts)
       ctx.save();
@@ -487,12 +487,12 @@ async function createLeaderboardImage(
       ctx.drawImage(avatar, avatarX, avatarY, avatarSize, avatarSize);
       ctx.restore();
 
-      // Draw frame overlay if user has an active frame (300x300 centered over 260x260 avatar)
+      // Draw frame overlay if user has an active frame (140x140 centered over 120x120 avatar)
       const userFrameUrl = getActiveFrameUrl(userData.userId);
       if (userFrameUrl) {
         try {
           const frame = await loadImage(userFrameUrl);
-          const frameSize = 300;
+          const frameSize = 140;
           const frameX = avatarX - (frameSize - avatarSize) / 2;
           const frameY = avatarY - (frameSize - avatarSize) / 2;
           ctx.drawImage(frame, frameX, frameY, frameSize, frameSize);
