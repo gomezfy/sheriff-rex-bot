@@ -28,12 +28,53 @@ Sheriff Bot/
 │   │   └── utility/       # 3 comandos utilitários
 │   ├── events/            # Event handlers do Discord
 │   ├── utils/             # Gerenciadores e utilitários
+│   │   ├── consoleLogger.ts  # Sistema centralizado de logs (console)
+│   │   ├── logger.ts         # Sistema de logs Discord (embeds)
+│   │   └── ... outros utilitários
 │   ├── types/             # Definições de tipos TypeScript
 │   └── data/              # Armazenamento JSON de dados
 ├── assets/                # Recursos visuais (emojis, imagens)
 ├── database/              # Esquema SQL
 └── server/                # Servidor web para Linked Roles
 ```
+
+## 📝 Sistema de Logs
+
+### Console Logger (`src/utils/consoleLogger.ts`)
+Sistema centralizado de logs para o console com recursos avançados:
+
+**Níveis de Log:**
+- `logger.debug()` - Mensagens de depuração detalhadas
+- `logger.info()` - Informações gerais
+- `logger.warn()` - Avisos importantes
+- `logger.error()` - Erros e exceções
+- `logger.success()` - Operações bem-sucedidas
+
+**Recursos Especiais:**
+- `logger.startup()` - Banner inicial do bot
+- `logger.ready()` - Status quando bot conecta
+- `logger.section()` - Divisor de seção
+- `logger.divider()` - Linha divisória
+- `logger.table()` - Exibir dados em tabela
+
+**Características:**
+- Logs coloridos e formatados com timestamps
+- Sanitização automática de erros em produção
+- Ocultação de stack traces em produção
+- Detecção automática de ambiente (dev/prod)
+
+**Exemplo de uso:**
+```typescript
+import logger from '@/utils/consoleLogger';
+
+logger.info("Starting process");
+logger.success("Process completed!");
+logger.error("Something went wrong", sanitizedError);
+logger.table({ "Status": "Online", "Users": 100 });
+```
+
+### Discord Logger (`src/utils/logger.ts`)
+Sistema separado para enviar logs como embeds para canais do Discord (não alterado).
 
 ## 📂 Categorias de Comandos
 
