@@ -29,6 +29,7 @@ import { startAutomaticTerritoryIncome } from "./utils/territoryIncome";
 import { startMiningNotifications } from "./utils/miningTracker";
 import { startExpeditionChecker } from "./utils/expeditionChecker";
 import { startWarehouseStatsReset } from "./utils/warehouseManager";
+import { startDailyRewardsScheduler } from "./utils/dailyRewards";
 import { addXp } from "./utils/xpManager";
 import { initializeDatabase } from "./utils/database";
 import {
@@ -617,6 +618,10 @@ client
     // Start warehouse statistics hourly reset
     logger.info("Starting warehouse stats reset");
     startWarehouseStatsReset();
+
+    // Start daily rewards scheduler
+    logger.info("Starting daily rewards scheduler");
+    startDailyRewardsScheduler(client);
 
     // Start automatic mute expiration checker
     logger.info("Starting mute expiration checker");
