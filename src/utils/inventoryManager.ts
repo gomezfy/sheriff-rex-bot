@@ -21,7 +21,7 @@ export const ITEMS: Record<string, Item> = {
     name: "Saloon Token",
     emoji: EMOJI_TEXT.SALOON_TOKEN,
     customEmoji: "SALOON_TOKEN",
-    weight: 0.00001,
+    weight: 0.0000005,
     stackable: true,
     description: "Main saloon currency",
   },
@@ -35,7 +35,7 @@ export const ITEMS: Record<string, Item> = {
   silver: {
     name: "Silver Coin",
     emoji: EMOJI_TEXT.SILVER_COIN,
-    weight: 0.0001,
+    weight: 0.000005,
     stackable: true,
     description: "Valuable silver coin",
   },
