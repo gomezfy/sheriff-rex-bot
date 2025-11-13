@@ -86,7 +86,7 @@ function drawBadge(ctx: any, x: number, y: number, rank: number) {
   const color = colors[rank];
 
   // Glow effect
-  drawGlowEffect(ctx, x, y, 50, color.glow);
+  drawGlowEffect(ctx, x, y, 30, color.glow);
 
   // Badge background
   ctx.save();
@@ -94,8 +94,8 @@ function drawBadge(ctx: any, x: number, y: number, rank: number) {
 
   // Star shape
   const spikes = 8;
-  const outerRadius = 45;
-  const innerRadius = 22;
+  const outerRadius = 28;
+  const innerRadius = 14;
   let rot = (Math.PI / 2) * 3;
   let step = Math.PI / spikes;
 
@@ -124,16 +124,16 @@ function drawBadge(ctx: any, x: number, y: number, rank: number) {
 
   // Border
   ctx.strokeStyle = color.border;
-  ctx.lineWidth = 3;
+  ctx.lineWidth = 2;
   ctx.stroke();
   ctx.restore();
 
   // Rank number
   ctx.fillStyle = "#000000";
-  ctx.font = "bold 28px Nunito-Bold";
+  ctx.font = "bold 18px Nunito-Bold";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText(`${rank + 1}`, x, y + 2);
+  ctx.fillText(`${rank + 1}`, x, y + 1);
 }
 
 async function createLeaderboardImage(
@@ -317,12 +317,12 @@ async function createLeaderboardImage(
       // Rank indicator
       if (i < 3) {
         ctx.fillStyle = i === 0 ? "#FFD700" : i === 1 ? "#E8E8E8" : "#CD7F32";
-        ctx.font = "bold 36px Nunito-Bold";
+        ctx.font = "bold 28px Nunito-Bold";
         ctx.textAlign = "center";
         ctx.fillText(medals[i], 100, y);
       } else {
         ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
-        ctx.font = "bold 28px Nunito-Bold";
+        ctx.font = "bold 24px Nunito-Bold";
         ctx.textAlign = "center";
         ctx.fillText(`#${i + 1}`, 100, y);
       }
@@ -381,12 +381,12 @@ async function createLeaderboardImage(
       // Rank indicator
       if (i < 3) {
         ctx.fillStyle = i === 0 ? "#FFD700" : i === 1 ? "#E8E8E8" : "#CD7F32";
-        ctx.font = "bold 36px Nunito-Bold";
+        ctx.font = "bold 28px Nunito-Bold";
         ctx.textAlign = "center";
         ctx.fillText(medals[i], 100, y);
       } else {
         ctx.fillStyle = isCurrentUser ? color : "rgba(255, 255, 255, 0.6)";
-        ctx.font = "bold 28px Nunito-Bold";
+        ctx.font = "bold 24px Nunito-Bold";
         ctx.textAlign = "center";
         ctx.fillText(`#${i + 1}`, 100, y);
       }
