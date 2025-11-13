@@ -13,7 +13,7 @@ import {
   StringSelectMenuOptionBuilder,
   AttachmentBuilder,
 } from "discord.js";
-import { setUserBio } from "../utils/profileManager";
+import { setUserBio, setUserPhrase } from "../utils/profileManager";
 import {
   getUserBackgrounds,
   purchaseBackground,
@@ -174,6 +174,27 @@ export = {
 
         const firstActionRow =
           new ActionRowBuilder<TextInputBuilder>().addComponents(bioInput);
+        modal.addComponents(firstActionRow);
+
+        await interaction.showModal(modal);
+      }
+
+      // Edit Phrase Button
+      if (interaction.customId === "edit_phrase") {
+        const modal = new ModalBuilder()
+          .setCustomId("phrase_modal")
+          .setTitle("Editar Frase do Perfil");
+
+        const phraseInput = new TextInputBuilder()
+          .setCustomId("phrase_text")
+          .setLabel("Sua frase pessoal (max 100 caracteres)")
+          .setStyle(TextInputStyle.Short)
+          .setPlaceholder("Ex: O corajoso não teme o desafio...")
+          .setMaxLength(100)
+          .setRequired(false);
+
+        const firstActionRow =
+          new ActionRowBuilder<TextInputBuilder>().addComponents(phraseInput);
         modal.addComponents(firstActionRow);
 
         await interaction.showModal(modal);
@@ -804,6 +825,25 @@ export = {
           .setDescription("Your profile bio has been updated successfully.")
           .addFields({ name: "📝 New Bio", value: bioText, inline: false })
           .setFooter({ text: "Use /profile to see your updated card" })
+          .setTimestamp();
+
+        await interaction.reply({
+          embeds: [embed],
+          flags: MessageFlags.Ephemeral,
+        });
+      }
+
+      if (interaction.customId === "phrase_modal") {
+        const phraseText = interaction.fields.getTextInputValue("phrase_text");
+
+        setUserPhrase(interaction.user.id, phraseText);
+
+        const embed = new EmbedBuilder()
+          .setColor("#D4AF37")
+          .setTitle("✅ Frase Atualizada!")
+          .setDescription("Sua frase pessoal foi atualizada com sucesso.")
+          .addFields({ name: "💬 Nova Frase", value: phraseText || "*(removida)*", inline: false })
+          .setFooter({ text: "Use /profile para ver seu card atualizado" })
           .setTimestamp();
 
         await interaction.reply({

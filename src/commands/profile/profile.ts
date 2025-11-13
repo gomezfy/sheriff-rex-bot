@@ -91,6 +91,7 @@ export default {
         level: xpData.level,
         bio: profile.bio,
         background: profile.background,
+        phrase: profile.phrase,
       },
       interaction,
     );
@@ -105,10 +106,18 @@ export default {
           .setLabel(t(interaction, "profile_edit_bio"))
           .setStyle(ButtonStyle.Secondary),
         new ButtonBuilder()
+          .setCustomId("edit_phrase")
+          .setEmoji("💬")
+          .setLabel("Editar Frase")
+          .setStyle(ButtonStyle.Secondary),
+        new ButtonBuilder()
           .setCustomId("change_background")
           .setEmoji("🖼️")
           .setLabel(t(interaction, "profile_change_bg"))
           .setStyle(ButtonStyle.Secondary),
+      );
+
+      const row2 = new ActionRowBuilder<ButtonBuilder>().addComponents(
         new ButtonBuilder()
           .setCustomId("shop_backgrounds")
           .setEmoji("🛒")
@@ -116,7 +125,7 @@ export default {
           .setStyle(ButtonStyle.Secondary),
       );
 
-      await interaction.editReply({ files: [card], components: [row1] });
+      await interaction.editReply({ files: [card], components: [row1, row2] });
     } else {
       await interaction.editReply({ files: [card] });
     }
@@ -431,6 +440,68 @@ async function createProfileCard(
   ctx.textAlign = "center";
   ctx.fillText("▼", buttonX + buttonSize / 2, buttonY + 35);
   ctx.restore();
+
+  // Frase personalizada (na parte inferior do card)
+  if (stats.phrase && stats.phrase.trim() !== "") {
+    const phraseY = 750;
+    const phraseBoxHeight = 180;
+    const phraseBoxPadding = 40;
+
+    // Caixa semi-transparente para a frase
+    ctx.fillStyle = "rgba(212, 175, 55, 0.15)";
+    roundRect(ctx, 80, phraseY, 1376, phraseBoxHeight, 20);
+    ctx.fill();
+
+    // Borda dourada
+    ctx.strokeStyle = "rgba(212, 175, 55, 0.6)";
+    ctx.lineWidth = 3;
+    roundRect(ctx, 80, phraseY, 1376, phraseBoxHeight, 20);
+    ctx.stroke();
+
+    // Aspas decorativas
+    ctx.save();
+    ctx.font = "italic bold 80px Nunito";
+    ctx.fillStyle = "rgba(212, 175, 55, 0.4)";
+    ctx.fillText("\"", 110, phraseY + 85);
+    ctx.restore();
+
+    // Texto da frase
+    ctx.save();
+    ctx.font = "italic 40px Nunito";
+    ctx.fillStyle = "#FFFFFF";
+    ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
+    ctx.shadowBlur = 10;
+    ctx.textAlign = "center";
+    
+    // Quebrar texto se for muito longo
+    const maxPhraseWidth = 1200;
+    const phraseWords = stats.phrase.split(" ");
+    let currentLine = "";
+    let lineY = phraseY + 75;
+    
+    for (const word of phraseWords) {
+      const testLine = currentLine + word + " ";
+      const testWidth = ctx.measureText(testLine).width;
+      
+      if (testWidth > maxPhraseWidth && currentLine !== "") {
+        ctx.fillText(currentLine.trim(), 768, lineY);
+        currentLine = word + " ";
+        lineY += 50;
+      } else {
+        currentLine = testLine;
+      }
+    }
+    ctx.fillText(currentLine.trim(), 768, lineY);
+    ctx.restore();
+
+    // Aspas de fechamento
+    ctx.save();
+    ctx.font = "italic bold 80px Nunito";
+    ctx.fillStyle = "rgba(212, 175, 55, 0.4)";
+    ctx.textAlign = "right";
+    ctx.fillText("\"", 1426, phraseY + 150);
+    ctx.restore();
+  }
 
   return new AttachmentBuilder(canvas.toBuffer("image/png"), {
     name: "profile.png",

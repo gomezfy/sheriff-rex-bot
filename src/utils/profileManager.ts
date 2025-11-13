@@ -18,6 +18,7 @@ if (!fs.existsSync(profilesFile)) {
 interface UserProfile {
   bio: string;
   background: string | null;
+  phrase?: string;
   ownedBackgrounds?: string[];
 }
 
@@ -74,6 +75,28 @@ export function setUserProfile(userId: string, profile: UserProfile): boolean {
   const profiles = JSON.parse(data);
 
   profiles[userId] = profile;
+  fs.writeFileSync(profilesFile, JSON.stringify(profiles, null, 2));
+
+  return true;
+}
+
+export function setUserPhrase(userId: string, phrase: string): boolean {
+  const data = fs.readFileSync(profilesFile, "utf8");
+  const profiles = JSON.parse(data);
+
+  // Trim whitespace to avoid storing effectively empty strings
+  const trimmedPhrase = phrase.trim();
+
+  if (!profiles[userId]) {
+    profiles[userId] = {
+      bio: "A mysterious cowboy wandering the Wild West...",
+      background: null,
+      phrase: trimmedPhrase,
+    };
+  } else {
+    profiles[userId].phrase = trimmedPhrase;
+  }
+
   fs.writeFileSync(profilesFile, JSON.stringify(profiles, null, 2));
 
   return true;
