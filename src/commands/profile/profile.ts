@@ -14,6 +14,7 @@ import { getAllBackgrounds } from "../../utils/backgroundManager";
 import { getUserXp, getXpForLevel } from "../../utils/xpManager";
 import { getUserProfile } from "../../utils/profileManager";
 import { parseTextWithEmojis } from "../../utils/emojiMapper";
+import { getActiveFrameUrl } from "../../utils/frameManager";
 const {
   getCustomEmojiPath,
   CUSTOM_EMOJIS,
@@ -113,6 +114,10 @@ export default {
           .setCustomId("change_background")
           .setLabel(t(interaction, "profile_change_bg"))
           .setStyle(ButtonStyle.Secondary),
+        new ButtonBuilder()
+          .setCustomId("change_frame")
+          .setLabel("🖼️ Trocar Moldura")
+          .setStyle(ButtonStyle.Secondary),
       );
 
       const row2 = new ActionRowBuilder<ButtonBuilder>().addComponents(
@@ -120,6 +125,10 @@ export default {
           .setCustomId("shop_backgrounds")
           .setLabel(t(interaction, "profile_shop_bg"))
           .setStyle(ButtonStyle.Secondary),
+        new ButtonBuilder()
+          .setCustomId("shop_frames")
+          .setLabel("🖼️ Loja de Molduras")
+          .setStyle(ButtonStyle.Primary),
       );
 
       await interaction.editReply({ files: [card], components: [row1, row2] });
@@ -238,15 +247,17 @@ async function createProfileCard(
     ctx.restore();
 
     // Draw frame overlay (300x300 centered over 260x260 avatar)
-    try {
-      const frameURL = "https://i.postimg.cc/Nj3ZrzK7/result-0F9BE830-2CC5-4F60-BF94-6B37E629AF17.png";
-      const frame = await loadImage(frameURL);
-      const frameSize = 300;
-      const frameX = avatarX - (frameSize - avatarSize) / 2;
-      const frameY = avatarY - (frameSize - avatarSize) / 2;
-      ctx.drawImage(frame, frameX, frameY, frameSize, frameSize);
-    } catch (error) {
-      console.error("Error loading frame overlay:", error);
+    const userFrameUrl = getActiveFrameUrl(user.id);
+    if (userFrameUrl) {
+      try {
+        const frame = await loadImage(userFrameUrl);
+        const frameSize = 300;
+        const frameX = avatarX - (frameSize - avatarSize) / 2;
+        const frameY = avatarY - (frameSize - avatarSize) / 2;
+        ctx.drawImage(frame, frameX, frameY, frameSize, frameSize);
+      } catch (error) {
+        console.error("Error loading frame overlay:", error);
+      }
     }
   } catch (error) {
     console.error("Error loading avatar:", error);

@@ -24,6 +24,16 @@ import {
   userOwnsBackground,
   getRarityColor,
 } from "../utils/backgroundManager";
+import {
+  getAllFrames,
+  getFrameById,
+  userOwnsFrame,
+  purchaseFrame,
+  setActiveFrame,
+  getUserFrames,
+  getRarityColor as getFrameRarityColor,
+  getRarityEmoji as getFrameRarityEmoji,
+} from "../utils/frameManager";
 import { getUserGold } from "../utils/dataManager";
 import {
   createGuild,
@@ -42,6 +52,75 @@ import { tUser } from "../utils/i18n";
 import path from "path";
 import fs from "fs";
 import { getSaloonTokenEmoji } from "../utils/customEmojis";
+import { getInventory, saveInventory } from "../utils/inventoryManager";
+
+/**
+ * Show frame carousel
+ * @param interaction
+ * @param index
+ * @param isUpdate
+ */
+async function showFrameCarousel(
+  interaction: any,
+  index: number,
+  isUpdate: boolean = false,
+): Promise<void> {
+  const allFrames = getAllFrames();
+  const frame = allFrames[index];
+  const inventory = getInventory(interaction.user.id);
+  const userTokens = inventory.items["saloon_token"] || 0;
+  const owned = userOwnsFrame(interaction.user.id, frame.id);
+
+  const saloonEmoji = getSaloonTokenEmoji();
+  
+  const embed = new EmbedBuilder()
+    .setColor(getFrameRarityColor(frame.rarity) as any)
+    .setTitle("🖼️ Loja de Molduras")
+    .setDescription(
+      `**${getFrameRarityEmoji(frame.rarity)} ${frame.name}** - ${frame.rarity.toUpperCase()}\n\n${frame.description}\n\n**Preço:** ${saloonEmoji} ${frame.price.toLocaleString()} Saloon Tokens\n**Status:** ${owned ? "✅ Já possui" : userTokens >= frame.price ? "💰 Disponível para compra" : "❌ Tokens insuficientes"}\n\n**Seus tokens:** ${saloonEmoji} ${userTokens.toLocaleString()}`
+    )
+    .setImage(frame.imageUrl)
+    .setFooter({
+      text: `Moldura ${index + 1} de ${allFrames.length}`,
+    })
+    .setTimestamp();
+
+  const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+    new ButtonBuilder()
+      .setCustomId(`frame_carousel_prev_${index}`)
+      .setLabel("◀")
+      .setStyle(ButtonStyle.Secondary)
+      .setDisabled(index === 0),
+    new ButtonBuilder()
+      .setCustomId(`buy_frame_${frame.id}_${index}`)
+      .setLabel(owned ? "✅ Já possui" : "💰 Comprar")
+      .setStyle(
+        owned
+          ? ButtonStyle.Secondary
+          : userTokens >= frame.price
+            ? ButtonStyle.Success
+            : ButtonStyle.Danger
+      )
+      .setDisabled(owned || userTokens < frame.price),
+    new ButtonBuilder()
+      .setCustomId(`frame_carousel_next_${index}`)
+      .setLabel("▶")
+      .setStyle(ButtonStyle.Secondary)
+      .setDisabled(index === allFrames.length - 1)
+  );
+
+  const payload = {
+    embeds: [embed],
+    components: [row],
+    flags: MessageFlags.Ephemeral,
+  };
+
+  if (isUpdate) {
+    await interaction.update(payload);
+  } else {
+    await interaction.reply(payload);
+  }
+}
 
 /**
  *
@@ -249,6 +328,74 @@ export = {
         await showBackgroundCarousel(interaction, 0);
       }
 
+      // Shop Frames Button - Show carousel
+      if (interaction.customId === "shop_frames") {
+        await showFrameCarousel(interaction, 0);
+      }
+
+      // Change Frame Button - Show owned frames
+      if (interaction.customId === "change_frame") {
+        const userFramesData = getUserFrames(interaction.user.id);
+        const ownedFrameIds = userFramesData.ownedFrames;
+
+        if (ownedFrameIds.length === 0) {
+          await interaction.reply({
+            content: "🖼️ Você não possui nenhuma moldura ainda! Visite a loja de molduras para comprar.",
+            flags: MessageFlags.Ephemeral,
+          });
+          return;
+        }
+
+        const ownedFrames = ownedFrameIds
+          .map((id) => getFrameById(id))
+          .filter((f) => f !== null);
+
+        if (ownedFrames.length === 0) {
+          await interaction.reply({
+            content: "❌ Erro ao carregar suas molduras.",
+            flags: MessageFlags.Ephemeral,
+          });
+          return;
+        }
+
+        const options = [
+          new StringSelectMenuOptionBuilder()
+            .setLabel("Sem Moldura")
+            .setDescription("Remover moldura do perfil")
+            .setValue("no_frame")
+            .setEmoji("❌"),
+          ...ownedFrames.map((frame) =>
+            new StringSelectMenuOptionBuilder()
+              .setLabel(frame.name)
+              .setDescription(frame.description.substring(0, 100))
+              .setValue(frame.id)
+              .setEmoji(getFrameRarityEmoji(frame.rarity))
+          ),
+        ];
+
+        const selectMenu = new StringSelectMenuBuilder()
+          .setCustomId("select_frame")
+          .setPlaceholder("Escolha uma moldura...")
+          .addOptions(options);
+
+        const row =
+          new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
+            selectMenu
+          );
+
+        const embed = new EmbedBuilder()
+          .setColor("#5865F2")
+          .setTitle("🖼️ Selecionar Moldura")
+          .setDescription("Escolha uma moldura da sua coleção:")
+          .setFooter({ text: "Seu perfil será atualizado automaticamente" });
+
+        await interaction.reply({
+          embeds: [embed],
+          components: [row],
+          flags: MessageFlags.Ephemeral,
+        });
+      }
+
       // Warehouse buttons
       if (
         interaction.customId === "warehouse_sell" ||
@@ -281,6 +428,138 @@ export = {
           }
 
           await showBackgroundCarousel(interaction, newIndex, true);
+        }
+      }
+
+      // Frame Carousel Navigation
+      if (interaction.customId.startsWith("frame_carousel_")) {
+        const [_, _action, action, indexStr] = interaction.customId.split("_");
+        const currentIndex = parseInt(indexStr);
+
+        if (action === "next" || action === "prev") {
+          const allFrames = getAllFrames();
+          let newIndex = currentIndex;
+
+          if (action === "next") {
+            newIndex = (currentIndex + 1) % allFrames.length;
+          } else {
+            newIndex = currentIndex - 1;
+            if (newIndex < 0) {
+              newIndex = allFrames.length - 1;
+            }
+          }
+
+          await showFrameCarousel(interaction, newIndex, true);
+        }
+      }
+
+      // Purchase Frame Buttons from carousel
+      if (interaction.customId.startsWith("buy_frame_")) {
+        const parts = interaction.customId.split("_");
+        const frameId = parts.slice(2, -1).join("_");
+        const currentIndex = parseInt(parts[parts.length - 1]);
+        const frame = getFrameById(frameId);
+
+        if (!frame) {
+          await interaction.reply({
+            content: "❌ Moldura não encontrada!",
+            flags: MessageFlags.Ephemeral,
+          });
+          return;
+        }
+
+        const inventory = getInventory(interaction.user.id);
+        const userTokens = inventory.items["saloon_token"] || 0;
+
+        // Check if user already owns it
+        if (userOwnsFrame(interaction.user.id, frameId)) {
+          await interaction.update({
+            embeds: [
+              new EmbedBuilder()
+                .setColor("#ED4245")
+                .setTitle("❌ Compra Falhou")
+                .setDescription("Você já possui esta moldura!")
+                .setFooter({ text: "Retornando para a loja..." }),
+            ],
+            components: [],
+          });
+
+          setTimeout(async () => {
+            await showFrameCarousel(interaction, currentIndex, true);
+          }, 2000);
+          return;
+        }
+
+        // Check if user has enough tokens
+        if (userTokens < frame.price) {
+          await interaction.update({
+            embeds: [
+              new EmbedBuilder()
+                .setColor("#ED4245")
+                .setTitle("❌ Tokens Insuficientes")
+                .setDescription(`Você precisa de ${getSaloonTokenEmoji()} ${frame.price.toLocaleString()} Saloon Tokens.\nVocê tem apenas ${getSaloonTokenEmoji()} ${userTokens.toLocaleString()}.`)
+                .setFooter({ text: "Retornando para a loja..." }),
+            ],
+            components: [],
+          });
+
+          setTimeout(async () => {
+            await showFrameCarousel(interaction, currentIndex, true);
+          }, 2000);
+          return;
+        }
+
+        // Deduct tokens
+        inventory.items["saloon_token"] = userTokens - frame.price;
+        saveInventory(interaction.user.id, inventory);
+
+        // Purchase frame
+        const success = purchaseFrame(interaction.user.id, frameId);
+
+        if (success) {
+          const successEmbed = new EmbedBuilder()
+            .setColor("#57F287")
+            .setTitle("✅ Compra Realizada!")
+            .setDescription(`Você comprou a moldura **${frame.name}**!`)
+            .addFields(
+              { name: "🖼️ Moldura", value: frame.name, inline: true },
+              {
+                name: "💰 Preço",
+                value: `${getSaloonTokenEmoji()} ${frame.price.toLocaleString()}`,
+                inline: true,
+              },
+              {
+                name: "💳 Saldo Restante",
+                value: `${getSaloonTokenEmoji()} ${(userTokens - frame.price).toLocaleString()}`,
+                inline: true,
+              },
+            )
+            .setFooter({ text: "A moldura foi equipada automaticamente!" })
+            .setTimestamp();
+
+          await interaction.update({
+            embeds: [successEmbed],
+            components: [],
+          });
+
+          setTimeout(async () => {
+            await showFrameCarousel(interaction, currentIndex, true);
+          }, 2000);
+        } else {
+          await interaction.update({
+            embeds: [
+              new EmbedBuilder()
+                .setColor("#ED4245")
+                .setTitle("❌ Erro")
+                .setDescription("Ocorreu um erro ao comprar a moldura.")
+                .setFooter({ text: "Retornando para a loja..." }),
+            ],
+            components: [],
+          });
+
+          setTimeout(async () => {
+            await showFrameCarousel(interaction, currentIndex, true);
+          }, 2000);
         }
       }
 
@@ -621,6 +900,58 @@ export = {
           await helpCommand.handleSelectMenu(interaction);
         }
         return;
+      }
+
+      if (interaction.customId === "select_frame") {
+        const selectedFrameId = interaction.values[0];
+
+        if (selectedFrameId === "no_frame") {
+          // Remove frame
+          setActiveFrame(interaction.user.id, null);
+
+          await interaction.update({
+            embeds: [
+              new EmbedBuilder()
+                .setColor("#57F287")
+                .setTitle("✅ Moldura Removida")
+                .setDescription("Sua moldura foi removida com sucesso! Use `/profile` para ver.")
+                .setTimestamp(),
+            ],
+            components: [],
+          });
+          return;
+        }
+
+        const frame = getFrameById(selectedFrameId);
+
+        if (!frame) {
+          await interaction.reply({
+            content: "❌ Moldura não encontrada!",
+            flags: MessageFlags.Ephemeral,
+          });
+          return;
+        }
+
+        if (!userOwnsFrame(interaction.user.id, selectedFrameId)) {
+          await interaction.reply({
+            content: "❌ Você não possui esta moldura!",
+            flags: MessageFlags.Ephemeral,
+          });
+          return;
+        }
+
+        setActiveFrame(interaction.user.id, selectedFrameId);
+
+        await interaction.update({
+          embeds: [
+            new EmbedBuilder()
+              .setColor("#57F287")
+              .setTitle("✅ Moldura Equipada")
+              .setDescription(`Você equipou a moldura **${frame.name}**! Use \`/profile\` para ver.`)
+              .setTimestamp(),
+          ],
+          components: [],
+        });
       }
 
       if (interaction.customId === "select_background") {
