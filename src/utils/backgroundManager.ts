@@ -27,7 +27,7 @@ export const BACKGROUNDS: Background[] = [
     description: "The classic western desert background",
     rarity: "common",
     free: true,
-    imageUrl: "https://i.postimg.cc/RZhF5hYv/IMG-3267.png",
+    imageUrl: "https://i.postimg.cc/RZzdB582/IMG-3354.png",
   },
   {
     id: "arabe_ingles",
