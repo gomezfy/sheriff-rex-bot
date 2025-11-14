@@ -14,6 +14,8 @@ import {
   AttachmentBuilder,
   UserSelectMenuBuilder,
 } from "discord.js";
+import { handleInteractionError } from "../utils/errors";
+import { componentRegistry } from "../interactions";
 import { setUserBio, setUserPhrase } from "../utils/profileManager";
 import {
   getUserBackgrounds,
@@ -234,6 +236,7 @@ async function showBackgroundCarousel(
 export = {
   name: Events.InteractionCreate,
   async execute(interaction: Interaction): Promise<void> {
+    try {
     if (interaction.isButton()) {
       // Ignore duel, mining and expedition buttons - they are handled by their command collectors
       if (
@@ -1296,6 +1299,13 @@ export = {
           embeds: [embed],
           flags: MessageFlags.Ephemeral,
         });
+      }
+    }
+    } catch (error) {
+      if (interaction.isRepliable()) {
+        await handleInteractionError(interaction as any, error);
+      } else {
+        console.error('Error in interaction handler:', error);
       }
     }
   },
