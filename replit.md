@@ -35,6 +35,10 @@ Sheriff Bot/
 │   │   └── ... outros utilitários
 │   ├── types/             # Definições de tipos TypeScript
 │   └── data/              # Armazenamento JSON de dados
+├── website/               # 🌐 Website e Dashboard (NOVO!)
+│   ├── server.js          # Servidor Express com OAuth2
+│   ├── public/            # Arquivos estáticos (CSS, JS, imagens)
+│   └── views/             # Páginas HTML (index, dashboard)
 ├── assets/                # Recursos visuais (emojis, imagens)
 ├── database/              # Esquema SQL
 └── server/                # Servidor web para Linked Roles
@@ -318,6 +322,17 @@ src/
 ---
 
 ## 📅 Mudanças Recentes
+
+### 14 de Novembro de 2025
+- ✅ **Website e Dashboard criados**
+  - Landing page completa com tema western
+  - Sistema de autenticação OAuth2 do Discord
+  - Dashboard interativo com estatísticas do bot
+  - Proteção CSRF com parâmetro state
+  - Painel de visualização de servidores
+  - Integrado com dados do bot Discord
+  - Rodando na porta 5000 (workflow "website")
+  - Documentação em `WEBSITE_SETUP.md`
 
 ### 13 de Novembro de 2025
 - ✅ Adicionado botão "Exibir no Chat" ao comando `/profile`
