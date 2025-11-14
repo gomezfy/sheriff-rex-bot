@@ -513,7 +513,7 @@ async function handleBuyInteraction(
       return;
     }
 
-    addItem(interaction.user.id, resourceId, amount);
+    await addItem(interaction.user.id, resourceId, amount);
     recordTransaction(interaction.user.id, "buy", resourceId, amount, buyPrice);
 
     removeUserSilver(interaction.user.id, totalCost);

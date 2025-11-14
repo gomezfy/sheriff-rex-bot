@@ -463,7 +463,7 @@ async function executeHeist(
       const participantId = participants[i];
       const cattleAmount =
         i === 0 ? cattlePerPlayer + remainder : cattlePerPlayer;
-      addItem(participantId, "cattle", cattleAmount);
+      await addItem(participantId, "cattle", cattleAmount);
     }
 
     const checkEmoji = getCheckEmoji();

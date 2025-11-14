@@ -450,7 +450,7 @@ ${t(interaction, "mine_pending_gold")}: ${stats.totalGoldPending} ${goldEmoji}
 
           await i.deferUpdate();
 
-          const addResult = addItem(userId, "gold", activeMining.goldAmount);
+          const addResult = await addItem(userId, "gold", activeMining.goldAmount);
 
           if (!addResult.success) {
             return i.editReply({
@@ -470,7 +470,7 @@ ${t(interaction, "mine_pending_gold")}: ${stats.totalGoldPending} ${goldEmoji}
           let foundDiamond = false;
           const diamondChance = Math.random();
           if (diamondChance < 0.2) {
-            const diamondResult = addItem(userId, "diamond", 1);
+            const diamondResult = await addItem(userId, "diamond", 1);
             if (diamondResult.success) {
               foundDiamond = true;
             }
