@@ -172,9 +172,12 @@ export function checkCapacity(
 
   const additionalWeight = itemInfo.weight * quantity;
   const currentWeight = calculateWeight(inventory);
+  
+  // Round the total weight to avoid floating point precision issues
+  const totalWeight = Math.round((currentWeight + additionalWeight) * 1000) / 1000;
 
   return {
-    hasCapacity: currentWeight + additionalWeight <= inventory.maxWeight,
+    hasCapacity: totalWeight <= inventory.maxWeight,
     required: additionalWeight,
   };
 }

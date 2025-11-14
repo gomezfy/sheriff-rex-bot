@@ -12,7 +12,7 @@ import {
   StringSelectMenuOptionBuilder,
   User,
 } from "discord.js";
-import { addXp } from "../../../utils/xpManager";
+import { addXp } from "../../utils/xpManager";
 import {
   economyEmbed,
   errorEmbed,
@@ -20,7 +20,7 @@ import {
   formatCurrency,
   formatDuration,
   field,
-} from "../../../utils/embeds";
+} from "../../utils/embeds";
 import {
   getSilverCoinEmoji,
   getGoldBarEmoji,
@@ -33,18 +33,18 @@ import {
   getMoneybagEmoji,
   getStatsEmoji,
   getStarEmoji,
-} from "../../../utils/customEmojis";
-import { t } from "../../../utils/i18n";
-import { applyLocalizations } from "../../../utils/commandLocalizations";
+} from "../../utils/customEmojis";
+import { t } from "../../utils/i18n";
+import { applyLocalizations } from "../../utils/commandLocalizations";
 import {
   addItem,
   removeItem,
   getItem,
   getInventory,
   calculateWeight,
-} from "../../../utils/inventoryManager";
-import { readData, writeData } from "../../../utils/database";
-import { addUserSilver } from "../../../utils/dataManager";
+} from "../../utils/inventoryManager";
+import { readData, writeData } from "../../utils/database";
+import { addUserSilver } from "../../utils/dataManager";
 import path from "path";
 
 const EXPEDITION_DURATION_SHORT = 3 * 60 * 60 * 1000; // 3 horas

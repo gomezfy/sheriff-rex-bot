@@ -32,8 +32,8 @@ import {
   kickMember,
   promoteMember,
   demoteMember,
-} from "../../../utils/guildManager";
-import { tUser } from "../../../utils/i18n";
+} from "../../utils/guildManager";
+import { tUser } from "../../utils/i18n";
 
 export default {
   data: new SlashCommandBuilder()
