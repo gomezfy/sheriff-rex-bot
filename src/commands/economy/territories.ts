@@ -238,7 +238,7 @@ export default {
         }
 
         // Process purchase
-        const removed = removeUserSilver(userId, territory.price);
+        const removed = await removeUserSilver(userId, territory.price);
         if (!removed) {
           return i.reply({
             content: `${getCancelEmoji()} ${t(i, "territories_transaction_failed")}`,
@@ -254,7 +254,7 @@ export default {
         if (!success) {
           // Refund if purchase failed
           const { addUserSilver } = require("../../utils/dataManager");
-          addUserSilver(userId, territory.price);
+          await addUserSilver(userId, territory.price);
           return i.reply({
             content: `${getCancelEmoji()} ${t(i, "territories_purchase_failed")}`,
             flags: MessageFlags.Ephemeral,

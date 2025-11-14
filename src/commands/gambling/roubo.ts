@@ -443,7 +443,7 @@ async function executeHeist(
       activeHeists.delete(heistId);
       return;
     }
-    removeUserSilver(participantId, ENTRY_FEE);
+    await removeUserSilver(participantId, ENTRY_FEE);
     cooldowns.set(participantId, Date.now());
   }
 

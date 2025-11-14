@@ -1038,7 +1038,7 @@ async function startExpedition(
 
   // Consume seals from all members (after validation passed)
   for (const memberId of members) {
-    removeItem(memberId, "seal", sealCost);
+    await removeItem(memberId, "seal", sealCost);
   }
 
   // Update all members

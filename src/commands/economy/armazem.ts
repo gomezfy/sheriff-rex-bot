@@ -379,7 +379,7 @@ async function handleSellInteraction(
       return;
     }
 
-    removeItem(interaction.user.id, resourceId, amount);
+    await removeItem(interaction.user.id, resourceId, amount);
     addStock(resourceId, amount);
     recordTransaction(
       interaction.user.id,
@@ -389,7 +389,7 @@ async function handleSellInteraction(
       sellPrice,
     );
 
-    addUserSilver(interaction.user.id, totalEarned);
+    await addUserSilver(interaction.user.id, totalEarned);
 
     try {
       const checkEmoji = getEmoji("check");
@@ -516,7 +516,7 @@ async function handleBuyInteraction(
     await addItem(interaction.user.id, resourceId, amount);
     recordTransaction(interaction.user.id, "buy", resourceId, amount, buyPrice);
 
-    removeUserSilver(interaction.user.id, totalCost);
+    await removeUserSilver(interaction.user.id, totalCost);
     addTreasury(totalCost);
 
     await msg.reply(
