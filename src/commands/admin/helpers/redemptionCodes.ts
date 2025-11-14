@@ -1,0 +1,106 @@
+import * as path from "path";
+import { readData, writeData, getDataPath } from "../../../utils/database";
+
+export interface RedemptionCode {
+  productId: string;
+  productName: string;
+  tokens: number;
+  coins: number;
+  vip: boolean;
+  background: boolean;
+  backpack?: number | boolean;
+  createdAt: number;
+  createdBy: string;
+  redeemed: boolean;
+}
+
+export interface Product {
+  name: string;
+  tokens: number;
+  coins: number;
+  vip: boolean;
+  background: boolean;
+  backpack?: number | boolean;
+}
+
+export const PRODUCTS: Record<string, Product> = {
+  starter: {
+    name: "Starter Pack",
+    tokens: 100,
+    coins: 5000,
+    vip: false,
+    background: false,
+  },
+  popular: {
+    name: "Popular Pack",
+    tokens: 350,
+    coins: 15000,
+    vip: false,
+    background: false,
+  },
+  gold: {
+    name: "Gold Pack",
+    tokens: 900,
+    coins: 40000,
+    vip: true,
+    background: false,
+  },
+  ultimate: {
+    name: "Ultimate Pack",
+    tokens: 2500,
+    coins: 100000,
+    vip: true,
+    background: true,
+  },
+  backpack_200: {
+    name: "Small Backpack",
+    tokens: 0,
+    coins: 0,
+    vip: false,
+    background: false,
+    backpack: 200,
+  },
+  backpack_300: {
+    name: "Medium Backpack",
+    tokens: 0,
+    coins: 0,
+    vip: false,
+    background: false,
+    backpack: 300,
+  },
+  backpack_400: {
+    name: "Large Backpack",
+    tokens: 0,
+    coins: 0,
+    vip: false,
+    background: false,
+    backpack: 400,
+  },
+  backpack_500: {
+    name: "Ultimate Backpack",
+    tokens: 0,
+    coins: 0,
+    vip: false,
+    background: false,
+    backpack: 500,
+  },
+};
+
+export function loadRedemptionCodes(): Record<string, RedemptionCode> {
+  try {
+    return readData("redemption-codes.json");
+  } catch (error) {
+    console.error("Error loading redemption codes:", error);
+    return {};
+  }
+}
+
+export function saveRedemptionCodes(data: Record<string, RedemptionCode>): void {
+  writeData("redemption-codes.json", data);
+}
+
+export function generateRedemptionCode(productId: string): string {
+  const timestamp = Date.now().toString(36);
+  const random = Math.random().toString(36).substring(2, 8);
+  return `SHERIFF-${productId.toUpperCase()}-${timestamp}-${random}`.toUpperCase();
+}
