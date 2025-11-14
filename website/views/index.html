@@ -28,14 +28,23 @@
                 explore territórios e construa seu império no Velho Oeste!
             </p>
             <div class="hero-buttons">
-                <a href="https://discord.com/api/oauth2/authorize?client_id=YOUR_CLIENT_ID&permissions=8&scope=bot%20applications.commands" 
-                   class="btn btn-primary" target="_blank">
+                <a href="#" id="addBotBtn" class="btn btn-primary" target="_blank">
                     Adicionar ao Discord
                 </a>
                 <a href="/login" class="btn btn-secondary">
                     Painel de Controle
                 </a>
             </div>
+            <script>
+                fetch('/api/invite-url')
+                    .then(r => r.json())
+                    .then(data => {
+                        document.getElementById('addBotBtn').href = data.url;
+                    })
+                    .catch(() => {
+                        document.getElementById('addBotBtn').style.display = 'none';
+                    });
+            </script>
         </div>
     </div>
 

@@ -2,6 +2,7 @@ const express = require('express');
 const session = require('express-session');
 const axios = require('axios');
 const path = require('path');
+const crypto = require('crypto');
 
 const app = express();
 const PORT = 5000;
@@ -42,16 +43,26 @@ app.get('/', (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-  const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=identify%20guilds`;
+  const state = crypto.randomBytes(16).toString('hex');
+  req.session.oauthState = state;
+  
+  const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=identify%20guilds&state=${state}`;
   res.redirect(authUrl);
 });
 
 app.get('/callback', async (req, res) => {
   const code = req.query.code;
+  const state = req.query.state;
   
   if (!code) {
     return res.redirect('/?error=no_code');
   }
+  
+  if (!state || state !== req.session.oauthState) {
+    return res.redirect('/?error=invalid_state');
+  }
+  
+  delete req.session.oauthState;
 
   try {
     // Exchange code for access token
@@ -105,6 +116,11 @@ app.get('/callback', async (req, res) => {
 
 app.get('/dashboard', isAuthenticated, (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'dashboard.html'));
+});
+
+app.get('/api/invite-url', (req, res) => {
+  const inviteUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
+  res.json({ url: inviteUrl });
 });
 
 app.get('/api/user', isAuthenticated, (req, res) => {

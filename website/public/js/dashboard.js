@@ -26,29 +26,41 @@ document.querySelectorAll('.nav-item').forEach(item => {
 async function loadUserData() {
     try {
         const response = await fetch('/api/user');
-        const user = response.json();
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch user data');
+        }
+        
+        const user = await response.json();
         
         const userName = document.getElementById('userName');
         const userAvatar = document.getElementById('userAvatar');
         const clientId = document.getElementById('clientId');
         
-        userName.textContent = `${user.username}`;
-        
-        if (user.avatar) {
-            const avatarUrl = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`;
-            userAvatar.innerHTML = `<img src="${avatarUrl}" alt="${user.username}">`;
-        } else {
-            userAvatar.textContent = user.username.charAt(0).toUpperCase();
+        if (userName && user.username) {
+            userName.textContent = `${user.username}`;
         }
         
-        if (clientId) {
+        if (userAvatar) {
+            if (user.avatar) {
+                const avatarUrl = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`;
+                userAvatar.innerHTML = `<img src="${avatarUrl}" alt="${user.username}">`;
+            } else if (user.username) {
+                userAvatar.textContent = user.username.charAt(0).toUpperCase();
+            }
+        }
+        
+        if (clientId && user.id) {
             clientId.textContent = user.id;
         }
         
         // Load servers
-        loadServers(user.guilds);
+        if (user.guilds) {
+            loadServers(user.guilds);
+        }
     } catch (error) {
         console.error('Error loading user data:', error);
+        window.location.href = '/';
     }
 }
 
