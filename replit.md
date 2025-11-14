@@ -282,6 +282,41 @@ npm run format       # Formatar código
 - Sweepers automáticos para memória
 - Monitoramento de performance integrado
 
+## 🔧 Infraestrutura de Refatoração (14 de Novembro de 2025)
+
+### ✅ Sistema de Erros Centralizado - ATIVO
+**Localização:** `src/utils/errors/`
+- `BaseBotError.ts` - Hierarquia de erros (DatabaseError, ValidationError, etc.)
+- `errorHandler.ts` - Handler centralizado para interações Discord
+- **Status:** ✅ Integrado e funcionando em `interactionCreate.ts`
+- **Uso:** Todos os erros de interação são tratados automaticamente
+
+### 🔧 ComponentRegistry - PRONTO PARA USO
+**Localização:** `src/interactions/ComponentRegistry.ts`
+- Sistema para registrar handlers de botões e menus
+- Suporte para exact match e patterns (regex)
+- **Status:** ⚠️ Criado mas não integrado (pronto para substituir if-else chains)
+
+### 📁 Estrutura Modular
+Nova organização para facilitar manutenção:
+```
+src/
+├── i18n/                    # Traduções modulares por locale/domínio
+├── commands/admin/handlers/ # Subcomandos admin separados
+├── events/interaction-handlers/ # Handlers de modals/buttons/menus
+├── features/                # Features grandes (expedition, guilds, etc)
+├── utils/errors/            # Sistema de erros
+└── interactions/            # ComponentRegistry
+```
+
+### 📝 Exemplos de Refatoração Criados
+- `src/commands/admin/handlers/logs.ts` - Padrão para extrair handlers
+- `src/i18n/pt-BR/core.ts` - Padrão para modularizar traduções
+
+**Documentação completa:** Veja `REFACTORING_COMPLETE.md`
+
+---
+
 ## 📅 Mudanças Recentes
 
 ### 13 de Novembro de 2025
