@@ -1,5 +1,19 @@
 import { componentRegistry } from '@/interactions';
-import { handleProfileShowPublic } from './buttons/profileHandlers';
+import {
+  handleProfileShowPublic,
+  handleEditBio,
+  handleEditPhrase,
+  handleChangeBackground,
+} from './buttons/profileHandlers';
+import {
+  handleShopBackgrounds,
+  handleShopFrames,
+  handleChangeFrame,
+  handleCarouselNavigation,
+  handleFrameCarouselNavigation,
+  handleBuyFrame,
+  handleBuyBackground,
+} from './buttons/shopHandlers';
 
 /**
  * Register all button and select menu handlers
@@ -23,21 +37,31 @@ import { handleProfileShowPublic } from './buttons/profileHandlers';
  * 
  * PATTERN-BASED HANDLERS:
  * ```typescript
- * componentRegistry.registerButton(/^carousel_/, handleCarousel);
- * componentRegistry.registerButton(/^buy_bg_/, handleBuyBackground);
+ * componentRegistry.registerButtonPattern(/^carousel_/, handleCarousel);
+ * componentRegistry.registerButtonPattern(/^buy_bg_/, handleBuyBackground);
  * ```
  */
 export function registerAllHandlers(): void {
   // ✅ MIGRATED HANDLERS (tested and working)
   
-  // Profile button - share profile publicly in chat
+  // Profile buttons
   componentRegistry.registerButton('profile_show_public', handleProfileShowPublic);
-  
-  // 📝 READY TO MIGRATE (handlers extracted but need testing):
-  // import { handleEditBio, handleEditPhrase, handleChangeBackground } from './buttons/profileHandlers';
-  // componentRegistry.registerButton('edit_bio', handleEditBio);
-  // componentRegistry.registerButton('edit_phrase', handleEditPhrase);
-  // componentRegistry.registerButton('change_background', handleChangeBackground);
+  componentRegistry.registerButton('edit_bio', handleEditBio);
+  componentRegistry.registerButton('edit_phrase', handleEditPhrase);
+  componentRegistry.registerButton('change_background', handleChangeBackground);
+
+  // Shop entry buttons
+  componentRegistry.registerButton('shop_backgrounds', handleShopBackgrounds);
+  componentRegistry.registerButton('shop_frames', handleShopFrames);
+  componentRegistry.registerButton('change_frame', handleChangeFrame);
+
+  // Carousel navigation patterns
+  componentRegistry.registerButtonPattern(/^carousel_(next|prev)_\d+$/, handleCarouselNavigation);
+  componentRegistry.registerButtonPattern(/^frame_carousel_(next|prev)_\d+$/, handleFrameCarouselNavigation);
+
+  // Purchase patterns
+  componentRegistry.registerButtonPattern(/^buy_frame_.+_\d+$/, handleBuyFrame);
+  componentRegistry.registerButtonPattern(/^buy_bg_.+_\d+$/, handleBuyBackground);
   
   // 🔜 TODO: Extract and register remaining handlers:
   // Guild handlers
