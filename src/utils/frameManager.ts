@@ -55,6 +55,12 @@ const AVAILABLE_FRAMES_BASE: Omit<Frame, "name" | "description">[] = [
     rarity: "legendary",
     requiresTerritory: "gold_mine_shares",
   },
+  {
+    id: "pink_floral_frame",
+    imageUrl: "https://i.postimg.cc/fyGhRNqg/IMG-3392-300x300.png",
+    price: 290,
+    rarity: "epic",
+  },
 ];
 
 // Get frame translation key for name
