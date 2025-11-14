@@ -27,6 +27,7 @@ args = "npm run dev:shard"
 
 [nix]
 channel = "stable-25_05"
+packages = ["imagemagick"]
 
 [[ports]]
 localPort = 5000
