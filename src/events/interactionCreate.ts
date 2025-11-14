@@ -59,6 +59,20 @@ import { getSaloonTokenEmoji } from "../utils/customEmojis";
 import { getInventory, saveInventory } from "../utils/inventoryManager";
 
 /**
+ * ComponentRegistry Integration:
+ * 
+ * The registry is now integrated and will be checked BEFORE legacy handlers.
+ * To migrate a handler to the registry:
+ * 
+ * 1. Extract handler logic to src/events/interaction-handlers/buttons/ or selectMenus/
+ * 2. Register in src/events/interaction-handlers/registerHandlers.ts
+ * 3. Call registerAllHandlers() from bot's ready event
+ * 4. Test and remove legacy if-else block
+ * 
+ * This allows gradual migration without breaking existing functionality.
+ */
+
+/**
  * Show frame carousel
  * @param interaction
  * @param index
@@ -248,6 +262,14 @@ export = {
       ) {
         return;
       }
+
+      // Try ComponentRegistry first (migrated handlers)
+      const handled = await componentRegistry.handleButton(interaction);
+      if (handled) {
+        return; // Handler found and executed successfully
+      }
+
+      // Fall through to legacy handlers below...
 
       // Edit Bio Button
       if (interaction.customId === "edit_bio") {
@@ -907,6 +929,14 @@ export = {
 
     // Select Menu Handler
     if (interaction.isStringSelectMenu()) {
+      // Try ComponentRegistry first (migrated handlers)
+      const handled = await componentRegistry.handleSelectMenu(interaction);
+      if (handled) {
+        return; // Handler found and executed successfully
+      }
+
+      // Fall through to legacy handlers below...
+
       // Warehouse select menus
       if (
         interaction.customId === "warehouse_sell_select" ||

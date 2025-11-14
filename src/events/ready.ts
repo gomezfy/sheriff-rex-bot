@@ -1,6 +1,7 @@
 import { Events, Client, ActivityType } from "discord.js";
 import { backupManager } from "../utils/backupManager";
 import logger from "../utils/consoleLogger";
+import { registerAllHandlers } from "./interaction-handlers/registerHandlers";
 
 export = {
   name: Events.ClientReady,
@@ -13,6 +14,10 @@ export = {
       client.users.cache.size
     );
 
+    // Register component handlers
+    logger.info("Registering component handlers");
+    registerAllHandlers();
+    
     // Start automatic backups
     logger.info("Starting automatic backup system");
     backupManager.startAutomaticBackups();
