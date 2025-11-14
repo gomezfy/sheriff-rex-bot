@@ -59,6 +59,16 @@ export const BACKGROUNDS: Background[] = [
     free: false,
     imageUrl: "https://i.postimg.cc/Hs9tVZB1/IMG-3268.png",
   },
+  {
+    id: "sakura_dreams",
+    name: "Sonhos de Sakura",
+    filename: "sakura-dreams.png",
+    price: 350,
+    description: "Linda garota anime em um jardim de flores de cerejeira com pétalas caindo",
+    rarity: "legendary",
+    free: false,
+    imageUrl: "https://i.postimg.cc/nhc1hwNF/IMG-3397.png",
+  },
 ];
 
 /**
