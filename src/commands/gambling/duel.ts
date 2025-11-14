@@ -15,6 +15,7 @@ import { Command } from "../../types";
 import { getEmoji } from "../../utils/customEmojis";
 import { t, getLocale, tLocale } from "../../utils/i18n";
 import { addXp } from "../../utils/xpManager";
+import { isValidBetAmount } from "../../utils/security";
 import path from "path";
 
 interface DuelPlayer {
@@ -249,7 +250,7 @@ export const data = new SlashCommandBuilder()
       })
       .setRequired(false)
       .setMinValue(0)
-      .setMaxValue(10000),
+      .setMaxValue(10000000),
   );
 
 export async function execute(
@@ -269,6 +270,15 @@ export async function execute(
   if (opponent.bot) {
     await interaction.reply({
       content: `${getEmoji("warning")} ${t(interaction, "duel_cant_bot")}`,
+      flags: MessageFlags.Ephemeral,
+    });
+    return;
+  }
+
+  // Security: Validate bet amount
+  if (bet > 0 && !isValidBetAmount(bet)) {
+    await interaction.reply({
+      content: "❌ Invalid bet amount! Maximum bet is 10,000,000 silver coins.",
       flags: MessageFlags.Ephemeral,
     });
     return;

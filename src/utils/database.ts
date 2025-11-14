@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import crypto from "crypto";
 import { isValidDataFilename } from "./security";
 import { measureDatabaseOperation } from "./performance";
 
@@ -108,6 +109,19 @@ export function readData(filename: string): any {
       fs.mkdirSync(dataDir, { recursive: true });
     }
 
+    // Auto-restore from backup if main file is missing but backup exists
+    if (!fs.existsSync(filePath) && fs.existsSync(path.join(dataDir, `${filename}.backup`))) {
+      try {
+        const backupPath = path.join(dataDir, `${filename}.backup`);
+        const backupData = fs.readFileSync(backupPath, "utf8");
+        JSON.parse(backupData); // Verify it's valid JSON
+        fs.copyFileSync(backupPath, filePath);
+        console.log(`✅ Auto-restored ${filename} from backup`);
+      } catch (restoreError) {
+        console.error(`⚠️  Failed to restore ${filename} from backup:`, restoreError);
+      }
+    }
+
     if (!fs.existsSync(filePath)) {
       fs.writeFileSync(filePath, "{}", "utf8");
       const emptyData = {};
@@ -148,13 +162,41 @@ export function writeData(filename: string, data: any): boolean {
   }
 
   const filePath = path.join(dataDir, filename);
+  const backupPath = path.join(dataDir, `${filename}.backup`);
+  
+  // Use unique temp file to avoid collision
+  const uniqueId = crypto.randomBytes(8).toString("hex");
+  const tempPath = path.join(dataDir, `${filename}.${uniqueId}.tmp`);
 
   try {
     if (!fs.existsSync(dataDir)) {
       fs.mkdirSync(dataDir, { recursive: true });
     }
 
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf8");
+    // Step 1: Write to unique temporary file
+    const jsonData = JSON.stringify(data, null, 2);
+    fs.writeFileSync(tempPath, jsonData, "utf8");
+
+    // Step 2: Verify the temp file was written correctly
+    const verifyData = fs.readFileSync(tempPath, "utf8");
+    JSON.parse(verifyData); // This will throw if JSON is invalid
+
+    // Step 3: Sync to disk to ensure data is persisted
+    const fd = fs.openSync(tempPath, "r");
+    fs.fsyncSync(fd);
+    fs.closeSync(fd);
+
+    // Step 4: Copy current file to backup (if it exists)
+    if (fs.existsSync(filePath)) {
+      try {
+        fs.copyFileSync(filePath, backupPath);
+      } catch (backupError) {
+        console.warn(`⚠️  Failed to create backup for ${filename}:`, backupError);
+      }
+    }
+
+    // Step 5: Atomic rename temp to main file (overwrites existing)
+    fs.renameSync(tempPath, filePath);
 
     // Update cache
     dataCache.set(filename, { data: data, timestamp: Date.now() });
@@ -163,6 +205,16 @@ export function writeData(filename: string, data: any): boolean {
     return true;
   } catch (error: any) {
     console.error(`❌ Erro ao escrever ${filename}:`, error.message);
+    
+    // Clean up temp file if it exists
+    if (fs.existsSync(tempPath)) {
+      try {
+        fs.unlinkSync(tempPath);
+      } catch {
+        // Ignore cleanup errors
+      }
+    }
+
     measureDatabaseOperation(`write_${filename}_error`, startTime);
     return false;
   }
@@ -188,4 +240,42 @@ export function getCacheStats(): { size: number; files: string[] } {
     size: dataCache.size,
     files: Array.from(dataCache.keys()),
   };
+}
+
+/**
+ * Restore data from backup file
+ * @param filename - The data file to restore
+ * @returns true if restored successfully, false otherwise
+ */
+export function restoreFromBackup(filename: string): boolean {
+  if (!isValidDataFilename(filename)) {
+    console.error(`🚨 SECURITY: Invalid filename attempted: ${filename}`);
+    throw new Error(`Invalid filename: ${filename}`);
+  }
+
+  const filePath = path.join(dataDir, filename);
+  const backupPath = path.join(dataDir, `${filename}.backup`);
+
+  try {
+    if (!fs.existsSync(backupPath)) {
+      console.error(`❌ No backup found for ${filename}`);
+      return false;
+    }
+
+    // Verify backup is valid JSON
+    const backupData = fs.readFileSync(backupPath, "utf8");
+    JSON.parse(backupData);
+
+    // Copy backup to main file
+    fs.copyFileSync(backupPath, filePath);
+
+    // Clear cache for this file
+    dataCache.delete(filename);
+
+    console.log(`✅ Successfully restored ${filename} from backup`);
+    return true;
+  } catch (error: any) {
+    console.error(`❌ Failed to restore ${filename} from backup:`, error.message);
+    return false;
+  }
 }

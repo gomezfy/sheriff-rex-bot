@@ -12,6 +12,7 @@ import { getUserGold, transferGold } from "../../utils/dataManager";
 import { formatDuration } from "../../utils/embeds";
 import { t } from "../../utils/i18n";
 import { Command } from "../../types";
+import { isValidBetAmount } from "../../utils/security";
 
 /**
  * Cooldown management for dice game
@@ -41,7 +42,8 @@ const command: Command = {
         .setName("bet")
         .setDescription("Amount of Saloon Tokens to bet")
         .setRequired(true)
-        .setMinValue(10),
+        .setMinValue(10)
+        .setMaxValue(10000000),
     )
     .addIntegerOption((option) =>
       option
@@ -122,6 +124,15 @@ const command: Command = {
     if (activeGames.has(challenger.id) || activeGames.has(opponent.id)) {
       await interaction.reply({
         content: t(interaction, "dice_already_active"),
+        flags: MessageFlags.Ephemeral,
+      });
+      return;
+    }
+
+    // Security: Validate bet amount
+    if (!isValidBetAmount(bet)) {
+      await interaction.reply({
+        content: "❌ Invalid bet amount! Maximum bet is 10,000,000 tokens.",
         flags: MessageFlags.Ephemeral,
       });
       return;

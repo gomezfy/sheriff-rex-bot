@@ -45,9 +45,11 @@ coverage/
 src/data/*.json
 !src/data/.gitkeep
 
-# Backups
+# Backups and temporary files
 src/data/backups/
+*.backup
 *.backup.json
+*.tmp
 
 # Replit specific
 .replit

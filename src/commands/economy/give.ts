@@ -20,6 +20,7 @@ import {
   getGiftEmoji,
 } from "../../utils/customEmojis";
 import { transferItem, ITEMS } from "../../utils/inventoryManager";
+import { isValidCurrencyAmount, MAX_CURRENCY_AMOUNT } from "../../utils/security";
 
 export default {
   data: applyLocalizations(
@@ -81,7 +82,8 @@ export default {
             fr: "Quantité à donner",
           })
           .setRequired(true)
-          .setMinValue(1),
+          .setMinValue(1)
+          .setMaxValue(1000000000),
       ),
     "give",
   ),
@@ -109,6 +111,21 @@ export default {
         t(interaction, "give_self_transfer"),
         t(interaction, "give_cant_give_self"),
         t(interaction, "give_mighty_strange"),
+      );
+
+      await interaction.reply({
+        embeds: [embed],
+        flags: MessageFlags.Ephemeral,
+      });
+      return;
+    }
+
+    // Security: Validate amount is within safe limits
+    if (!isValidCurrencyAmount(amount)) {
+      const embed = errorEmbed(
+        "Invalid Amount",
+        `The amount must be between 1 and ${MAX_CURRENCY_AMOUNT.toLocaleString()}.`,
+        "Please try again with a valid amount.",
       );
 
       await interaction.reply({

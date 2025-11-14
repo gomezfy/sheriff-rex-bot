@@ -82,6 +82,31 @@ export async function isOwner(
 }
 
 /**
+ * Combined owner and rate limit check for admin commands
+ * @param interaction Discord interaction
+ * @returns object with { authorized: boolean, reason?: string }
+ */
+export async function checkOwnerWithRateLimit(
+  interaction: ChatInputCommandInteraction,
+): Promise<{ authorized: boolean; reason?: string }> {
+  // Check if user is owner
+  if (!(await isOwner(interaction))) {
+    return { authorized: false, reason: "not_owner" };
+  }
+
+  // Check rate limit
+  if (!adminRateLimiter.canExecute(interaction.user.id)) {
+    const remaining = adminRateLimiter.getRemainingCooldown(interaction.user.id);
+    await interaction.editReply({
+      content: `⏰ Please wait ${(remaining / 1000).toFixed(1)}s before using another admin command.`,
+    });
+    return { authorized: false, reason: "rate_limited" };
+  }
+
+  return { authorized: true };
+}
+
+/**
  * Validates currency amount is within safe limits
  * @param amount Amount to validate
  * @param maxAmount Maximum allowed amount (default: MAX_CURRENCY_AMOUNT)
