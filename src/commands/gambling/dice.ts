@@ -286,7 +286,7 @@ const command: Command = {
         return;
       }
 
-      const transferResult = transferGold(loser.id, winner.id, bet);
+      const transferResult = await transferGold(loser.id, winner.id, bet);
 
       if (!transferResult.success) {
         const fullInventoryEmbed = new EmbedBuilder()

@@ -332,17 +332,17 @@ export default {
 
           if (outcome === "success") {
             // BOTH ESCAPE SUCCESSFULLY
-            const initiatorSilverResult = addUserSilver(
+            const initiatorSilverResult = await addUserSilver(
               userId,
               silverPerPerson,
             );
-            const partnerSilverResult = addUserSilver(
+            const partnerSilverResult = await addUserSilver(
               i.user.id,
               silverPerPerson,
             );
 
-            let initiatorGoldResult = addItem(userId, "gold", goldPerPerson);
-            let partnerGoldResult = addItem(
+            let initiatorGoldResult = await addItem(userId, "gold", goldPerPerson);
+            let partnerGoldResult = await addItem(
               i.user.id,
               "gold",
               goldPerPerson + extraGold,
@@ -352,10 +352,10 @@ export default {
             let initiatorDiamondResult = { success: false };
             let partnerDiamondResult = { success: false };
             if (Math.random() < 0.15) {
-              initiatorDiamondResult = addItem(userId, "diamond", 1);
+              initiatorDiamondResult = await addItem(userId, "diamond", 1);
             }
             if (Math.random() < 0.15) {
-              partnerDiamondResult = addItem(i.user.id, "diamond", 1);
+              partnerDiamondResult = await addItem(i.user.id, "diamond", 1);
             }
 
             let initiatorLoot: string[] = [];
@@ -462,13 +462,13 @@ export default {
 
             // Escapee gets ALL the loot
             const escapeeId = escapee.id;
-            const silverResult = addUserSilver(escapeeId, silverReward);
-            const goldResult = addItem(escapeeId, "gold", goldBars);
+            const silverResult = await addUserSilver(escapeeId, silverReward);
+            const goldResult = await addItem(escapeeId, "gold", goldBars);
 
             // Chance de encontrar diamante (15% de chance)
             let diamondResult = { success: false };
             if (Math.random() < 0.15) {
-              diamondResult = addItem(escapeeId, "diamond", 1);
+              diamondResult = await addItem(escapeeId, "diamond", 1);
             }
 
             let loot: string[] = [];

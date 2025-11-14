@@ -207,7 +207,7 @@ export default {
             });
           }
 
-          const removeResult = removeItem(userId, "saloon_token", amount);
+          const removeResult = await removeItem(userId, "saloon_token", amount);
           if (!removeResult.success) {
             return si.update({
               content: `${cancelEmoji} ${t(si, "middleman_error")}: ${removeResult.error}`,
@@ -216,7 +216,7 @@ export default {
           }
 
           const silverAmount = amount * TOKEN_TO_SILVER;
-          addUserSilver(userId, silverAmount);
+          await addUserSilver(userId, silverAmount);
 
           const checkEmoji = getCheckEmoji();
           const successEmbed = new EmbedBuilder()
@@ -323,7 +323,7 @@ export default {
             });
           }
 
-          const removeResult = removeItem(userId, "gold", amount);
+          const removeResult = await removeItem(userId, "gold", amount);
           if (!removeResult.success) {
             return si.update({
               content: `${cancelEmoji} ${t(si, "middleman_error")}: ${removeResult.error}`,
@@ -332,7 +332,7 @@ export default {
           }
 
           const silverAmount = amount * GOLD_TO_SILVER;
-          addUserSilver(userId, silverAmount);
+          await addUserSilver(userId, silverAmount);
 
           const checkEmoji = getCheckEmoji();
           const successEmbed = new EmbedBuilder()
@@ -449,7 +449,7 @@ export default {
             });
           }
 
-          const removeResult = removeItem(userId, "diamond", amount);
+          const removeResult = await removeItem(userId, "diamond", amount);
           if (!removeResult.success) {
             return si.update({
               content: `${cancelEmoji} ${locale === "pt-BR" ? "Erro" : "Error"}: ${removeResult.error}`,
@@ -458,7 +458,7 @@ export default {
           }
 
           const silverAmount = amount * DIAMOND_TO_SILVER;
-          addUserSilver(userId, silverAmount);
+          await addUserSilver(userId, silverAmount);
 
           const checkEmoji = getCheckEmoji();
           const successEmbed = new EmbedBuilder()

@@ -115,7 +115,7 @@ export default {
 
     await interaction.deferReply();
 
-    const removeResult = removeItem(interaction.user.id, "silver", amount);
+    const removeResult = await removeItem(interaction.user.id, "silver", amount);
     if (!removeResult.success) {
       const embed = errorEmbed(
         t(interaction, "bounty_transaction_failed"),

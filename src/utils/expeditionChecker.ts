@@ -244,10 +244,10 @@ export async function checkCompletedExpeditions(
               xp: xpDistribution[i],
             };
 
-            addUserSilver(memberId, memberRewards.silver);
-            addItem(memberId, "gold", memberRewards.gold);
-            addItem(memberId, "wheat", memberRewards.wheat);
-            addItem(memberId, "honey", memberRewards.honey);
+            await addUserSilver(memberId, memberRewards.silver);
+            await addItem(memberId, "gold", memberRewards.gold);
+            await addItem(memberId, "wheat", memberRewards.wheat);
+            await addItem(memberId, "honey", memberRewards.honey);
             addXp(memberId, memberRewards.xp);
 
             if (!expeditionData[memberId]) {

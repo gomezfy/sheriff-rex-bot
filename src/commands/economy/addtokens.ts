@@ -7,8 +7,12 @@ import {
 import { getSaloonTokenEmoji } from "../../utils/customEmojis";
 import { transactionLock } from "../../utils/transactionLock";
 import { addItem } from "../../utils/inventoryManager";
-
-const OWNER_ID = process.env.OWNER_ID;
+import {
+  isOwner,
+  adminRateLimiter,
+  isValidCurrencyAmount,
+  MAX_CURRENCY_AMOUNT,
+} from "../../utils/security";
 
 export default {
   data: new SlashCommandBuilder()
@@ -27,21 +31,39 @@ export default {
         .setName("amount")
         .setDescription("Amount of Saloon Tokens to add")
         .setRequired(true)
-        .setMinValue(1),
+        .setMinValue(1)
+        .setMaxValue(MAX_CURRENCY_AMOUNT),
     )
     .setDefaultMemberPermissions(0),
   async execute(interaction: ChatInputCommandInteraction): Promise<void> {
     await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
-    if (interaction.user.id !== OWNER_ID) {
+    // Security: Validate owner
+    if (!(await isOwner(interaction))) {
+      return;
+    }
+
+    // Security: Rate limit admin commands
+    if (!adminRateLimiter.canExecute(interaction.user.id)) {
+      const remaining = adminRateLimiter.getRemainingCooldown(
+        interaction.user.id,
+      );
       await interaction.editReply({
-        content: "❌ This command is only available to the bot owner!",
+        content: `⏰ Please wait ${(remaining / 1000).toFixed(1)}s before using another admin command.`,
       });
       return;
     }
 
     const targetUser = interaction.options.getUser("user", true);
     const amount = interaction.options.getInteger("amount", true);
+
+    // Security: Validate amount
+    if (!isValidCurrencyAmount(amount)) {
+      await interaction.editReply({
+        content: `❌ Invalid amount! Must be between 1 and ${MAX_CURRENCY_AMOUNT.toLocaleString()}.`,
+      });
+      return;
+    }
 
     // Use transaction lock to prevent race conditions
     const result = await transactionLock.withLock(targetUser.id, () =>

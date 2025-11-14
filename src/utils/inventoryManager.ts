@@ -3,6 +3,7 @@ import path from "path";
 import { EMOJI_TEXT } from "./customEmojis";
 import { cacheManager } from "./cacheManager";
 import { getDataPath } from "./database";
+import { transactionLock } from "./transactionLock";
 
 const dataDir = getDataPath("data");
 const inventoryFile = path.join(dataDir, "inventory.json");
@@ -178,75 +179,79 @@ export function checkCapacity(
   };
 }
 
-export function addItem(
+export async function addItem(
   userId: string,
   itemId: string,
   quantity: number = 1,
-): any {
-  const inventory = getInventory(userId);
+): Promise<any> {
+  return await transactionLock.withLock(userId, () => {
+    const inventory = getInventory(userId);
 
-  if (!ITEMS[itemId]) {
-    return { success: false, error: "Item not found!" };
-  }
+    if (!ITEMS[itemId]) {
+      return { success: false, error: "Item not found!" };
+    }
 
-  const capacityResult = checkCapacity(inventory, itemId, quantity);
-  if (!capacityResult.hasCapacity) {
+    const capacityResult = checkCapacity(inventory, itemId, quantity);
+    if (!capacityResult.hasCapacity) {
+      return {
+        success: false,
+        error: "🚫 You're carrying too much weight!",
+        currentWeight: calculateWeight(inventory),
+        maxWeight: inventory.maxWeight,
+        additionalWeight: capacityResult.required,
+      };
+    }
+
+    if (!inventory.items[itemId]) {
+      inventory.items[itemId] = 0;
+    }
+
+    inventory.items[itemId] += quantity;
+    const newWeight = calculateWeight(inventory);
+    inventory.weight = newWeight;
+
+    saveInventory(userId, inventory);
+
     return {
-      success: false,
-      error: "🚫 You're carrying too much weight!",
-      currentWeight: calculateWeight(inventory),
-      maxWeight: inventory.maxWeight,
-      additionalWeight: capacityResult.required,
+      success: true,
+      item: ITEMS[itemId],
+      quantity: quantity,
+      newWeight: newWeight,
+      totalQuantity: inventory.items[itemId],
     };
-  }
-
-  if (!inventory.items[itemId]) {
-    inventory.items[itemId] = 0;
-  }
-
-  inventory.items[itemId] += quantity;
-  const newWeight = calculateWeight(inventory);
-  inventory.weight = newWeight;
-
-  saveInventory(userId, inventory);
-
-  return {
-    success: true,
-    item: ITEMS[itemId],
-    quantity: quantity,
-    newWeight: newWeight,
-    totalQuantity: inventory.items[itemId],
-  };
+  });
 }
 
-export function removeItem(
+export async function removeItem(
   userId: string,
   itemId: string,
   quantity: number = 1,
-): any {
-  const inventory = getInventory(userId);
+): Promise<any> {
+  return await transactionLock.withLock(userId, () => {
+    const inventory = getInventory(userId);
 
-  if (!inventory.items[itemId] || inventory.items[itemId] < quantity) {
-    return { success: false, error: "You don't have enough items!" };
-  }
+    if (!inventory.items[itemId] || inventory.items[itemId] < quantity) {
+      return { success: false, error: "You don't have enough items!" };
+    }
 
-  inventory.items[itemId] -= quantity;
+    inventory.items[itemId] -= quantity;
 
-  if (inventory.items[itemId] <= 0) {
-    delete inventory.items[itemId];
-  }
+    if (inventory.items[itemId] <= 0) {
+      delete inventory.items[itemId];
+    }
 
-  inventory.weight = calculateWeight(inventory);
+    inventory.weight = calculateWeight(inventory);
 
-  saveInventory(userId, inventory);
+    saveInventory(userId, inventory);
 
-  return {
-    success: true,
-    item: ITEMS[itemId],
-    quantity: quantity,
-    newWeight: inventory.weight,
-    remainingQuantity: inventory.items[itemId] || 0,
-  };
+    return {
+      success: true,
+      item: ITEMS[itemId],
+      quantity: quantity,
+      newWeight: inventory.weight,
+      remainingQuantity: inventory.items[itemId] || 0,
+    };
+  });
 }
 
 export function getItem(userId: string, itemId: string): number {
@@ -254,52 +259,54 @@ export function getItem(userId: string, itemId: string): number {
   return inventory.items[itemId] || 0;
 }
 
-export function transferItem(
+export async function transferItem(
   fromUserId: string,
   toUserId: string,
   itemId: string,
   quantity: number,
-): any {
-  const fromInventory = getInventory(fromUserId);
-  const toInventory = getInventory(toUserId);
+): Promise<any> {
+  return await transactionLock.withMultipleLocks([fromUserId, toUserId], () => {
+    const fromInventory = getInventory(fromUserId);
+    const toInventory = getInventory(toUserId);
 
-  // Check sender's balance
-  if (!fromInventory.items[itemId] || fromInventory.items[itemId] < quantity) {
-    return { success: false, error: "You don't have enough items!" };
-  }
+    // Check sender's balance
+    if (!fromInventory.items[itemId] || fromInventory.items[itemId] < quantity) {
+      return { success: false, error: "You don't have enough items!" };
+    }
 
-  // Check recipient's capacity
-  const capacityResult = checkCapacity(toInventory, itemId, quantity);
-  if (!capacityResult.hasCapacity) {
-    return {
-      success: false,
-      error: "The recipient does not have enough space in their inventory.",
-    };
-  }
+    // Check recipient's capacity
+    const capacityResult = checkCapacity(toInventory, itemId, quantity);
+    if (!capacityResult.hasCapacity) {
+      return {
+        success: false,
+        error: "The recipient does not have enough space in their inventory.",
+      };
+    }
 
-  const itemInfo = ITEMS[itemId];
-  if (!itemInfo) {
-    return { success: false, error: "Item not found!" };
-  }
+    const itemInfo = ITEMS[itemId];
+    if (!itemInfo) {
+      return { success: false, error: "Item not found!" };
+    }
 
-  // All checks passed, now perform the state changes in memory
-  fromInventory.items[itemId] -= quantity;
-  if (fromInventory.items[itemId] <= 0) {
-    delete fromInventory.items[itemId];
-  }
-  fromInventory.weight = calculateWeight(fromInventory);
+    // All checks passed, now perform the state changes in memory
+    fromInventory.items[itemId] -= quantity;
+    if (fromInventory.items[itemId] <= 0) {
+      delete fromInventory.items[itemId];
+    }
+    fromInventory.weight = calculateWeight(fromInventory);
 
-  if (!toInventory.items[itemId]) {
-    toInventory.items[itemId] = 0;
-  }
-  toInventory.items[itemId] += quantity;
-  toInventory.weight = calculateWeight(toInventory);
+    if (!toInventory.items[itemId]) {
+      toInventory.items[itemId] = 0;
+    }
+    toInventory.items[itemId] += quantity;
+    toInventory.weight = calculateWeight(toInventory);
 
-  // Now, save both inventories.
-  saveInventory(fromUserId, fromInventory);
-  saveInventory(toUserId, toInventory);
+    // Now, save both inventories.
+    saveInventory(fromUserId, fromInventory);
+    saveInventory(toUserId, toInventory);
 
-  return { success: true, item: itemInfo, quantity: quantity };
+    return { success: true, item: itemInfo, quantity: quantity };
+  });
 }
 
 export const UPGRADE_TIERS = [
@@ -366,7 +373,7 @@ export function getTopUsers(
   return userAmounts.slice(0, limit);
 }
 
-export function upgradeBackpack(userId: string, newCapacity?: number): any {
+export async function upgradeBackpack(userId: string, newCapacity?: number): Promise<any> {
   const inventory = getInventory(userId);
   const currentLevel = getBackpackLevel(userId);
 
@@ -414,7 +421,7 @@ export function upgradeBackpack(userId: string, newCapacity?: number): any {
       };
     }
 
-    const removeResult = removeItem(userId, nextTier.currency, nextTier.cost);
+    const removeResult = await removeItem(userId, nextTier.currency, nextTier.cost);
 
     if (!removeResult.success) {
       return removeResult;

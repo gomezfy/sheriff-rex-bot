@@ -52,7 +52,7 @@ export default {
       return;
     }
 
-    const result = addItem(targetUser.id, "saloon_token", starterAmount);
+    const result = await addItem(targetUser.id, "saloon_token", starterAmount);
 
     if (!result.success) {
       await interaction.reply({

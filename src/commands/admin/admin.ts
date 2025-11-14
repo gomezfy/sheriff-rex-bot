@@ -1740,7 +1740,7 @@ async function handleMigrate(
 
     for (const [userId, balance] of Object.entries(economyData)) {
       if (balance > 0) {
-        const result = addItem(userId, "saloon_token", balance);
+        const result = await addItem(userId, "saloon_token", balance);
 
         if (result.success) {
           migrated++;

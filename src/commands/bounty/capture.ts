@@ -167,7 +167,7 @@ export default {
     }
 
     const reward = bounty.totalAmount;
-    const result = addItem(hunter.id, "silver", reward);
+    const result = await addItem(hunter.id, "silver", reward);
 
     if (!result.success) {
       const embed = errorEmbed(

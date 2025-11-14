@@ -603,7 +603,7 @@ export = {
         }
 
         const userTokens = getUserGold(interaction.user.id);
-        const result = purchaseBackground(interaction.user.id, bgId);
+        const result = await purchaseBackground(interaction.user.id, bgId);
 
         if (result.success) {
           // Show success message temporarily
@@ -1248,7 +1248,7 @@ export = {
           return;
         }
 
-        const result = createGuild(
+        const result = await createGuild(
           interaction.user.id,
           guildName,
           guildDescription,

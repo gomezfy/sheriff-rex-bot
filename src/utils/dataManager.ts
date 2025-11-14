@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import { getItem, addItem, removeItem, transferItem } from "./inventoryManager";
 import { getDataPath } from "./database";
+import { transactionLock } from "./transactionLock";
 
 const dataDir = getDataPath("data");
 const economyFile = path.join(dataDir, "economy.json");
@@ -38,66 +39,66 @@ export function getUserGold(userId: string): number {
   return getItem(userId, "saloon_token");
 }
 
-export function setUserGold(userId: string, amount: number): any {
+export async function setUserGold(userId: string, amount: number): Promise<any> {
   const current = getUserGold(userId);
   const diff = amount - current;
 
   if (diff > 0) {
-    return addItem(userId, "saloon_token", diff);
+    return await addItem(userId, "saloon_token", diff);
   } else if (diff < 0) {
-    return removeItem(userId, "saloon_token", Math.abs(diff));
+    return await removeItem(userId, "saloon_token", Math.abs(diff));
   }
 
   return { success: true, totalQuantity: current };
 }
 
-export function addUserGold(userId: string, amount: number): any {
-  return addItem(userId, "saloon_token", amount);
+export async function addUserGold(userId: string, amount: number): Promise<any> {
+  return await addItem(userId, "saloon_token", amount);
 }
 
-export function removeUserGold(userId: string, amount: number): any {
-  return removeItem(userId, "saloon_token", amount);
+export async function removeUserGold(userId: string, amount: number): Promise<any> {
+  return await removeItem(userId, "saloon_token", amount);
 }
 
-export function transferGold(
+export async function transferGold(
   fromUserId: string,
   toUserId: string,
   amount: number,
-): any {
-  return transferItem(fromUserId, toUserId, "saloon_token", amount);
+): Promise<any> {
+  return await transferItem(fromUserId, toUserId, "saloon_token", amount);
 }
 
 export function getUserSilver(userId: string): number {
   return getItem(userId, "silver");
 }
 
-export function setUserSilver(userId: string, amount: number): any {
+export async function setUserSilver(userId: string, amount: number): Promise<any> {
   const current = getUserSilver(userId);
   const diff = amount - current;
 
   if (diff > 0) {
-    return addItem(userId, "silver", diff);
+    return await addItem(userId, "silver", diff);
   } else if (diff < 0) {
-    return removeItem(userId, "silver", Math.abs(diff));
+    return await removeItem(userId, "silver", Math.abs(diff));
   }
 
   return { success: true, totalQuantity: current };
 }
 
-export function addUserSilver(userId: string, amount: number): any {
-  return addItem(userId, "silver", amount);
+export async function addUserSilver(userId: string, amount: number): Promise<any> {
+  return await addItem(userId, "silver", amount);
 }
 
-export function removeUserSilver(userId: string, amount: number): any {
-  return removeItem(userId, "silver", amount);
+export async function removeUserSilver(userId: string, amount: number): Promise<any> {
+  return await removeItem(userId, "silver", amount);
 }
 
-export function transferSilver(
+export async function transferSilver(
   fromUserId: string,
   toUserId: string,
   amount: number,
-): any {
-  return transferItem(fromUserId, toUserId, "silver", amount);
+): Promise<any> {
+  return await transferItem(fromUserId, toUserId, "silver", amount);
 }
 
 function getBounties(): any[] {

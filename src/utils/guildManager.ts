@@ -60,12 +60,12 @@ function saveJoinRequests(data: JoinRequestData): void {
   fs.writeFileSync(joinRequestsFile, JSON.stringify(data, null, 2));
 }
 
-export function createGuild(
+export async function createGuild(
   userId: string,
   name: string,
   description: string,
   isPublic: boolean = true,
-): GuildOperationResult {
+): Promise<GuildOperationResult> {
   const userGuilds = getUserGuilds();
 
   if (userGuilds[userId]) {
@@ -103,7 +103,7 @@ export function createGuild(
   }
 
   // Deduzir 1000 Saloon Tokens
-  const removeResult = removeUserGold(userId, 1000);
+  const removeResult = await removeUserGold(userId, 1000);
   if (!removeResult.success) {
     return {
       success: false,

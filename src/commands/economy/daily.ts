@@ -129,8 +129,8 @@ const command: Command = {
     const tokenAmount = Math.floor(baseTokens * (1 + streakBonus));
     const xpAmount = Math.floor(baseXP * (1 + streakBonus));
 
-    const silverResult = addItem(userId, "silver", silverAmount);
-    const tokenResult = addItem(userId, "saloon_token", tokenAmount);
+    const silverResult = await addItem(userId, "silver", silverAmount);
+    const tokenResult = await addItem(userId, "saloon_token", tokenAmount);
 
     if (!silverResult.success || !tokenResult.success) {
       const error = !silverResult.success

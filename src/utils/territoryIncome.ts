@@ -126,10 +126,10 @@ export async function processTerritoryIncome(
 
     // Add income to inventory
     if (totalSilver > 0) {
-      addItem(userId, "silver", totalSilver);
+      await addItem(userId, "silver", totalSilver);
     }
     if (totalCattle > 0) {
-      addItem(userId, "cattle", totalCattle);
+      await addItem(userId, "cattle", totalCattle);
     }
 
     // Update payout timestamps

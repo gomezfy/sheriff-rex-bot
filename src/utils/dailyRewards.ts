@@ -122,9 +122,9 @@ async function grantRewardToUser(
       return false;
     }
 
-    const tokenResult = addItem(userId, "saloon_token", REWARD_AMOUNTS.saloon_token);
-    const goldResult = addItem(userId, "gold", REWARD_AMOUNTS.gold);
-    const sealResult = addItem(userId, "seal", REWARD_AMOUNTS.seal);
+    const tokenResult = await addItem(userId, "saloon_token", REWARD_AMOUNTS.saloon_token);
+    const goldResult = await addItem(userId, "gold", REWARD_AMOUNTS.gold);
+    const sealResult = await addItem(userId, "seal", REWARD_AMOUNTS.seal);
 
     if (!tokenResult.success || !goldResult.success || !sealResult.success) {
       logger.error(

@@ -150,7 +150,7 @@ export default {
 
       // Add tokens
       if (redemption.tokens > 0) {
-        const tokenResult = addItem(userId, "saloon_token", redemption.tokens);
+        const tokenResult = await addItem(userId, "saloon_token", redemption.tokens);
         if (tokenResult.success) {
           rewards.push(
             `${getSaloonTokenEmoji()} +${formatCurrency(redemption.tokens, "tokens")}`,
@@ -160,7 +160,7 @@ export default {
 
       // Add coins
       if (redemption.coins > 0) {
-        const coinResult = addItem(userId, "silver", redemption.coins);
+        const coinResult = await addItem(userId, "silver", redemption.coins);
         if (coinResult.success) {
           rewards.push(
             `${getSilverCoinEmoji()} +${formatCurrency(redemption.coins, "silver")}`,
@@ -199,7 +199,7 @@ export default {
         }
 
         // Apply upgrade
-        const upgradeResult = upgradeBackpack(userId, targetCapacity);
+        const upgradeResult = await upgradeBackpack(userId, targetCapacity);
         if (upgradeResult.success) {
           backpackUpgraded = true;
           newCapacity = targetCapacity;

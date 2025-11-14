@@ -66,10 +66,10 @@ export function saveBankAccount(userId: string, account: BankAccount): void {
 /**
  * Deposit saloon tokens from wallet to bank
  */
-export function depositTokens(
+export async function depositTokens(
   userId: string,
   amount: number,
-): { success: boolean; message: string } {
+): Promise<{ success: boolean; message: string }> {
   if (amount <= 0) {
     return { success: false, message: "Amount must be greater than 0" };
   }
@@ -79,7 +79,7 @@ export function depositTokens(
     return { success: false, message: "Insufficient balance in wallet" };
   }
 
-  const removeResult = removeUserGold(userId, amount);
+  const removeResult = await removeUserGold(userId, amount);
   if (!removeResult.success) {
     return { success: false, message: "Failed to remove tokens from wallet" };
   }
@@ -94,10 +94,10 @@ export function depositTokens(
 /**
  * Withdraw saloon tokens from bank to wallet
  */
-export function withdrawTokens(
+export async function withdrawTokens(
   userId: string,
   amount: number,
-): { success: boolean; message: string } {
+): Promise<{ success: boolean; message: string }> {
   if (amount <= 0) {
     return { success: false, message: "Amount must be greater than 0" };
   }
@@ -110,7 +110,7 @@ export function withdrawTokens(
   account.saloon_tokens -= amount;
   saveBankAccount(userId, account);
 
-  addUserGold(userId, amount);
+  await addUserGold(userId, amount);
 
   return { success: true, message: `Withdrawn ${amount} tokens` };
 }
@@ -118,10 +118,10 @@ export function withdrawTokens(
 /**
  * Deposit silver from wallet to bank
  */
-export function depositSilver(
+export async function depositSilver(
   userId: string,
   amount: number,
-): { success: boolean; message: string } {
+): Promise<{ success: boolean; message: string }> {
   if (amount <= 0) {
     return { success: false, message: "Amount must be greater than 0" };
   }
@@ -131,7 +131,7 @@ export function depositSilver(
     return { success: false, message: "Insufficient balance in wallet" };
   }
 
-  const removeResult = removeUserSilver(userId, amount);
+  const removeResult = await removeUserSilver(userId, amount);
   if (!removeResult.success) {
     return { success: false, message: "Failed to remove silver from wallet" };
   }
@@ -146,10 +146,10 @@ export function depositSilver(
 /**
  * Withdraw silver from bank to wallet
  */
-export function withdrawSilver(
+export async function withdrawSilver(
   userId: string,
   amount: number,
-): { success: boolean; message: string } {
+): Promise<{ success: boolean; message: string }> {
   if (amount <= 0) {
     return { success: false, message: "Amount must be greater than 0" };
   }
@@ -162,7 +162,7 @@ export function withdrawSilver(
   account.silver -= amount;
   saveBankAccount(userId, account);
 
-  addUserSilver(userId, amount);
+  await addUserSilver(userId, amount);
 
   return { success: true, message: `Withdrawn ${amount} silver` };
 }

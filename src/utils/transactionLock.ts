@@ -2,51 +2,54 @@
  * Transaction Lock Manager
  * Prevents race conditions in economy operations by ensuring
  * only one operation per user can run at a time
+ * 
+ * Fixed implementation using promise chaining to serialize access
  */
-
-interface LockEntry {
-  resolve: () => void;
-  timestamp: number;
-}
 
 class TransactionLockManager {
   private locks: Map<string, Promise<void>> = new Map();
-  private waitQueue: Map<string, LockEntry[]> = new Map();
   private lockTimeout: number = 30000; // 30 seconds max lock time
 
   /**
    * Acquire a lock for a user
    * Returns a promise that resolves when the lock is acquired
+   * Uses promise chaining to ensure serial execution
    * @param userId
    */
   async acquire(userId: string): Promise<() => void> {
-    // If there's already a lock, wait for it
-    while (this.locks.has(userId)) {
-      await this.locks.get(userId);
-    }
+    // Get current lock promise or create resolved one
+    const currentLock = this.locks.get(userId) || Promise.resolve();
 
-    // Create a new lock
+    // Create new lock promise that will be resolved when this operation completes
     let releaseLock: () => void;
-    const lockPromise = new Promise<void>((resolve) => {
+    const newLockPromise = new Promise<void>((resolve) => {
       releaseLock = resolve;
     });
 
-    this.locks.set(userId, lockPromise);
+    // Chain the new lock to wait for the current one
+    const chainedPromise = currentLock.then(() => newLockPromise);
+    this.locks.set(userId, chainedPromise);
+
+    // Wait for the current lock to release before proceeding
+    await currentLock;
 
     // Set timeout to auto-release stuck locks
     const timeoutId = setTimeout(() => {
-      if (this.locks.get(userId) === lockPromise) {
+      if (this.locks.get(userId) === chainedPromise) {
         console.warn(`⚠️  Lock timeout for user ${userId} - force releasing`);
         releaseLock();
         this.locks.delete(userId);
       }
     }, this.lockTimeout);
 
-    // Return release function that clears both lock and timeout
+    // Return release function that clears timeout and resolves the lock
     return () => {
       clearTimeout(timeoutId);
       releaseLock();
-      this.locks.delete(userId);
+      // Clean up if this is the last lock in the chain
+      if (this.locks.get(userId) === chainedPromise) {
+        this.locks.delete(userId);
+      }
     };
   }
 

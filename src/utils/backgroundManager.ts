@@ -120,10 +120,10 @@ export function getUserBackgrounds(userId: string): Background[] {
  * @param userId
  * @param backgroundId
  */
-export function purchaseBackground(
+export async function purchaseBackground(
   userId: string,
   backgroundId: string,
-): { success: boolean; message: string } {
+): Promise<{ success: boolean; message: string }> {
   const background = getBackgroundById(backgroundId);
 
   if (!background) {
@@ -159,7 +159,7 @@ export function purchaseBackground(
   }
 
   // Deduct tokens
-  removeUserGold(userId, background.price);
+  await removeUserGold(userId, background.price);
 
   // Add background to user's collection
   const profile = getUserProfile(userId);

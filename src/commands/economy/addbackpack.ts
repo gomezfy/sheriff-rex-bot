@@ -5,8 +5,7 @@ import {
   MessageFlags,
 } from "discord.js";
 import { upgradeBackpack } from "../../utils/inventoryManager";
-
-const OWNER_ID = process.env.OWNER_ID;
+import { isOwner, adminRateLimiter } from "../../utils/security";
 
 export default {
   data: new SlashCommandBuilder()
@@ -20,22 +19,31 @@ export default {
     )
     .setDefaultMemberPermissions(0),
   async execute(interaction: ChatInputCommandInteraction): Promise<void> {
-    if (interaction.user.id !== OWNER_ID) {
-      await interaction.reply({
-        content: "❌ This command is only available to the bot owner!",
-        flags: [MessageFlags.Ephemeral],
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+
+    // Security: Validate owner
+    if (!(await isOwner(interaction))) {
+      return;
+    }
+
+    // Security: Rate limit admin commands
+    if (!adminRateLimiter.canExecute(interaction.user.id)) {
+      const remaining = adminRateLimiter.getRemainingCooldown(
+        interaction.user.id,
+      );
+      await interaction.editReply({
+        content: `⏰ Please wait ${(remaining / 1000).toFixed(1)}s before using another admin command.`,
       });
       return;
     }
 
     const targetUser = interaction.options.getUser("user", true);
 
-    const result = upgradeBackpack(targetUser.id, 500);
+    const result = await upgradeBackpack(targetUser.id, 500);
 
     if (!result.success) {
-      await interaction.reply({
+      await interaction.editReply({
         content: `❌ Failed to upgrade backpack: ${result.error}`,
-        flags: [MessageFlags.Ephemeral],
       });
       return;
     }
@@ -51,6 +59,6 @@ export default {
       .setFooter({ text: "Manual upgrade by bot owner" })
       .setTimestamp();
 
-    await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
+    await interaction.editReply({ embeds: [embed] });
   },
 };
