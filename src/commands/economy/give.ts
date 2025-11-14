@@ -12,7 +12,6 @@ import {
 import { t } from "../../utils/i18n";
 import { applyLocalizations } from "../../utils/commandLocalizations";
 import { securityLogger } from "../../utils/security";
-import { transactionLock } from "../../utils/transactionLock";
 import {
   getSaloonTokenEmoji,
   getSilverCoinEmoji,
@@ -137,11 +136,8 @@ export default {
 
     await interaction.deferReply();
 
-    // Use transaction lock to prevent race conditions
-    const result = await transactionLock.withMultipleLocks(
-      [interaction.user.id, recipient.id],
-      () => transferItem(interaction.user.id, recipient.id, itemId, amount),
-    );
+    // transferItem already uses transaction locks internally
+    const result = await transferItem(interaction.user.id, recipient.id, itemId, amount);
 
     if (!result.success) {
       const embed = errorEmbed(
