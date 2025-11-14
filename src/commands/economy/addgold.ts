@@ -11,7 +11,6 @@ import {
   isValidCurrencyAmount,
   MAX_CURRENCY_AMOUNT,
 } from "../../utils/security";
-import { transactionLock } from "../../utils/transactionLock";
 import { addItem } from "../../utils/inventoryManager";
 
 export default {
@@ -63,10 +62,8 @@ export default {
       return;
     }
 
-    // Use transaction lock to prevent race conditions
-    const result = await transactionLock.withLock(targetUser.id, () =>
-      addItem(targetUser.id, "gold", amount),
-    );
+    // addItem already uses transaction lock internally
+    const result = await addItem(targetUser.id, "gold", amount);
 
     if (!result.success) {
       await interaction.editReply({

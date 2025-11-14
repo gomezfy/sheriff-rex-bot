@@ -5,7 +5,6 @@ import {
   MessageFlags,
 } from "discord.js";
 import { getSaloonTokenEmoji } from "../../utils/customEmojis";
-import { transactionLock } from "../../utils/transactionLock";
 import { addItem } from "../../utils/inventoryManager";
 import {
   isOwner,
@@ -65,10 +64,8 @@ export default {
       return;
     }
 
-    // Use transaction lock to prevent race conditions
-    const result = await transactionLock.withLock(targetUser.id, () =>
-      addItem(targetUser.id, "saloon_token", amount),
-    );
+    // addItem already uses transaction lock internally
+    const result = await addItem(targetUser.id, "saloon_token", amount);
 
     if (!result.success) {
       await interaction.editReply({

@@ -16,7 +16,6 @@ import {
   isValidCurrencyAmount,
   MAX_CURRENCY_AMOUNT,
 } from "../../utils/security";
-import { transactionLock } from "../../utils/transactionLock";
 import { addItem } from "../../utils/inventoryManager";
 
 const HIGH_VALUE_THRESHOLD = 10000;
@@ -130,10 +129,8 @@ export default {
       }
     }
 
-    // Use transaction lock to prevent race conditions
-    const result = await transactionLock.withLock(targetUser.id, () =>
-      addItem(targetUser.id, "silver", amount),
-    );
+    // addItem already uses transaction lock internally
+    const result = await addItem(targetUser.id, "silver", amount);
 
     // Log the transaction
     securityLogger.logTransaction(
