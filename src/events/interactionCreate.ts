@@ -17,6 +17,8 @@ import {
 import { handleInteractionError } from "../utils/errors";
 import { componentRegistry } from "../interactions";
 import { setUserBio, setUserPhrase } from "../utils/profileManager";
+import { handleGuildButtons } from "./interaction-handlers/buttons/guildManagement";
+import { handleProfileModals } from "./interaction-handlers/modals/profileModals";
 import {
   getUserBackgrounds,
   purchaseBackground,
@@ -95,9 +97,17 @@ export = {
         return; // Handler found and executed successfully
       }
 
+      // Try guild management handlers
+      const guildHandled = await handleGuildButtons(interaction);
+      if (guildHandled) {
+        return;
+      }
+
       // Fall through to legacy handlers below...
       // ✅ MIGRATED to ComponentRegistry: edit_bio, edit_phrase, change_background, profile_show_public,
       //    shop_backgrounds, shop_frames, change_frame, carousel navigation, purchase handlers
+      // ✅ MIGRATED to guildManagement: guild_approve, guild_reject, guild_info, guild_members,
+      //    guild_leave, kick_member, promote_member, demote_member
 
       // Warehouse buttons
       if (
@@ -112,248 +122,8 @@ export = {
         await handleWarehouseButtons(interaction);
       }
 
-      // Guild Join Request Approve
-      if (interaction.customId.startsWith("guild_approve_")) {
-        const requestId = interaction.customId.replace("guild_approve_", "");
-        const request = getRequestById(requestId);
-
-        if (!request) {
-          await interaction.reply({
-            content: tUser(interaction.user.id, "guild_request_not_found"),
-            flags: MessageFlags.Ephemeral,
-          });
-          return;
-        }
-
-        const result = approveJoinRequest(requestId);
-
-        const embed = new EmbedBuilder()
-          .setColor(result.success ? "#57F287" : "#ED4245")
-          .setTitle(
-            result.success
-              ? tUser(interaction.user.id, "guild_request_approved_title")
-              : tUser(interaction.user.id, "guild_request_error"),
-          )
-          .setDescription(result.message)
-          .setTimestamp();
-
-        await interaction.update({
-          embeds: [embed],
-          components: [],
-        });
-
-        if (result.success && result.guild) {
-          try {
-            const applicant = await interaction.client.users.fetch(
-              request.userId,
-            );
-
-            const notificationEmbed = new EmbedBuilder()
-              .setColor("#57F287")
-              .setTitle(tUser(applicant.id, "guild_request_accepted_title"))
-              .setDescription(
-                tUser(applicant.id, "guild_request_accepted_desc").replace(
-                  "{guild}",
-                  result.guild.name,
-                ),
-              )
-              .setTimestamp();
-
-            await applicant.send({ embeds: [notificationEmbed] });
-          } catch (error) {
-            console.error("Failed to send DM to applicant:", error);
-          }
-        }
-      }
-
-      // Guild Join Request Reject
-      if (interaction.customId.startsWith("guild_reject_")) {
-        const requestId = interaction.customId.replace("guild_reject_", "");
-        const request = getRequestById(requestId);
-
-        if (!request) {
-          await interaction.reply({
-            content: tUser(interaction.user.id, "guild_request_not_found"),
-            flags: MessageFlags.Ephemeral,
-          });
-          return;
-        }
-
-        const result = rejectJoinRequest(requestId);
-
-        const embed = new EmbedBuilder()
-          .setColor(result.success ? "#FFA500" : "#ED4245")
-          .setTitle(
-            result.success
-              ? tUser(interaction.user.id, "guild_request_rejected_title")
-              : tUser(interaction.user.id, "guild_request_error"),
-          )
-          .setDescription(result.message)
-          .setTimestamp();
-
-        await interaction.update({
-          embeds: [embed],
-          components: [],
-        });
-
-        if (result.success && result.userId && result.guildName) {
-          try {
-            const applicant = await interaction.client.users.fetch(
-              result.userId,
-            );
-
-            const notificationEmbed = new EmbedBuilder()
-              .setColor("#ED4245")
-              .setTitle(tUser(applicant.id, "guild_request_denied_title"))
-              .setDescription(
-                tUser(applicant.id, "guild_request_denied_desc").replace(
-                  "{guild}",
-                  result.guildName,
-                ),
-              )
-              .setTimestamp();
-
-            await applicant.send({ embeds: [notificationEmbed] });
-          } catch (error) {
-            console.error("Failed to send DM to applicant:", error);
-          }
-        }
-      }
-
-      // Guild Info Button
-      if (interaction.customId === "guild_info") {
-        const userGuild = getUserGuild(interaction.user.id);
-
-        if (!userGuild) {
-          await interaction.reply({
-            content: tUser(interaction.user.id, "guild_not_found"),
-            flags: MessageFlags.Ephemeral,
-          });
-          return;
-        }
-
-        const embed = new EmbedBuilder()
-          .setColor("#5865F2")
-          .setTitle(`🏰 ${userGuild.name}`)
-          .setDescription(userGuild.description)
-          .addFields(
-            {
-              name: tUser(interaction.user.id, "guild_leader"),
-              value: `<@${userGuild.leaderId}>`,
-              inline: true,
-            },
-            {
-              name: tUser(interaction.user.id, "guild_members"),
-              value: `${userGuild.members.length}/${userGuild.settings.maxMembers}`,
-              inline: true,
-            },
-            {
-              name: tUser(interaction.user.id, "guild_level"),
-              value: `${userGuild.level}`,
-              inline: true,
-            },
-            {
-              name: tUser(interaction.user.id, "guild_xp"),
-              value: `${userGuild.xp} XP`,
-              inline: true,
-            },
-            {
-              name: tUser(interaction.user.id, "guild_type"),
-              value: userGuild.settings.isPublic
-                ? tUser(interaction.user.id, "guild_type_public")
-                : tUser(interaction.user.id, "guild_type_private"),
-              inline: true,
-            },
-            {
-              name: tUser(interaction.user.id, "guild_created"),
-              value: `<t:${Math.floor(userGuild.createdAt / 1000)}:R>`,
-              inline: true,
-            },
-          )
-          .setTimestamp();
-
-        await interaction.reply({
-          embeds: [embed],
-          flags: MessageFlags.Ephemeral,
-        });
-      }
-
-      // Guild Members Button
-      if (interaction.customId === "guild_members") {
-        const userGuild = getUserGuild(interaction.user.id);
-
-        if (!userGuild) {
-          await interaction.reply({
-            content: tUser(interaction.user.id, "guild_not_found"),
-            flags: MessageFlags.Ephemeral,
-          });
-          return;
-        }
-
-        const membersList = userGuild.members
-          .map((member, index) => {
-            const roleIcon = member.role === "leader" ? "👑" : "👤";
-            const joinedDate = `<t:${Math.floor(member.joinedAt / 1000)}:R>`;
-            return `${index + 1}. ${roleIcon} <@${member.userId}> - ${tUser(interaction.user.id, "guild_joined")} ${joinedDate}`;
-          })
-          .join("\n");
-
-        const embed = new EmbedBuilder()
-          .setColor("#FFD700")
-          .setTitle(
-            tUser(interaction.user.id, "guild_members_title").replace(
-              "{guild}",
-              userGuild.name,
-            ),
-          )
-          .setDescription(
-            membersList || tUser(interaction.user.id, "guild_no_members"),
-          )
-          .addFields({
-            name: tUser(interaction.user.id, "guild_stats"),
-            value: `**${tUser(interaction.user.id, "guild_total")}:** ${userGuild.members.length}/${userGuild.settings.maxMembers}`,
-            inline: false,
-          })
-          .setFooter({
-            text: `${userGuild.name} • ${tUser(interaction.user.id, "guild_level")} ${userGuild.level}`,
-          })
-          .setTimestamp();
-
-        await interaction.reply({
-          embeds: [embed],
-          flags: MessageFlags.Ephemeral,
-        });
-      }
-
-      // Guild Leave Button
-      if (interaction.customId === "guild_leave") {
-        const userGuild = getUserGuild(interaction.user.id);
-
-        if (!userGuild) {
-          await interaction.reply({
-            content: tUser(interaction.user.id, "guild_not_found"),
-            flags: MessageFlags.Ephemeral,
-          });
-          return;
-        }
-
-        const result = leaveGuild(interaction.user.id);
-
-        const embed = new EmbedBuilder()
-          .setColor(result.success ? "#57F287" : "#ED4245")
-          .setTitle(
-            result.success
-              ? tUser(interaction.user.id, "guild_left_title")
-              : tUser(interaction.user.id, "guild_error"),
-          )
-          .setDescription(result.message)
-          .setTimestamp();
-
-        await interaction.reply({
-          embeds: [embed],
-          flags: MessageFlags.Ephemeral,
-        });
-      }
+      // REMOVED: Guild handlers migrated to guildManagement.ts
+      // Guild approve/reject/info/members/leave/kick/promote/demote are now handled by handleGuildButtons()
     }
 
     // Select Menu Handler
@@ -577,188 +347,15 @@ export = {
       }
     }
 
-    if (interaction.isButton()) {
-      // Kick Member Button
-      if (interaction.customId.startsWith("kick_member_")) {
-        const targetId = interaction.customId.replace("kick_member_", "");
-        const result = kickMember(interaction.user.id, targetId);
-
-        const embed = new EmbedBuilder()
-          .setColor(result.success ? "#57F287" : "#ED4245")
-          .setTitle(result.success ? "✅ Membro Expulso" : "❌ Erro")
-          .setDescription(result.message)
-          .setTimestamp();
-
-        await interaction.update({
-          embeds: [embed],
-          components: [],
-        });
-      }
-
-      // Promote Member Button
-      if (interaction.customId.startsWith("promote_member_")) {
-        const targetId = interaction.customId.replace("promote_member_", "");
-        const result = promoteMember(interaction.user.id, targetId);
-
-        const embed = new EmbedBuilder()
-          .setColor(result.success ? "#57F287" : "#ED4245")
-          .setTitle(result.success ? "✅ Membro Promovido" : "❌ Erro")
-          .setDescription(result.message)
-          .setTimestamp();
-
-        await interaction.update({
-          embeds: [embed],
-          components: [],
-        });
-      }
-
-      // Demote Member Button
-      if (interaction.customId.startsWith("demote_member_")) {
-        const targetId = interaction.customId.replace("demote_member_", "");
-        const result = demoteMember(interaction.user.id, targetId);
-
-        const embed = new EmbedBuilder()
-          .setColor(result.success ? "#57F287" : "#ED4245")
-          .setTitle(result.success ? "✅ Membro Rebaixado" : "❌ Erro")
-          .setDescription(result.message)
-          .setTimestamp();
-
-        await interaction.update({
-          embeds: [embed],
-          components: [],
-        });
-      }
-    }
-
     if (interaction.isModalSubmit()) {
-      if (interaction.customId === "bio_modal") {
-        const bioText = interaction.fields.getTextInputValue("bio_text");
-
-        setUserBio(interaction.user.id, bioText);
-
-        const embed = new EmbedBuilder()
-          .setColor("#57F287")
-          .setTitle("✅ Bio Updated!")
-          .setDescription("Your profile bio has been updated successfully.")
-          .addFields({ name: "📝 New Bio", value: bioText, inline: false })
-          .setFooter({ text: "Use /profile to see your updated card" })
-          .setTimestamp();
-
-        await interaction.reply({
-          embeds: [embed],
-          flags: MessageFlags.Ephemeral,
-        });
+      // Try profile modals handler
+      const modalHandled = await handleProfileModals(interaction);
+      if (modalHandled) {
+        return;
       }
 
-      if (interaction.customId === "phrase_modal") {
-        const phraseText = interaction.fields.getTextInputValue("phrase_text");
-
-        setUserPhrase(interaction.user.id, phraseText);
-
-        const embed = new EmbedBuilder()
-          .setColor("#D4AF37")
-          .setTitle("✅ Frase Atualizada!")
-          .setDescription("Sua frase pessoal foi atualizada com sucesso.")
-          .addFields({ name: "💬 Nova Frase", value: phraseText || "*(removida)*", inline: false })
-          .setFooter({ text: "Use /profile para ver seu card atualizado" })
-          .setTimestamp();
-
-        await interaction.reply({
-          embeds: [embed],
-          flags: MessageFlags.Ephemeral,
-        });
-      }
-
-      if (interaction.customId === "guild_create_modal_new") {
-        const guildName = interaction.fields.getTextInputValue("guild_name");
-        const guildDescription =
-          interaction.fields.getTextInputValue("guild_description");
-        const privacyInput = interaction.fields
-          .getTextInputValue("guild_privacy")
-          .toLowerCase()
-          .trim();
-
-        let isPublic = true;
-        const privateTerms = [
-          "privada",
-          "private",
-          "priv",
-          "no",
-          "não",
-          "nao",
-          "false",
-        ];
-        const publicTerms = [
-          "pública",
-          "publica",
-          "public",
-          "pub",
-          "yes",
-          "sim",
-          "true",
-        ];
-
-        if (privateTerms.some((term) => privacyInput.includes(term))) {
-          isPublic = false;
-        } else if (publicTerms.some((term) => privacyInput.includes(term))) {
-          isPublic = true;
-        } else {
-          await interaction.reply({
-            content: tUser(interaction.user.id, "guild_invalid_privacy"),
-            flags: MessageFlags.Ephemeral,
-          });
-          return;
-        }
-
-        const result = await createGuild(
-          interaction.user.id,
-          guildName,
-          guildDescription,
-          isPublic,
-        );
-
-        const embed = new EmbedBuilder()
-          .setColor(result.success ? "#57F287" : "#ED4245")
-          .setTitle(
-            result.success
-              ? tUser(interaction.user.id, "guild_created_title")
-              : "❌ Erro",
-          )
-          .setDescription(result.message)
-          .setTimestamp();
-
-        if (result.success && result.guild) {
-          embed.addFields(
-            {
-              name: `🏰 ${tUser(interaction.user.id, "guild_name")}`,
-              value: result.guild.name,
-              inline: true,
-            },
-            {
-              name: `👑 ${tUser(interaction.user.id, "guild_leader")}`,
-              value: `<@${interaction.user.id}>`,
-              inline: true,
-            },
-            {
-              name: `🔓 ${tUser(interaction.user.id, "guild_type")}`,
-              value: result.guild.settings.isPublic
-                ? tUser(interaction.user.id, "guild_type_public")
-                : tUser(interaction.user.id, "guild_type_private"),
-              inline: true,
-            },
-            {
-              name: `📝 ${tUser(interaction.user.id, "guild_description")}`,
-              value: result.guild.description,
-              inline: false,
-            },
-          );
-        }
-
-        await interaction.reply({
-          embeds: [embed],
-          flags: MessageFlags.Ephemeral,
-        });
-      }
+      // REMOVED: Modal handlers migrated to profileModals.ts
+      // bio_modal, phrase_modal, and guild_create_modal_new are now handled by handleProfileModals()
     }
     } catch (error) {
       if (interaction.isRepliable()) {
