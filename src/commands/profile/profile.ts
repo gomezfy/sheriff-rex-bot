@@ -13,9 +13,10 @@ import { getInventory } from "../../utils/inventoryManager";
 import { commandRateLimiter } from "../../utils/security";
 import { getAllBackgrounds } from "../../utils/backgroundManager";
 import { getUserXp, getXpForLevel } from "../../utils/xpManager";
-import { getUserProfile } from "../../utils/profileManager";
+import { getUserProfile, getUserColorTheme } from "../../utils/profileManager";
 import { parseTextWithEmojis } from "../../utils/emojiMapper";
 import { getActiveFrameUrl } from "../../utils/frameManager";
+import { getThemeById } from "../../utils/profileColorThemes";
 const {
   getCustomEmojiPath,
   CUSTOM_EMOJIS,
@@ -84,6 +85,7 @@ export default {
     const saloonTokens = inventory.items["saloon_token"] || 0;
     const xpData = getUserXp(targetUser.id);
     const profile = getUserProfile(targetUser.id);
+    const colorTheme = getUserColorTheme(targetUser.id);
 
     const card = await createProfileCard(
       targetUser,
@@ -95,6 +97,7 @@ export default {
         bio: profile.bio,
         background: profile.background,
         phrase: profile.phrase,
+        colorTheme,
       },
       interaction,
     );
@@ -130,6 +133,10 @@ export default {
           .setCustomId("shop_frames")
           .setLabel(t(interaction, "profile_shop_frames"))
           .setStyle(ButtonStyle.Primary),
+        new ButtonBuilder()
+          .setCustomId("change_colors")
+          .setLabel(t(interaction, "profile_change_colors"))
+          .setStyle(ButtonStyle.Secondary),
       );
 
       const row3 = new ActionRowBuilder<ButtonBuilder>().addComponents(
@@ -160,6 +167,8 @@ async function createProfileCard(
 ): Promise<AttachmentBuilder> {
   const canvas = createCanvas(1536, 1024);
   const ctx = canvas.getContext("2d");
+
+  const theme = getThemeById(stats.colorTheme || "default");
 
   // Load custom background or use default hosted image
   let backgroundLoaded = false;
@@ -222,13 +231,13 @@ async function createProfileCard(
   }
 
   // Semi-transparent overlay (darker to improve readability)
-  ctx.fillStyle = "rgba(0, 0, 0, 0.45)";
+  ctx.fillStyle = theme.colors.overlay;
   ctx.fillRect(0, 0, 1536, 1024);
 
   // "Rex" signature in top right (stylized handwriting)
   ctx.save();
   ctx.font = "italic bold 120px Nunito";
-  ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+  ctx.fillStyle = theme.colors.rexSignature;
   ctx.textAlign = "right";
   ctx.fillText("Rex", 1450, 130);
   ctx.restore();
@@ -274,7 +283,7 @@ async function createProfileCard(
 
   // Display name in large font
   ctx.font = "bold 100px Nunito";
-  ctx.fillStyle = "#FFFFFF";
+  ctx.fillStyle = theme.colors.username;
   ctx.shadowColor = "rgba(0, 0, 0, 0.7)";
   ctx.shadowBlur = 15;
 
@@ -285,7 +294,7 @@ async function createProfileCard(
 
   // @username in smaller font
   ctx.font = "bold 60px Nunito";
-  ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+  ctx.fillStyle = theme.colors.usernameSecondary;
   ctx.fillText(
     `@${user.username}`,
     usernameX + displayNameWidth + 15,
@@ -329,7 +338,7 @@ async function createProfileCard(
 
     // Value text
     ctx.font = "bold 48px Nunito";
-    ctx.fillStyle = "#FFFFFF";
+    ctx.fillStyle = theme.colors.statsText;
     ctx.shadowColor = "rgba(0, 0, 0, 0.7)";
     ctx.shadowBlur = 8;
 
@@ -379,7 +388,7 @@ async function createProfileCard(
   }
 
   ctx.font = "bold 48px Nunito";
-  ctx.fillStyle = "#FFFFFF";
+  ctx.fillStyle = theme.colors.statsText;
   ctx.shadowColor = "rgba(0, 0, 0, 0.7)";
   ctx.shadowBlur = 8;
   ctx.fillText(
@@ -390,7 +399,7 @@ async function createProfileCard(
 
   // XP in smaller text
   ctx.font = "bold 28px Nunito";
-  ctx.fillStyle = "#CCCCCC";
+  ctx.fillStyle = theme.colors.xpText;
   ctx.fillText(`${xpInCurrentLevel} XP`, statsX + 80, statsY + 35);
   ctx.restore();
   statsY += statSpacing;
@@ -402,12 +411,12 @@ async function createProfileCard(
   const bioHeight = 280;
 
   // Semi-transparent dark box for bio
-  ctx.fillStyle = "rgba(0, 30, 60, 0.75)";
+  ctx.fillStyle = theme.colors.bioBoxBackground;
   roundRect(ctx, bioX, bioY, bioWidth, bioHeight, 15);
   ctx.fill();
 
   // Border
-  ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
+  ctx.strokeStyle = theme.colors.bioBoxBorder;
   ctx.lineWidth = 3;
   roundRect(ctx, bioX, bioY, bioWidth, bioHeight, 15);
   ctx.stroke();
@@ -415,14 +424,14 @@ async function createProfileCard(
   // "Sobre Mim" title
   ctx.save();
   ctx.font = "bold 32px Nunito";
-  ctx.fillStyle = "#FFFFFF";
+  ctx.fillStyle = theme.colors.bioTitle;
   ctx.fillText(t(interaction, "profile_about_me"), bioX + 25, bioY + 45);
   ctx.restore();
 
   // Bio text
   ctx.save();
   ctx.font = "28px Nunito Regular";
-  ctx.fillStyle = "#E5E5E5";
+  ctx.fillStyle = theme.colors.bioText;
   await wrapTextWithEmojis(
     ctx,
     stats.bio || t(interaction, "profile_no_bio"),
@@ -463,12 +472,12 @@ async function createProfileCard(
     const phraseBoxPadding = 40;
 
     // Caixa semi-transparente para a frase
-    ctx.fillStyle = "rgba(212, 175, 55, 0.15)";
+    ctx.fillStyle = theme.colors.phraseBoxBackground;
     roundRect(ctx, 80, phraseY, 1376, phraseBoxHeight, 20);
     ctx.fill();
 
     // Borda dourada
-    ctx.strokeStyle = "rgba(212, 175, 55, 0.6)";
+    ctx.strokeStyle = theme.colors.phraseBoxBorder;
     ctx.lineWidth = 3;
     roundRect(ctx, 80, phraseY, 1376, phraseBoxHeight, 20);
     ctx.stroke();
@@ -476,14 +485,14 @@ async function createProfileCard(
     // Aspas decorativas
     ctx.save();
     ctx.font = "italic bold 80px Nunito";
-    ctx.fillStyle = "rgba(212, 175, 55, 0.4)";
+    ctx.fillStyle = theme.colors.phraseQuotes;
     ctx.fillText("\"", 110, phraseY + 85);
     ctx.restore();
 
     // Texto da frase
     ctx.save();
     ctx.font = "italic 40px Nunito";
-    ctx.fillStyle = "#FFFFFF";
+    ctx.fillStyle = theme.colors.phraseText;
     ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
     ctx.shadowBlur = 10;
     ctx.textAlign = "center";
@@ -512,7 +521,7 @@ async function createProfileCard(
     // Aspas de fechamento
     ctx.save();
     ctx.font = "italic bold 80px Nunito";
-    ctx.fillStyle = "rgba(212, 175, 55, 0.4)";
+    ctx.fillStyle = theme.colors.phraseQuotes;
     ctx.textAlign = "right";
     ctx.fillText("\"", 1426, phraseY + 150);
     ctx.restore();
@@ -668,6 +677,7 @@ export async function createPublicProfile(interaction: ButtonInteraction): Promi
   const saloonTokens = inventory.items["saloon_token"] || 0;
   const xpData = getUserXp(user.id);
   const profile = getUserProfile(user.id);
+  const colorTheme = getUserColorTheme(user.id);
 
   const card = await createProfileCard(
     user,
@@ -679,6 +689,7 @@ export async function createPublicProfile(interaction: ButtonInteraction): Promi
       bio: profile.bio,
       background: profile.background,
       phrase: profile.phrase,
+      colorTheme,
     },
     interaction as any,
   );

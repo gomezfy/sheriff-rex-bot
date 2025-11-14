@@ -4,6 +4,7 @@ import {
   handleEditBio,
   handleEditPhrase,
   handleChangeBackground,
+  handleChangeColors,
 } from './buttons/profileHandlers';
 import {
   handleShopBackgrounds,
@@ -14,6 +15,7 @@ import {
   handleBuyFrame,
   handleBuyBackground,
 } from './buttons/shopHandlers';
+import { handleSelectColorTheme } from './selectMenus/profileMenus';
 
 /**
  * Register all button and select menu handlers
@@ -49,11 +51,15 @@ export function registerAllHandlers(): void {
   componentRegistry.registerButton('edit_bio', handleEditBio);
   componentRegistry.registerButton('edit_phrase', handleEditPhrase);
   componentRegistry.registerButton('change_background', handleChangeBackground);
+  componentRegistry.registerButton('change_colors', handleChangeColors);
 
   // Shop entry buttons
   componentRegistry.registerButton('shop_backgrounds', handleShopBackgrounds);
   componentRegistry.registerButton('shop_frames', handleShopFrames);
   componentRegistry.registerButton('change_frame', handleChangeFrame);
+
+  // Profile select menus
+  componentRegistry.registerSelectMenu('select_color_theme', handleSelectColorTheme);
 
   // Carousel navigation patterns
   componentRegistry.registerButtonPattern(/^carousel_(next|prev)_\d+$/, handleCarouselNavigation);

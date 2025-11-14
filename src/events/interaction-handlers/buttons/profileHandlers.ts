@@ -7,9 +7,12 @@ import {
   StringSelectMenuBuilder,
   StringSelectMenuOptionBuilder,
   MessageFlags,
+  EmbedBuilder,
 } from 'discord.js';
 import { getUserBackgrounds, getRarityEmoji } from '@/utils/backgroundManager';
 import { createPublicProfile } from '@/commands/profile/profile';
+import { COLOR_THEMES, getThemeNameLocalized } from '@/utils/profileColorThemes';
+import { getLocale } from '@/utils/i18n';
 
 export async function handleEditBio(interaction: ButtonInteraction): Promise<void> {
   const modal = new ModalBuilder()
@@ -97,4 +100,40 @@ export async function handleProfileShowPublic(
   interaction: ButtonInteraction,
 ): Promise<void> {
   await createPublicProfile(interaction);
+}
+
+export async function handleChangeColors(
+  interaction: ButtonInteraction,
+): Promise<void> {
+  const locale = getLocale(interaction);
+  const { t } = await import('@/utils/i18n');
+  
+  const options = COLOR_THEMES.map((theme) =>
+    new StringSelectMenuOptionBuilder()
+      .setLabel(getThemeNameLocalized(theme.id, locale))
+      .setDescription(theme.name)
+      .setValue(theme.id)
+      .setEmoji(theme.emoji),
+  );
+
+  const selectMenu = new StringSelectMenuBuilder()
+    .setCustomId('select_color_theme')
+    .setPlaceholder(t(interaction, 'profile_colors_placeholder'))
+    .addOptions(options);
+
+  const row = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
+    selectMenu,
+  );
+
+  const embed = new EmbedBuilder()
+    .setColor('#5865F2')
+    .setTitle(t(interaction, 'profile_colors_title'))
+    .setDescription(t(interaction, 'profile_colors_desc'))
+    .setFooter({ text: t(interaction, 'profile_colors_footer') });
+
+  await interaction.reply({
+    embeds: [embed],
+    components: [row],
+    flags: MessageFlags.Ephemeral,
+  });
 }
