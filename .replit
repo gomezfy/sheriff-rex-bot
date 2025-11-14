@@ -1,4 +1,4 @@
-modules = ["nodejs-18"]
+modules = ["nodejs-20"]
 [agent]
 expertMode = true
 
@@ -23,7 +23,7 @@ outputType = "console"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npm run start:shard"
+args = "npm run dev:shard"
 
 [nix]
 channel = "stable-25_05"
