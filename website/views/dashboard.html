@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Sheriff Rex</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <span class="sheriff-icon">🤠</span>
+                <span class="brand-name">Sheriff Rex</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-section="overview">
+                    📊 Visão Geral
+                </a>
+                <a href="#" class="nav-item" data-section="servers">
+                    🏛️ Servidores
+                </a>
+                <a href="#" class="nav-item" data-section="commands">
+                    📜 Comandos
+                </a>
+                <a href="#" class="nav-item" data-section="settings">
+                    ⚙️ Configurações
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info" id="userInfo">
+                    <div class="user-avatar" id="userAvatar"></div>
+                    <div class="user-details">
+                        <div class="user-name" id="userName">Carregando...</div>
+                    </div>
+                </div>
+                <a href="/logout" class="btn-logout">Sair</a>
+            </div>
+        </aside>
+
+        <main class="dashboard-main">
+            <header class="dashboard-header">
+                <h1 id="pageTitle">Visão Geral</h1>
+            </header>
+
+            <div class="dashboard-content">
+                <!-- Overview Section -->
+                <div id="overview-section" class="content-section active">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">🏛️</div>
+                            <div class="stat-info">
+                                <div class="stat-label">Servidores</div>
+                                <div class="stat-value" id="serverCount">-</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">👥</div>
+                            <div class="stat-info">
+                                <div class="stat-label">Usuários</div>
+                                <div class="stat-value" id="userCount">-</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📜</div>
+                            <div class="stat-info">
+                                <div class="stat-label">Comandos</div>
+                                <div class="stat-value" id="commandCount">-</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">⏱️</div>
+                            <div class="stat-info">
+                                <div class="stat-label">Uptime</div>
+                                <div class="stat-value" id="uptime">-</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-section">
+                        <h2>🎯 Status do Bot</h2>
+                        <div class="status-card">
+                            <div class="status-indicator online"></div>
+                            <span>Bot Online e Funcionando</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Servers Section -->
+                <div id="servers-section" class="content-section">
+                    <div class="servers-list" id="serversList">
+                        <p>Carregando servidores...</p>
+                    </div>
+                </div>
+
+                <!-- Commands Section -->
+                <div id="commands-section" class="content-section">
+                    <h2>📜 Comandos Disponíveis</h2>
+                    <div class="commands-category">
+                        <h3>💰 Economia</h3>
+                        <ul class="command-list">
+                            <li><code>/daily</code> - Recompensa diária</li>
+                            <li><code>/expedition</code> - Iniciar expedição</li>
+                            <li><code>/give</code> - Dar itens para outro usuário</li>
+                            <li><code>/leaderboard</code> - Ver ranking</li>
+                            <li><code>/territories</code> - Ver territórios</li>
+                        </ul>
+                    </div>
+                    <div class="commands-category">
+                        <h3>🎲 Jogos</h3>
+                        <ul class="command-list">
+                            <li><code>/duel</code> - Desafiar outro jogador</li>
+                            <li><code>/dice</code> - Jogar dados</li>
+                            <li><code>/roulette</code> - Roleta</li>
+                            <li><code>/bankrob</code> - Assaltar banco</li>
+                        </ul>
+                    </div>
+                    <div class="commands-category">
+                        <h3>🏛️ Guilda</h3>
+                        <ul class="command-list">
+                            <li><code>/guilda create</code> - Criar guilda</li>
+                            <li><code>/guilda join</code> - Entrar em guilda</li>
+                            <li><code>/guilda info</code> - Informações da guilda</li>
+                        </ul>
+                    </div>
+                    <div class="commands-category">
+                        <h3>👤 Perfil</h3>
+                        <ul class="command-list">
+                            <li><code>/profile</code> - Ver perfil</li>
+                            <li><code>/inventory</code> - Ver inventário</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Settings Section -->
+                <div id="settings-section" class="content-section">
+                    <h2>⚙️ Configurações</h2>
+                    <div class="settings-card">
+                        <h3>Informações do Bot</h3>
+                        <p><strong>Client ID:</strong> <span id="clientId">-</span></p>
+                        <p><strong>Versão:</strong> 1.0.0</p>
+                        <p><strong>Biblioteca:</strong> Discord.js v14</p>
+                    </div>
+                    <div class="settings-card">
+                        <h3>Links Úteis</h3>
+                        <a href="https://discord.com/developers/applications" target="_blank" class="btn btn-secondary">
+                            Portal de Desenvolvedores
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/js/dashboard.js"></script>
+</body>
+</html>
