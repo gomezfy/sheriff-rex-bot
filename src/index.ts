@@ -130,42 +130,61 @@ const client = new Client({
 
 (client as BotClient).commands = new Collection<string, Command>();
 
-const commandsPath = path.join(__dirname, "commands");
-const commandCategories = fs.readdirSync(commandsPath).filter((item) => {
-  const itemPath = path.join(commandsPath, item);
-  return fs.statSync(itemPath).isDirectory();
-});
+// Helper function to load commands from a directory
+function loadCommandsFromPath(basePath: string, pathLabel: string): number {
+  if (!fs.existsSync(basePath)) {
+    logger.debug(`Path ${pathLabel} does not exist, skipping`);
+    return 0;
+  }
+
+  const categories = fs.readdirSync(basePath).filter((item) => {
+    const itemPath = path.join(basePath, item);
+    return fs.statSync(itemPath).isDirectory();
+  });
+
+  let count = 0;
+  for (const category of categories) {
+    const categoryPath = path.join(basePath, category);
+    const commandFiles = fs
+      .readdirSync(categoryPath)
+      .filter(
+        (file) =>
+          (file.endsWith(".js") || file.endsWith(".ts")) &&
+          !file.endsWith(".d.ts"),
+      );
+
+    for (const file of commandFiles) {
+      const filePath = path.join(categoryPath, file);
+      try {
+        const importedCommand = require(filePath);
+        // Support both export default and named exports
+        const command = importedCommand.default || importedCommand;
+        
+        if ("data" in command && "execute" in command) {
+          client.commands.set(command.data.name, command);
+          count++;
+          logger.debug(`Loaded command: /${command.data.name} (${pathLabel}/${category})`);
+        }
+      } catch (error: any) {
+        logger.error(`Failed to load command ${file}`, sanitizeErrorForLogging(error));
+      }
+    }
+  }
+  return count;
+}
 
 logger.section("Loading Commands");
 let commandCount = 0;
-for (const category of commandCategories) {
-  const categoryPath = path.join(commandsPath, category);
-  const commandFiles = fs
-    .readdirSync(categoryPath)
-    .filter(
-      (file) =>
-        (file.endsWith(".js") || file.endsWith(".ts")) &&
-        !file.endsWith(".d.ts"),
-    );
 
-  for (const file of commandFiles) {
-    const filePath = path.join(categoryPath, file);
-    try {
-      const importedCommand = require(filePath);
-      // Support both export default and named exports
-      const command = importedCommand.default || importedCommand;
-      
-      if ("data" in command && "execute" in command) {
-        client.commands.set(command.data.name, command);
-        commandCount++;
-        logger.debug(`Loaded command: /${command.data.name} (${category})`);
-      }
-    } catch (error: any) {
-      logger.error(`Failed to load command ${file}`, sanitizeErrorForLogging(error));
-    }
-  }
-}
-logger.success(`Loaded ${commandCount} commands from ${commandCategories.length} categories`);
+// Load from traditional commands directory
+const commandsPath = path.join(__dirname, "commands");
+commandCount += loadCommandsFromPath(commandsPath, "commands");
+
+// Load from features directory
+const featuresPath = path.join(__dirname, "features");
+commandCount += loadCommandsFromPath(featuresPath, "features");
+
+logger.success(`Loaded ${commandCount} total commands`);
 
 logger.section("Loading Events");
 const eventsPath = path.join(__dirname, "events");
