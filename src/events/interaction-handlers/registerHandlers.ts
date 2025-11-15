@@ -16,6 +16,7 @@ import {
   handleBuyBackground,
 } from './buttons/shopHandlers';
 import { handleSelectColorTheme } from './selectMenus/profileMenus';
+import { handleTeamCaptureButtons } from './buttons/teamCaptureHandlers';
 
 /**
  * Register all button and select menu handlers
@@ -68,6 +69,9 @@ export function registerAllHandlers(): void {
   // Purchase patterns
   componentRegistry.registerButtonPattern(/^buy_frame_.+_\d+$/, handleBuyFrame);
   componentRegistry.registerButtonPattern(/^buy_bg_.+_\d+$/, handleBuyBackground);
+  
+  // Team capture buttons
+  componentRegistry.registerButtonPattern(/^team_(join|leave|start|cancel)_.+$/, handleTeamCaptureButtons);
   
   // 🔜 TODO: Extract and register remaining handlers:
   // Guild handlers
