@@ -511,21 +511,31 @@ app.post(
  */
 app.post("/webhook/mercadopago", async (req: Request, res: Response) => {
   try {
-    const { type, data } = req.body;
+    console.log("📥 Mercado Pago Webhook received - Full body:", JSON.stringify(req.body, null, 2));
+    console.log("📥 Query params:", JSON.stringify(req.query, null, 2));
+    
+    const { type, data, action, id } = req.body;
+    const queryId = req.query?.id || req.query?.['data.id'];
 
-    console.log("📥 Mercado Pago Webhook received:", { type, data });
+    // Try different payload formats
+    const paymentId = data?.id || id || queryId;
+    const eventType = type || action;
+
+    console.log("🔍 Extracted data:", { eventType, paymentId });
 
     // Validate required fields
-    if (!type || !data || !data.id) {
-      console.error("❌ Invalid webhook payload - missing required fields");
-      return res.status(400).json({ 
-        error: "Invalid webhook payload",
-        success: false 
+    if (!paymentId) {
+      console.error("❌ Invalid webhook payload - missing payment ID");
+      console.log("ℹ️  This might be a webhook validation/test ping - responding with 200");
+      // Return 200 for validation pings
+      return res.status(200).json({ 
+        success: true,
+        message: "Webhook endpoint is active" 
       });
     }
 
-    if (type === "payment") {
-      const paymentId = data.id;
+    if (eventType === "payment" || eventType === "payment.created" || eventType === "payment.updated") {
+      console.log(`💳 Processing payment notification: ${paymentId}`);
       
       // Process payment - this internally validates by fetching from MP API
       const result = await processPaymentNotification(paymentId);
@@ -551,6 +561,7 @@ app.post("/webhook/mercadopago", async (req: Request, res: Response) => {
     }
 
     // Unknown event type - acknowledge but don't process
+    console.log(`ℹ️  Event type '${eventType}' not handled - acknowledging`);
     return res.status(200).json({ success: true, message: 'Event type not handled' });
 
   } catch (error) {
