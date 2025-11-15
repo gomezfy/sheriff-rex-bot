@@ -9,6 +9,7 @@ export const users = pgTable('users', {
   silver: integer('silver').notNull().default(0),
   saloonTokens: integer('saloon_tokens').notNull().default(0),
   bank: integer('bank').notNull().default(0),
+  rexBucks: integer('rex_bucks').notNull().default(0),
   
   level: integer('level').notNull().default(1),
   xp: integer('xp').notNull().default(0),
