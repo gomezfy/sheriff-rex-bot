@@ -1,4 +1,4 @@
-import { pgTable, text, integer, boolean, timestamp, jsonb, real } from 'drizzle-orm/pg-core';
+import { pgTable, text, integer, boolean, timestamp, jsonb, real, unique } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
 export const users = pgTable('users', {
@@ -19,6 +19,7 @@ export const users = pgTable('users', {
   dailyStreak: integer('daily_streak').notNull().default(0),
   
   customBackground: text('custom_background'),
+  isVip: boolean('is_vip').notNull().default(false),
   badges: jsonb('badges').notNull().default([]),
   
   gamesPlayed: integer('games_played').notNull().default(0),
@@ -49,7 +50,9 @@ export const inventoryItems = pgTable('inventory_items', {
   value: integer('value').notNull(),
   type: text('type').notNull(),
   createdAt: timestamp('created_at').notNull().defaultNow(),
-});
+}, (table) => ({
+  userItemUnique: unique().on(table.userId, table.itemId),
+}));
 
 export const bounties = pgTable('bounties', {
   id: text('id').primaryKey(),
@@ -147,6 +150,23 @@ export const welcomeSettings = pgTable('welcome_settings', {
   enabled: boolean('enabled').notNull().default(false),
 });
 
+export const redemptionCodes = pgTable('redemption_codes', {
+  code: text('code').primaryKey(),
+  productId: text('product_id').notNull(),
+  productName: text('product_name').notNull(),
+  tokens: integer('tokens').notNull().default(0),
+  coins: integer('coins').notNull().default(0),
+  rexBucks: integer('rex_bucks').notNull().default(0),
+  vip: boolean('vip').notNull().default(false),
+  background: boolean('background').notNull().default(false),
+  backpack: integer('backpack'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  createdBy: text('created_by').notNull(),
+  redeemed: boolean('redeemed').notNull().default(false),
+  redeemedBy: text('redeemed_by'),
+  redeemedAt: timestamp('redeemed_at'),
+});
+
 export const usersRelations = relations(users, ({ many }) => ({
   inventoryItems: many(inventoryItems),
   issuedBounties: many(bounties, { relationName: 'issuer' }),
@@ -238,6 +258,13 @@ export const rexBuckTransactionsRelations = relations(rexBuckTransactions, ({ on
   }),
 }));
 
+export const redemptionCodesRelations = relations(redemptionCodes, ({ one }) => ({
+  redeemedByUser: one(users, {
+    fields: [redemptionCodes.redeemedBy],
+    references: [users.userId],
+  }),
+}));
+
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 export type InventoryItem = typeof inventoryItems.$inferSelect;
@@ -256,3 +283,5 @@ export type WelcomeSetting = typeof welcomeSettings.$inferSelect;
 export type InsertWelcomeSetting = typeof welcomeSettings.$inferInsert;
 export type RexBuckTransaction = typeof rexBuckTransactions.$inferSelect;
 export type InsertRexBuckTransaction = typeof rexBuckTransactions.$inferInsert;
+export type RedemptionCode = typeof redemptionCodes.$inferSelect;
+export type InsertRedemptionCode = typeof redemptionCodes.$inferInsert;
