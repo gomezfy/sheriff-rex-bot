@@ -228,11 +228,12 @@ export = {
       selectMenu,
     );
 
-    const response = await interaction.reply({
+    await interaction.reply({
       embeds: [selectMenuEmbed],
       components: [row],
-      fetchReply: true,
     });
+
+    const response = await interaction.fetchReply();
 
     try {
       const selectInteraction = await response.awaitMessageComponent({

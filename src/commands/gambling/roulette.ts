@@ -211,12 +211,13 @@ export default {
       .setFooter({ text: t(interaction, "roulette_good_luck") })
       .setTimestamp();
 
-    const response = await interaction.reply({
+    await interaction.reply({
       embeds: [embed],
       components: [betTypeRow, betTypeRow2, amountMenu],
       flags: MessageFlags.Ephemeral,
-      fetchReply: true,
     });
+
+    const response = await interaction.fetchReply();
 
     // Collector para botões e menus
     const collector = response.createMessageComponentCollector({

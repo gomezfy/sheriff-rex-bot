@@ -109,12 +109,13 @@ export default {
           .setStyle(ButtonStyle.Danger),
       );
 
-      const guildReply = await interaction.reply({
+      await interaction.reply({
         embeds: [guildEmbed],
         components: [row],
         flags: MessageFlags.Ephemeral,
-        fetchReply: true,
       });
+
+      const guildReply = await interaction.fetchReply();
 
       // Collector para os botões da guilda
       const guildCollector = guildReply.createMessageComponentCollector({
@@ -452,12 +453,13 @@ export default {
                       actionButtons,
                     );
 
-                  const manageReply = await selectInteraction.reply({
+                  await selectInteraction.reply({
                     embeds: [memberInfoEmbed],
                     components: [actionRow],
                     flags: MessageFlags.Ephemeral,
-                    fetchReply: true,
                   });
+
+                  const manageReply = await selectInteraction.fetchReply();
 
                   // Collector para os botões de ação
                   const actionCollector =
@@ -717,12 +719,13 @@ export default {
               )
               .setFooter({ text: "Esta ação não pode ser desfeita" });
 
-            const leaveReply = await buttonInteraction.reply({
+            await buttonInteraction.reply({
               embeds: [confirmEmbed],
               components: [confirmRow],
               flags: MessageFlags.Ephemeral,
-              fetchReply: true,
             });
+
+            const leaveReply = await buttonInteraction.fetchReply();
 
             const leaveCollector = leaveReply.createMessageComponentCollector({
               componentType: ComponentType.Button,
@@ -795,12 +798,13 @@ export default {
           .setStyle(ButtonStyle.Primary),
       );
 
-      const reply = await interaction.reply({
+      await interaction.reply({
         embeds: [welcomeEmbed],
         components: [row],
         flags: MessageFlags.Ephemeral,
-        fetchReply: true,
       });
+
+      const reply = await interaction.fetchReply();
 
       const collector = reply.createMessageComponentCollector({
         componentType: ComponentType.Button,
@@ -885,12 +889,13 @@ export default {
               selectMenu,
             );
 
-          const selectReply = await i.reply({
+          await i.reply({
             content: tUser(i.user.id, "guild_select_guild"),
             components: [selectRow],
             flags: MessageFlags.Ephemeral,
-            fetchReply: true,
           });
+
+          const selectReply = await i.fetchReply();
 
           const selectCollector = selectReply.createMessageComponentCollector({
             componentType: ComponentType.StringSelect,
