@@ -121,9 +121,10 @@ Sistema separado para enviar logs como embeds para canais do Discord (não alter
 ### ⛏️ Mining (1 comando)
 - `/mine` - Mineração de recursos (ouro, prata, gemas)
 
-### 🎯 Bounty (4 comandos)
+### 🎯 Bounty (5 comandos)
 - `/wanted` - Colocar procurado
-- `/capture` - Capturar procurado
+- `/capture` - Capturar procurado (solo)
+- `/team-capture` - Caça em equipe com recompensa compartilhada (2-5 hunters)
 - `/bounties` - Lista de procurados
 - `/clearbounty` - Limpar recompensa
 
@@ -322,6 +323,24 @@ src/
 ---
 
 ## 📅 Mudanças Recentes
+
+### 15 de Novembro de 2025
+- ✅ **Sistema de Team Capture (Caça em Equipe) implementado**
+  - Novo comando `/team-capture` permite formar equipes de 2-5 hunters
+  - Recompensa compartilhada igualmente entre membros (resto vai para o líder)
+  - Sistema probabilístico: 50% base + 10% por membro adicional (máx 90%)
+  - Interface interativa com botões **minimalistas** (Join, Leave, Start, Cancel)
+  - Cooldown de 45 minutos (mais longo que captura solo)
+  - Janela de recrutamento de 5 minutos
+  - Limpeza automática de equipes expiradas
+  - Implementado em:
+    - `src/commands/bounty/teamcapture.ts` - Comando principal
+    - `src/utils/teamCaptureManager.ts` - Gerenciador de equipes
+    - `src/interactions/teamCaptureButtons.ts` - Handlers de botões
+    - `src/events/interaction-handlers/buttons/teamCaptureHandlers.ts` - Integração
+  - Bugs corrigidos:
+    - ✅ Cooldown agora é persistido corretamente
+    - ✅ Validação de estado para evitar equipes duplicadas
 
 ### 14 de Novembro de 2025
 - ✅ **Website e Dashboard criados**
