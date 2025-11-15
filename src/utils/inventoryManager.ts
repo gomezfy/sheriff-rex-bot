@@ -62,7 +62,7 @@ export const ITEMS: Record<string, Item> = {
     customEmoji: "pickaxe",
     weight: 2,
     stackable: false,
-    description: "A sturdy pickaxe that doubles your gold mining output in solo mining (2-6 bars instead of 1-3)",
+    description: "A legendary pickaxe that massively increases your gold mining output in solo mining (16-28 bars instead of 1-3)",
   },
   honey: {
     name: "Honey",

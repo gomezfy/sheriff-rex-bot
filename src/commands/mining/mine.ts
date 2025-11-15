@@ -98,8 +98,11 @@ function startMining(
     calculatedGold = goldAmount;
   } else {
     // Calculate for solo mining
-    const baseGold = Math.floor(Math.random() * 3) + 1; // 1-3 bars
-    calculatedGold = hasPickaxe ? baseGold * 2 : baseGold; // 2-6 bars with pickaxe
+    if (hasPickaxe) {
+      calculatedGold = Math.floor(Math.random() * 13) + 16; // 16-28 bars with pickaxe
+    } else {
+      calculatedGold = Math.floor(Math.random() * 3) + 1; // 1-3 bars without pickaxe
+    }
   }
 
   data[userId] = {
@@ -684,7 +687,7 @@ ${t(i, "mine_pending_gold")}: ${stats.totalGoldPending} ${goldEmoji}
           ? t(i, "mine_duration_1h30_boosted")
           : t(i, "mine_duration_1h30");
         const boostBadge = hasBoost ? t(i, "mine_boost_badge") : "";
-        const pickaxeBadge = miningResult.hasPickaxe ? `\n⛏️ **${t(i, "mine_pickaxe_bonus")}** (+100% ${t(i, "gold")})` : "";
+        const pickaxeBadge = miningResult.hasPickaxe ? `\n⛏️ **${t(i, "mine_pickaxe_bonus")}** (16-28 ${t(i, "gold_bars")})` : "";
 
         await i.update({
           embeds: [
