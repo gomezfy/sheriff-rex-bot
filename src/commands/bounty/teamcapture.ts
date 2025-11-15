@@ -177,20 +177,20 @@ export default {
 
     await interaction.deferReply();
 
-    // Create buttons for team recruitment
+    // Create buttons for team recruitment - minimalist design
     const joinButton = new ButtonBuilder()
       .setCustomId(`team_join_${target.id}`)
-      .setLabel(`${getCowboysEmoji()} Join Team`)
+      .setLabel("Join")
       .setStyle(ButtonStyle.Success);
 
     const leaveButton = new ButtonBuilder()
       .setCustomId(`team_leave_${target.id}`)
-      .setLabel("Leave Team")
+      .setLabel("Leave")
       .setStyle(ButtonStyle.Secondary);
 
     const startButton = new ButtonBuilder()
       .setCustomId(`team_start_${target.id}`)
-      .setLabel(`${getDartEmoji()} Start Hunt`)
+      .setLabel("Start")
       .setStyle(ButtonStyle.Primary);
 
     const cancelButton = new ButtonBuilder()
