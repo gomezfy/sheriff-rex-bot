@@ -1,4 +1,4 @@
-modules = ["nodejs-18", "web"]
+modules = ["nodejs-18"]
 [agent]
 expertMode = true
 
@@ -48,6 +48,10 @@ packages = ["imagemagick"]
 [[ports]]
 localPort = 5000
 externalPort = 80
+
+[[ports]]
+localPort = 34461
+externalPort = 3003
 
 [[ports]]
 localPort = 39255
