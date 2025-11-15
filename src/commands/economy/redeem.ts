@@ -24,6 +24,7 @@ import {
   getSaloonTokenEmoji,
   getSilverCoinEmoji,
   getInfoEmoji,
+  getRexBuckEmoji,
 } from "../../utils/customEmojis";
 import { applyLocalizations } from "../../utils/commandLocalizations";
 import {
@@ -33,6 +34,7 @@ import {
   getInventory,
 } from "../../utils/inventoryManager";
 import { showProgressBar } from "../../utils/progressBar";
+import { addRexBucks } from "../../utils/rexBuckManager";
 
 const redemptionCodesPath = path.join(
   getDataPath("data"),
@@ -47,6 +49,7 @@ interface RedemptionCode {
   vip: boolean;
   background: boolean;
   backpack?: number | boolean;
+  rexBucks?: number;
   createdAt: number;
   createdBy: string;
   redeemed: boolean;
@@ -164,6 +167,26 @@ export default {
         if (coinResult.success) {
           rewards.push(
             `${getSilverCoinEmoji()} +${formatCurrency(redemption.coins, "silver")}`,
+          );
+        }
+      }
+
+      // Add RexBucks
+      if (redemption.rexBucks && redemption.rexBucks > 0) {
+        const rexBuckResult = addRexBucks(
+          userId,
+          redemption.rexBucks,
+          "redeem",
+          code,
+          {
+            productId: redemption.productId,
+            productName: redemption.productName,
+            username: interaction.user.tag,
+          },
+        );
+        if (rexBuckResult.success) {
+          rewards.push(
+            `${getRexBuckEmoji()} +${redemption.rexBucks.toLocaleString()} RexBucks`,
           );
         }
       }

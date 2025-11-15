@@ -9,6 +9,7 @@ export interface RedemptionCode {
   vip: boolean;
   background: boolean;
   backpack?: number | boolean;
+  rexBucks?: number;
   createdAt: number;
   createdBy: string;
   redeemed: boolean;
@@ -21,6 +22,7 @@ export interface Product {
   vip: boolean;
   background: boolean;
   backpack?: number | boolean;
+  rexBucks?: number;
 }
 
 export const PRODUCTS: Record<string, Product> = {
@@ -83,6 +85,46 @@ export const PRODUCTS: Record<string, Product> = {
     vip: false,
     background: false,
     backpack: 500,
+  },
+  rexbucks_1000: {
+    name: "💵 1,000 RexBucks",
+    tokens: 0,
+    coins: 0,
+    vip: false,
+    background: false,
+    rexBucks: 1000,
+  },
+  rexbucks_5000: {
+    name: "💵 5,000 RexBucks",
+    tokens: 0,
+    coins: 0,
+    vip: false,
+    background: false,
+    rexBucks: 5000,
+  },
+  rexbucks_10000: {
+    name: "💵 10,000 RexBucks",
+    tokens: 0,
+    coins: 0,
+    vip: false,
+    background: false,
+    rexBucks: 10000,
+  },
+  rexbucks_25000: {
+    name: "💵 25,000 RexBucks",
+    tokens: 0,
+    coins: 0,
+    vip: false,
+    background: false,
+    rexBucks: 25000,
+  },
+  rexbucks_50000: {
+    name: "💵 50,000 RexBucks",
+    tokens: 0,
+    coins: 0,
+    vip: false,
+    background: false,
+    rexBucks: 50000,
   },
 };
 

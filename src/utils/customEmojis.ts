@@ -6,6 +6,7 @@ export const CUSTOM_EMOJIS = {
   SALOON_TOKEN: getDataPath("assets", "saloon-token.png"),
   SILVER_COIN: getDataPath("assets", "silver-coin.png"),
   GOLD_BAR: getDataPath("assets", "gold-bar.png"),
+  REX_BUCK: getDataPath("assets", "rex-buck.png"),
   // Novos custom emojis
   ALARM: getDataPath("assets", "custom-emojis", "alarm.png"),
   BACKPACK: getDataPath("assets", "custom-emojis", "backpack.png"),
@@ -51,6 +52,7 @@ export const EMOJI_TEXT = {
   SALOON_TOKEN: "🎫",
   SILVER_COIN: "🪙",
   GOLD_BAR: "🥇",
+  REX_BUCK: "💵",
   ALARM: "🚨",
   BACKPACK: "🎒",
   BALANCE: "⚖️",
@@ -136,6 +138,13 @@ export function getGoldBarEmoji(): string {
  */
 export function getSaloonTokenEmoji(): string {
   return getEmoji("saloon_token");
+}
+
+/**
+ * Obtém o emoji de RexBuck (moeda premium)
+ */
+export function getRexBuckEmoji(): string {
+  return getEmoji("rex_buck");
 }
 
 // Funções auxiliares para os custom emojis (SEM fallback de texto)

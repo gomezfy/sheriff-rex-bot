@@ -37,6 +37,7 @@ export async function handleGenerateCode(
       vip: product.vip,
       background: product.background,
       backpack: product.backpack || false,
+      rexBucks: product.rexBucks || 0,
       createdAt: Date.now(),
       createdBy: interaction.user.id,
       redeemed: false,
@@ -87,6 +88,14 @@ export async function handleGenerateCode(
       embed.addFields({
         name: "🎒 Backpack Upgrade",
         value: `Capacity: ${capacity}kg`,
+        inline: true,
+      });
+    }
+
+    if (product.rexBucks && product.rexBucks > 0) {
+      embed.addFields({
+        name: "💵 RexBucks",
+        value: `${product.rexBucks.toLocaleString()} RexBucks`,
         inline: true,
       });
     }
