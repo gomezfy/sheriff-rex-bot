@@ -1,410 +1,56 @@
 # Sheriff Rex Bot - Documentação do Projeto
 
-## 📋 Visão Geral
-**Sheriff Rex** é um bot Discord completo em TypeScript com tema de faroeste (Wild West), oferecendo:
-- 46 comandos slash organizados em 8 categorias
-- Sistema de economia dual (Saloon Tokens + Silver Coins)
-- **🌟 Recompensas diárias automáticas** (60 tokens, 3 gold bars, 15 seals às 21:00)
-- Mini jogos e sistema de apostas
-- Sistema de mineração (solo e cooperativo)
-- Sistema de bounty hunting com pôsters visuais
-- Sistema de expedições em grupo (agora com convites públicos!)
-- Sistema de moderação completo
-- Perfis visuais personalizados com Canvas
-- Suporte multilíngue (PT-BR, EN-US, ES-ES, FR)
-
-## 🗂️ Estrutura do Projeto
-
-```
-Sheriff Bot/
-├── src/
-│   ├── commands/          # 46 comandos organizados por categoria
-│   │   ├── admin/         # 11 comandos de administração
-│   │   ├── ai/            # 2 comandos de IA
-│   │   ├── bounty/        # 4 comandos de recompensas
-│   │   ├── economy/       # 13 comandos de economia
-│   │   ├── gambling/      # 5 comandos de jogos
-│   │   ├── guild/         # 1 comando de guildas
-│   │   ├── mining/        # 1 comando de mineração
-│   │   ├── profile/       # 2 comandos de perfil
-│   │   └── utility/       # 3 comandos utilitários
-│   ├── events/            # Event handlers do Discord
-│   ├── utils/             # Gerenciadores e utilitários
-│   │   ├── consoleLogger.ts  # Sistema centralizado de logs (console)
-│   │   ├── logger.ts         # Sistema de logs Discord (embeds)
-│   │   └── ... outros utilitários
-│   ├── types/             # Definições de tipos TypeScript
-│   └── data/              # Armazenamento JSON de dados
-├── website/               # 🌐 Website e Dashboard (NOVO!)
-│   ├── server.js          # Servidor Express com OAuth2
-│   ├── public/            # Arquivos estáticos (CSS, JS, imagens)
-│   └── views/             # Páginas HTML (index, dashboard)
-├── assets/                # Recursos visuais (emojis, imagens)
-├── database/              # Esquema SQL
-└── server/                # Servidor web para Linked Roles
-```
-
-## 📝 Sistema de Logs
-
-### Console Logger (`src/utils/consoleLogger.ts`)
-Sistema centralizado de logs para o console com recursos avançados:
-
-**Níveis de Log:**
-- `logger.debug()` - Mensagens de depuração detalhadas
-- `logger.info()` - Informações gerais
-- `logger.warn()` - Avisos importantes
-- `logger.error()` - Erros e exceções
-- `logger.success()` - Operações bem-sucedidas
-
-**Recursos Especiais:**
-- `logger.startup()` - Banner inicial do bot
-- `logger.ready()` - Status quando bot conecta
-- `logger.section()` - Divisor de seção
-- `logger.divider()` - Linha divisória
-- `logger.table()` - Exibir dados em tabela
-
-**Características:**
-- Logs coloridos e formatados com timestamps
-- Sanitização automática de erros em produção
-- Ocultação de stack traces em produção
-- Detecção automática de ambiente (dev/prod)
-
-**Exemplo de uso:**
-```typescript
-import logger from '@/utils/consoleLogger';
-
-logger.info("Starting process");
-logger.success("Process completed!");
-logger.error("Something went wrong", sanitizedError);
-logger.table({ "Status": "Online", "Users": 100 });
-```
-
-### Discord Logger (`src/utils/logger.ts`)
-Sistema separado para enviar logs como embeds para canais do Discord (não alterado).
-
-## 📂 Categorias de Comandos
-
-### 🛡️ Admin (11 comandos)
-- `/admin` - Painel administrativo
-- `/embedbuilder` - Construtor de embeds
-- `/welcome` - Configurar mensagens de boas-vindas
-- `/setlogs` - Configurar canal de logs
-- `/warn` - Avisar usuário
-- `/warnings` - Ver avisos
-- `/clearwarns` - Limpar avisos
-- `/mute` - Silenciar usuário
-- `/unmute` - Desilenciar usuário
-- `/clear` - Limpar mensagens
-- `/criaservidor` - Criar template de servidor
-
-### 💰 Economy (13 comandos)
-- `/daily` - Recompensa diária com streaks
-- `/give` - Transferir moedas
-- `/leaderboard` - Ranking de riqueza
-- `/expedition` - Sistema de expedições
-- `/territories` - Gerenciar territórios
-- `/middleman` - Intermediação de trocas
-- `/redeem` - Códigos promocionais
-- `/armazem` - Gerenciar armazém
-- `/addgold`, `/addsilver`, `/addtokens` - (Admin) Adicionar moedas
-- `/removegold` - (Admin) Remover ouro
-- `/addbackpack` - (Admin) Aumentar mochila
-- `/addseal` - (Admin) Adicionar selos
-
-### 🎲 Gambling (5 comandos)
-- `/dice` - Jogo de dados
-- `/duel` - Duelo PvP com apostas
-- `/roulette` - Roleta
-- `/bankrob` - Assalto ao banco
-- `/roubo` - Sistema de roubo
-
-### ⛏️ Mining (1 comando)
-- `/mine` - Mineração de recursos (ouro, prata, gemas)
-
-### 🎯 Bounty (5 comandos)
-- `/wanted` - Colocar procurado
-- `/capture` - Capturar procurado (solo)
-- `/team-capture` - Caça em equipe com recompensa compartilhada (2-5 hunters)
-- `/bounties` - Lista de procurados
-- `/clearbounty` - Limpar recompensa
-
-### 👤 Profile (2 comandos)
-- `/profile` - Perfil visual com Canvas + botão "📢 Exibir no Chat" para compartilhar publicamente
-- `/inventory` - Inventário de itens
-
-### 🏰 Guild (1 comando)
-- `/guilda` - Sistema de guildas/clãs
-
-### 🔧 Utility (3 comandos)
-- `/help` - Menu de ajuda
-- `/ping` - Latência do bot
-- `/poll` - Criar enquetes
-
-### 🤖 AI (2 comandos)
-- `/ai` - Conversar com IA
-- `/models` - Listar modelos de IA
-
-## ⚙️ Variáveis de Ambiente Necessárias
-
-### Obrigatórias
-- `DISCORD_TOKEN` - Token do bot Discord
-- `CLIENT_ID` ou `DISCORD_CLIENT_ID` - ID do aplicativo Discord
-
-### Opcionais
-- `DISCORD_CLIENT_SECRET` - Para Linked Roles
-- `SESSION_SECRET` - Segurança de sessão web
-- `DATABASE_URL` - PostgreSQL (opcional, usa JSON se não configurado)
-- `LOW_MEMORY=true` - Para ambientes com pouca RAM
-- `NODE_ENV=production` - Para modo produção
-
-## 🚀 Como Executar
-
-### Desenvolvimento (Replit)
-```bash
-# O workflow já está configurado para rodar automaticamente
-# Ou execute manualmente:
-npm run dev
-```
-
-### Registrar Comandos no Discord
-```bash
-npm run deploy
-```
-
-### Produção
-```bash
-npm run build
-npm start
-```
-
-## 🛠️ Como Modificar Comandos
-
-### 1. Localizar o Comando
-Encontre o arquivo em `src/commands/<categoria>/<nome>.ts`
-
-### 2. Estrutura Básica
-```typescript
-import { SlashCommandBuilder } from 'discord.js';
-import type { Command } from '@/types';
-
-const command: Command = {
-  data: new SlashCommandBuilder()
-    .setName('nome-comando')
-    .setDescription('Descrição'),
-  
-  async execute(interaction) {
-    // Lógica do comando
-  }
-};
-
-export default command;
-```
-
-### 3. Modificações Comuns
-
-**Alterar valores de recompensas:**
-```typescript
-const reward = 100; // Altere o valor aqui
-```
-
-**Adicionar nova opção:**
-```typescript
-.addStringOption(option =>
-  option
-    .setName('opcao')
-    .setDescription('Descrição')
-    .setRequired(true)
-)
-```
-
-**Modificar cooldown:**
-```typescript
-cooldownManager.setCooldown(userId, 'comando', 3600000); // 1 hora
-```
-
-## 📦 Arquivos Importantes
-
-### Gerenciadores (`src/utils/`)
-- `database.ts` - Banco de dados
-- `cooldownManager.ts` - Cooldowns
-- `embedBuilders.ts` - Embeds padronizadas
-- `inventoryManager.ts` - Inventário
-- `customEmojis.ts` - Emojis personalizados
-- `xpManager.ts` - Sistema de XP/Níveis
-- `warehouseManager.ts` - Gerenciamento de armazém
-- `territoryManager.ts` - Sistema de territórios
-
-### Dados (`src/data/`)
-Arquivos JSON com dados persistentes:
-- `economy.json` - Dados de economia
-- `profiles.json` - Perfis de usuários
-- `inventory.json` - Inventários
-- `bounties.json` - Recompensas ativas
-- `guilds.json` - Dados de guildas
-
-## 🔄 Comandos NPM
-
-```bash
-npm run dev          # Desenvolvimento com hot-reload
-npm run build        # Compilar TypeScript
-npm start            # Produção (requer build)
-npm run deploy       # Registrar comandos no Discord
-npm run lint         # Verificar erros
-npm run format       # Formatar código
-```
-
-## 📚 Documentação Adicional
-
-- `GUIA_COMANDOS.md` - Guia detalhado de todos os comandos
-- `GUIA_COMANDO_GUILDA.md` - Sistema de guildas
-- `README.md` - Informações gerais do projeto
-- `LINKED_ROLES_SETUP.md` - Configurar Linked Roles
-
-## 🌐 Hospedagem
-
-### Replit (Atual)
-- Desenvolvimento rápido
-- Hot-reload automático
-- Ambiente configurado
-
-### ShardCloud.app
-- Hospedagem gratuita/premium
-- Autodetecção de comandos npm
-- SSL e domínio inclusos
-- Suporte multi-bot
-
-## 🔒 Segurança
-
-- Nunca exponha tokens ou secrets
-- Use variáveis de ambiente para credenciais
-- Sistema de validação de ambiente (`src/utils/security.ts`)
-- Proteção contra spam com cooldowns
-
-## 📊 Performance
-
-- Sistema de cache otimizado
-- Modo low-memory para ambientes limitados
-- Sweepers automáticos para memória
-- Monitoramento de performance integrado
-
-## 🔧 Infraestrutura de Refatoração (14 de Novembro de 2025)
-
-### ✅ Sistema de Erros Centralizado - ATIVO
-**Localização:** `src/utils/errors/`
-- `BaseBotError.ts` - Hierarquia de erros (DatabaseError, ValidationError, etc.)
-- `errorHandler.ts` - Handler centralizado para interações Discord
-- **Status:** ✅ Integrado e funcionando em `interactionCreate.ts`
-- **Uso:** Todos os erros de interação são tratados automaticamente
-
-### 🔧 ComponentRegistry - PRONTO PARA USO
-**Localização:** `src/interactions/ComponentRegistry.ts`
-- Sistema para registrar handlers de botões e menus
-- Suporte para exact match e patterns (regex)
-- **Status:** ⚠️ Criado mas não integrado (pronto para substituir if-else chains)
-
-### 📁 Estrutura Modular
-Nova organização para facilitar manutenção:
-```
-src/
-├── i18n/                    # Traduções modulares por locale/domínio
-├── commands/admin/handlers/ # Subcomandos admin separados
-├── events/interaction-handlers/ # Handlers de modals/buttons/menus
-├── features/                # Features grandes (expedition, guilds, etc)
-├── utils/errors/            # Sistema de erros
-└── interactions/            # ComponentRegistry
-```
-
-### 📝 Exemplos de Refatoração Criados
-- `src/commands/admin/handlers/logs.ts` - Padrão para extrair handlers
-- `src/i18n/pt-BR/core.ts` - Padrão para modularizar traduções
-
-**Documentação completa:** Veja `REFACTORING_COMPLETE.md`
-
----
-
-## 📅 Mudanças Recentes
-
-### 15 de Novembro de 2025 - Sistema de RexBucks (Moeda Premium)
-- ✅ **Sistema de moeda premium RexBucks implementado**
-  - 💵 RexBucks representa dinheiro real (não conversível/não transferível)
-  - 🔒 Armazenamento seguro no banco de dados PostgreSQL (rex_buck_transactions + users.rexBucks)
-  - 📊 Auditoria completa com histórico imutável de transações
-  - 🎫 5 pacotes de RexBucks disponíveis (1K, 5K, 10K, 25K, 50K)
-  - ✨ Comando `/rexbucks balance` - Ver saldo de RexBucks
-  - 📜 Comando `/rexbucks history` - Histórico completo de transações
-  - 🎁 Comando `/redeem` atualizado para processar códigos de RexBucks
-  - 🔐 Admin pode gerar códigos com `/admin generatecode`
-  - 💰 Sistema implementado com:
-    - `src/utils/rexBuckManager.ts` - Gerenciador seguro com transações atômicas
-    - `shared/schema.ts` - Tabelas rex_buck_transactions e users.rexBucks
-    - `src/commands/economy/rexbucks.ts` - Comando de verificação de saldo/histórico
-    - `src/commands/economy/redeem.ts` - Resgate de códigos com RexBucks
-    - `assets/rex-buck.png` - Asset visual do RexBuck 💵
-  - ⚠️ **Importante:** RexBucks são **NÃO REEMBOLSÁVEIS** e **NÃO TRANSFERÍVEIS**
-
-### 15 de Novembro de 2025
-- ✅ **Sistema de Team Capture (Caça em Equipe) implementado**
-  - Novo comando `/team-capture` permite formar equipes de 2-5 hunters
-  - Recompensa compartilhada igualmente entre membros (resto vai para o líder)
-  - Sistema probabilístico: 50% base + 10% por membro adicional (máx 90%)
-  - Interface interativa com botões **minimalistas** (Join, Leave, Start, Cancel)
-  - Cooldown de 45 minutos (mais longo que captura solo)
-  - Janela de recrutamento de 5 minutos
-  - Limpeza automática de equipes expiradas
-  - Implementado em:
-    - `src/commands/bounty/teamcapture.ts` - Comando principal
-    - `src/utils/teamCaptureManager.ts` - Gerenciador de equipes
-    - `src/interactions/teamCaptureButtons.ts` - Handlers de botões
-    - `src/events/interaction-handlers/buttons/teamCaptureHandlers.ts` - Integração
-  - Bugs corrigidos:
-    - ✅ Cooldown agora é persistido corretamente
-    - ✅ Validação de estado para evitar equipes duplicadas
-
-### 14 de Novembro de 2025
-- ✅ **Website e Dashboard criados**
-  - Landing page completa com tema western
-  - Sistema de autenticação OAuth2 do Discord
-  - Dashboard interativo com estatísticas do bot
-  - Proteção CSRF com parâmetro state
-  - Painel de visualização de servidores
-  - Integrado com dados do bot Discord
-  - Rodando na porta 5000 (workflow "website")
-  - Documentação em `WEBSITE_SETUP.md`
-
-### 13 de Novembro de 2025
-- ✅ Adicionado botão "Exibir no Chat" ao comando `/profile`
-  - Permite que usuários compartilhem seu perfil publicamente no canal
-  - O `/profile` continua sendo efêmero (só o usuário vê)
-  - O botão envia uma cópia do perfil no chat para todos verem
-  - Implementado em `src/commands/profile/profile.ts` (função `createPublicProfile`)
-  - Handler adicionado em `src/events/interactionCreate.ts`
-  - Traduzido automaticamente: PT-BR, EN-US, ES-ES
-  
-- ✅ Adicionadas traduções automáticas para a loja de molduras
-  - Nomes e descrições das molduras agora são traduzidos automaticamente
-  - Suporte para PT-BR, EN-US e ES-ES
-  - Sistema implementado em:
-    - `src/utils/frameManager.ts` - Nova função `getAllFramesTranslated(userId)`
-    - `src/utils/i18n.ts` - Chaves de tradução adicionadas
-    - `src/events/interactionCreate.ts` - Carrossel usa traduções
-  - Molduras traduzidas:
-    - 🌟 Moldura Dourada Western / Golden Western Frame / Marco Dorado Western
-    - 🤠 Moldura Rex Premium / Rex Premium Frame / Marco Rex Premium
-    - 💫 Moldura Western Clássica / Classic Western Frame / Marco Western Clásico
-    - Enquadramento do Oeste Encantado: Sussurros de Higuma
-    - ⛏️ Moldura Exclusiva da Mina de Ouro / Gold Mine Exclusive Frame / Marco Exclusivo de la Mina de Oro
-
-## 🎯 Próximos Passos
-
-Para começar a modificar comandos:
-1. Configure as variáveis de ambiente (DISCORD_TOKEN, CLIENT_ID)
-2. O bot iniciará automaticamente
-3. Escolha um comando para modificar
-4. Edite o arquivo correspondente
-5. Teste as mudanças (hot-reload automático em dev)
-
-## 📞 Suporte
-
-- GitHub: https://github.com/gomezfy/Sheriffbot-
-- Documentação completa neste arquivo
-- Guias específicos nos arquivos .md do projeto
+### Overview
+Sheriff Rex is a comprehensive Discord bot written in TypeScript, featuring a Wild West theme. It offers 46 slash commands across 8 categories, including a dual economy system (Saloon Tokens + Silver Coins), automatic daily rewards, mini-games, a mining system, bounty hunting with visual posters, group expeditions, and a full moderation suite. The bot also supports personalized visual profiles using Canvas and is multilingual (PT-BR, EN-US, ES-ES, FR). Recent additions include a premium currency system (RexBucks) and a web dashboard with Discord OAuth2 integration. The project aims to provide a rich and engaging experience for Discord communities with its unique theme and extensive features.
+
+### User Preferences
+- I prefer simple language.
+- I want iterative development.
+- Ask before making major changes.
+- I prefer detailed explanations.
+- Do not make changes to the folder `website/`.
+- Do not make changes to the file `src/utils/consoleLogger.ts`.
+- Ensure all new features are fully translated into PT-BR, EN-US, and ES-ES.
+- Prioritize the use of the centralized error handling system (`src/utils/errors/`).
+- Utilize the `ComponentRegistry` for new button and menu handlers instead of if-else chains.
+
+### System Architecture
+The Sheriff Rex Bot is built with a modular and scalable architecture.
+
+**UI/UX Decisions:**
+- **Western Theme:** All visual assets, command themes, and the new web dashboard adhere to a consistent Wild West aesthetic.
+- **Visual Profiles:** User profiles are generated dynamically using Canvas, allowing for personalized and visually appealing displays.
+- **Interactive Elements:** Features like bounty hunting and team captures utilize interactive Discord components (buttons) for user engagement.
+- **Minimalist Buttons:** Interactive components are designed to be concise and intuitive.
+
+**Technical Implementations:**
+- **TypeScript:** The entire bot is developed in TypeScript for type safety and maintainability.
+- **Command Handling:** Uses Discord.js for robust command and event handling.
+- **Database:** Flexible data storage, defaulting to JSON files for various game data (economy, profiles, inventories, bounties, guilds) and supporting PostgreSQL for more complex data like RexBucks transactions.
+- **Logging:** Features a dual logging system: `consoleLogger.ts` for detailed console output with different log levels (debug, info, warn, error, success) and `logger.ts` for sending administrative logs as embeds to Discord channels.
+- **Internationalization (i18n):** Supports multiple languages with a modular translation structure (`src/i18n/`).
+- **Error Handling:** A centralized error handling system (`src/utils/errors/`) provides a hierarchical error structure and a global handler for Discord interactions.
+- **Component Registry:** A dedicated `ComponentRegistry` (`src/interactions/ComponentRegistry.ts`) is designed to manage button and menu interactions, supporting exact matches and regex patterns.
+- **Performance Optimization:** Includes features like an optimized cache system, a low-memory mode, and automatic sweepers for memory management.
+
+**Feature Specifications:**
+- **Economy System:** Dual currency (Saloon Tokens, Silver Coins) with a premium currency (RexBucks) for real-money transactions, designed to be non-refundable and non-transferable with full audit trails.
+- **Daily Rewards:** Automated daily rewards system.
+- **Mini-Games:** Dice, duels, roulette, bank robbery, and general theft mechanics.
+- **Mining System:** Solo and cooperative resource gathering.
+- **Bounty System:** Visual wanted posters, solo capture, and team-based capture mechanics with shared rewards.
+- **Expedition System:** Group expeditions with public invites.
+- **Moderation:** Comprehensive suite of moderation commands including warnings, mutes, and log configuration.
+- **Web Dashboard:** A new web dashboard provides administrative features and statistics, integrated via Discord OAuth2.
+
+**System Design Choices:**
+- **Modular Structure:** The project is organized into logical folders for commands, events, utilities, and specific features to enhance maintainability and scalability.
+- **Environment Variables:** Critical information like tokens and database URLs are managed through environment variables for security.
+- **Cooldown Management:** A dedicated `cooldownManager.ts` prevents spam and balances game mechanics.
+- **Asset Management:** Custom emojis and images are centrally managed in the `assets/` directory.
+
+### External Dependencies
+- **Discord API:** Core integration for bot functionality.
+- **PostgreSQL:** Optional relational database for persistent data storage, particularly for RexBucks transactions and user data. If not configured, JSON files are used.
+- **Express.js:** Used for the web server of the dashboard and linked roles.
+- **OAuth2:** Integrated with Discord for user authentication on the web dashboard.
