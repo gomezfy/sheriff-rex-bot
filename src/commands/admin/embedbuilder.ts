@@ -223,98 +223,94 @@ function buildComponents(
   embedData: EmbedData,
   interaction: ChatInputCommandInteraction,
 ): ActionRowBuilder<ButtonBuilder>[] {
-  // Row 1: Conteúdo Principal
-  const row1 = new ActionRowBuilder<ButtonBuilder>().addComponents(
+  // ━━━ LINHA 1: 📝 EDITAR CONTEÚDO (3 botões) ━━━
+  const rowContent = new ActionRowBuilder<ButtonBuilder>().addComponents(
     new ButtonBuilder()
       .setCustomId(`eb_basic_${sessionId}`)
-      .setLabel(t(interaction, "eb_btn_basic"))
-      .setStyle(ButtonStyle.Secondary)
+      .setLabel("Conteúdo")
+      .setStyle(ButtonStyle.Primary)
       .setEmoji(getIconEmoji("eb_basic")),
     new ButtonBuilder()
       .setCustomId(`eb_author_${sessionId}`)
-      .setLabel(t(interaction, "eb_btn_author"))
+      .setLabel("Autor")
       .setStyle(ButtonStyle.Secondary)
       .setEmoji(getIconEmoji("eb_author")),
     new ButtonBuilder()
-      .setCustomId(`eb_images_${sessionId}`)
-      .setLabel(t(interaction, "eb_btn_images"))
-      .setStyle(ButtonStyle.Secondary)
-      .setEmoji(getIconEmoji("eb_images")),
-    new ButtonBuilder()
       .setCustomId(`eb_footer_${sessionId}`)
-      .setLabel(t(interaction, "eb_btn_footer"))
+      .setLabel("Rodapé")
       .setStyle(ButtonStyle.Secondary)
       .setEmoji(getIconEmoji("eb_footer")),
   );
 
-  // Row 2: Personalização
-  const row2 = new ActionRowBuilder<ButtonBuilder>().addComponents(
-    new ButtonBuilder()
-      .setCustomId(`eb_addfield_${sessionId}`)
-      .setLabel(t(interaction, "eb_btn_add_field"))
-      .setStyle(ButtonStyle.Secondary)
-      .setEmoji(getIconEmoji("eb_addfield")),
-    new ButtonBuilder()
-      .setCustomId(`eb_managefields_${sessionId}`)
-      .setLabel(`${t(interaction, "eb_btn_manage_fields")} (${embedData.fields.length})`)
-      .setStyle(ButtonStyle.Secondary)
-      .setEmoji(getIconEmoji("eb_managefields"))
-      .setDisabled(embedData.fields.length === 0),
+  // ━━━ LINHA 2: 🎨 ESTILO & CAMPOS (5 botões) ━━━
+  const rowStyle = new ActionRowBuilder<ButtonBuilder>().addComponents(
     new ButtonBuilder()
       .setCustomId(`eb_color_${sessionId}`)
-      .setLabel(t(interaction, "eb_btn_color"))
+      .setLabel("Cor")
       .setStyle(ButtonStyle.Secondary)
       .setEmoji(getIconEmoji("eb_color")),
     new ButtonBuilder()
-      .setCustomId(`eb_timestamp_${sessionId}`)
-      .setLabel(
-        embedData.timestamp
-          ? t(interaction, "eb_btn_remove_timestamp")
-          : t(interaction, "eb_btn_timestamp"),
-      )
+      .setCustomId(`eb_images_${sessionId}`)
+      .setLabel("Imagens")
       .setStyle(ButtonStyle.Secondary)
-      .setEmoji(getIconEmoji("eb_timestamp")),
+      .setEmoji(getIconEmoji("eb_images")),
+    new ButtonBuilder()
+      .setCustomId(`eb_timestamp_${sessionId}`)
+      .setLabel(embedData.timestamp ? "⏱️ Remover" : "🕐 Timestamp")
+      .setStyle(ButtonStyle.Secondary)
+      .setEmoji(embedData.timestamp ? "⏱" : "🕐"),
+    new ButtonBuilder()
+      .setCustomId(`eb_addfield_${sessionId}`)
+      .setLabel("➕ Campo")
+      .setStyle(ButtonStyle.Success)
+      .setEmoji(getIconEmoji("eb_addfield")),
+    new ButtonBuilder()
+      .setCustomId(`eb_managefields_${sessionId}`)
+      .setLabel(`Campos (${embedData.fields.length})`)
+      .setStyle(embedData.fields.length > 0 ? ButtonStyle.Primary : ButtonStyle.Secondary)
+      .setEmoji(getIconEmoji("eb_managefields"))
+      .setDisabled(embedData.fields.length === 0),
   );
 
-  // Row 3: Gerenciamento
-  const row3 = new ActionRowBuilder<ButtonBuilder>().addComponents(
+  // ━━━ LINHA 3: 🔧 FERRAMENTAS (4 botões) ━━━
+  const rowTools = new ActionRowBuilder<ButtonBuilder>().addComponents(
     new ButtonBuilder()
       .setCustomId(`eb_template_${sessionId}`)
-      .setLabel(t(interaction, "eb_btn_templates"))
+      .setLabel("Templates")
       .setStyle(ButtonStyle.Primary)
       .setEmoji(getIconEmoji("eb_template")),
     new ButtonBuilder()
       .setCustomId(`eb_import_${sessionId}`)
-      .setLabel(t(interaction, "eb_btn_import"))
+      .setLabel("Importar")
       .setStyle(ButtonStyle.Secondary)
       .setEmoji(getIconEmoji("eb_import")),
     new ButtonBuilder()
       .setCustomId(`eb_export_${sessionId}`)
-      .setLabel(t(interaction, "eb_btn_export"))
+      .setLabel("Exportar")
       .setStyle(ButtonStyle.Secondary)
       .setEmoji(getIconEmoji("eb_export")),
     new ButtonBuilder()
       .setCustomId(`eb_clear_${sessionId}`)
-      .setLabel(t(interaction, "eb_btn_clear"))
+      .setLabel("Limpar")
       .setStyle(ButtonStyle.Danger)
       .setEmoji(getIconEmoji("eb_clear")),
   );
 
-  // Row 4: Ações Finais
-  const row4 = new ActionRowBuilder<ButtonBuilder>().addComponents(
+  // ━━━ LINHA 4: ✅ AÇÕES FINAIS (2 botões) ━━━
+  const rowActions = new ActionRowBuilder<ButtonBuilder>().addComponents(
     new ButtonBuilder()
       .setCustomId(`eb_send_${sessionId}`)
-      .setLabel(t(interaction, "eb_btn_send"))
+      .setLabel("Enviar Embed")
       .setStyle(ButtonStyle.Success)
       .setEmoji(getIconEmoji("eb_send")),
     new ButtonBuilder()
       .setCustomId(`eb_cancel_${sessionId}`)
-      .setLabel(t(interaction, "eb_btn_cancel"))
+      .setLabel("Cancelar")
       .setStyle(ButtonStyle.Secondary)
       .setEmoji(getIconEmoji("eb_cancel")),
   );
 
-  return [row1, row2, row3, row4];
+  return [rowContent, rowStyle, rowTools, rowActions];
 }
 
 async function updatePreview(sessionId: string): Promise<void> {
