@@ -173,15 +173,15 @@ export default {
 
       // Add RexBucks
       if (redemption.rexBucks && redemption.rexBucks > 0) {
-        const rexBuckResult = addRexBucks(
+        const rexBuckResult = await addRexBucks(
           userId,
+          interaction.user.tag,
           redemption.rexBucks,
           "redeem",
           code,
           {
             productId: redemption.productId,
             productName: redemption.productName,
-            username: interaction.user.tag,
           },
         );
         if (rexBuckResult.success) {

@@ -324,6 +324,24 @@ src/
 
 ## 📅 Mudanças Recentes
 
+### 15 de Novembro de 2025 - Sistema de RexBucks (Moeda Premium)
+- ✅ **Sistema de moeda premium RexBucks implementado**
+  - 💵 RexBucks representa dinheiro real (não conversível/não transferível)
+  - 🔒 Armazenamento seguro no banco de dados PostgreSQL (rex_buck_transactions + users.rexBucks)
+  - 📊 Auditoria completa com histórico imutável de transações
+  - 🎫 5 pacotes de RexBucks disponíveis (1K, 5K, 10K, 25K, 50K)
+  - ✨ Comando `/rexbucks balance` - Ver saldo de RexBucks
+  - 📜 Comando `/rexbucks history` - Histórico completo de transações
+  - 🎁 Comando `/redeem` atualizado para processar códigos de RexBucks
+  - 🔐 Admin pode gerar códigos com `/admin generatecode`
+  - 💰 Sistema implementado com:
+    - `src/utils/rexBuckManager.ts` - Gerenciador seguro com transações atômicas
+    - `shared/schema.ts` - Tabelas rex_buck_transactions e users.rexBucks
+    - `src/commands/economy/rexbucks.ts` - Comando de verificação de saldo/histórico
+    - `src/commands/economy/redeem.ts` - Resgate de códigos com RexBucks
+    - `assets/rex-buck.png` - Asset visual do RexBuck 💵
+  - ⚠️ **Importante:** RexBucks são **NÃO REEMBOLSÁVEIS** e **NÃO TRANSFERÍVEIS**
+
 ### 15 de Novembro de 2025
 - ✅ **Sistema de Team Capture (Caça em Equipe) implementado**
   - Novo comando `/team-capture` permite formar equipes de 2-5 hunters

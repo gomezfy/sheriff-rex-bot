@@ -1,208 +1,252 @@
-import { readData, writeData } from "./database";
 import crypto from "crypto";
+import { db } from "../../server/db";
+import { users, rexBuckTransactions } from "../../shared/schema";
+import { eq, desc, gt } from "drizzle-orm";
+import type { NeonDatabase } from "drizzle-orm/neon-serverless";
 
-interface RexBuckTransaction {
-  id: string;
-  userId: string;
-  amount: number;
-  type: "redeem" | "purchase" | "admin_add" | "admin_remove";
-  redemptionCode?: string;
-  balanceBefore: number;
-  balanceAfter: number;
-  metadata?: Record<string, any>;
-  timestamp: number;
+interface RexBuckResult {
+  success: boolean;
+  newBalance: number;
+  transactionId: string;
+  error?: string;
 }
 
-interface UserRexBucks {
-  userId: string;
+interface UserRexBucksData {
   balance: number;
-  totalEarned: number;
-  totalSpent: number;
-  lastUpdate: number;
+  totalTransactions: number;
 }
 
-const TRANSACTIONS_FILE = "rexbuck-transactions.json";
-const BALANCES_FILE = "rexbuck-balances.json";
-
-export function loadTransactions(): Record<string, RexBuckTransaction> {
+export async function getRexBuckBalance(userId: string): Promise<number> {
   try {
-    return readData(TRANSACTIONS_FILE);
+    const user = await db.select({ rexBucks: users.rexBucks }).from(users).where(eq(users.userId, userId)).limit(1);
+
+    return user[0]?.rexBucks ?? 0;
   } catch (error) {
-    console.error("Error loading RexBuck transactions:", error);
-    return {};
+    console.error(`Error getting RexBuck balance for ${userId}:`, error);
+    return 0;
   }
 }
 
-export function saveTransactions(data: Record<string, RexBuckTransaction>): void {
-  writeData(TRANSACTIONS_FILE, data);
-}
-
-export function loadBalances(): Record<string, UserRexBucks> {
+export async function getUserRexBuckData(userId: string): Promise<UserRexBucksData> {
   try {
-    return readData(BALANCES_FILE);
+    const user = await db.select({ rexBucks: users.rexBucks }).from(users).where(eq(users.userId, userId)).limit(1);
+
+    const transactions = await db
+      .select()
+      .from(rexBuckTransactions)
+      .where(eq(rexBuckTransactions.userId, userId));
+
+    return {
+      balance: user[0]?.rexBucks ?? 0,
+      totalTransactions: transactions.length,
+    };
   } catch (error) {
-    console.error("Error loading RexBuck balances:", error);
-    return {};
+    console.error(`Error getting RexBuck data for ${userId}:`, error);
+    return { balance: 0, totalTransactions: 0 };
   }
 }
 
-export function saveBalances(data: Record<string, UserRexBucks>): void {
-  writeData(BALANCES_FILE, data);
-}
-
-export function getRexBuckBalance(userId: string): number {
-  const balances = loadBalances();
-  return balances[userId]?.balance || 0;
-}
-
-export function getUserRexBuckData(userId: string): UserRexBucks {
-  const balances = loadBalances();
-  return (
-    balances[userId] || {
-      userId,
-      balance: 0,
-      totalEarned: 0,
-      totalSpent: 0,
-      lastUpdate: Date.now(),
-    }
-  );
-}
-
-export function addRexBucks(
+export async function addRexBucks(
   userId: string,
+  username: string,
   amount: number,
   type: "redeem" | "purchase" | "admin_add",
   redemptionCode?: string,
   metadata?: Record<string, any>,
-): { success: boolean; newBalance: number; transactionId: string } {
+): Promise<RexBuckResult> {
   if (amount <= 0) {
-    throw new Error("Amount must be positive");
-  }
-
-  const balances = loadBalances();
-  const transactions = loadTransactions();
-
-  const userData = getUserRexBuckData(userId);
-  const balanceBefore = userData.balance;
-  const balanceAfter = balanceBefore + amount;
-
-  const transactionId = crypto.randomBytes(16).toString("hex");
-  const transaction: RexBuckTransaction = {
-    id: transactionId,
-    userId,
-    amount,
-    type,
-    redemptionCode,
-    balanceBefore,
-    balanceAfter,
-    metadata,
-    timestamp: Date.now(),
-  };
-
-  userData.balance = balanceAfter;
-  userData.totalEarned += amount;
-  userData.lastUpdate = Date.now();
-
-  balances[userId] = userData;
-  transactions[transactionId] = transaction;
-
-  saveBalances(balances);
-  saveTransactions(transactions);
-
-  console.log(
-    `💵 RexBucks added: ${amount} to user ${userId} (${balanceBefore} → ${balanceAfter})`,
-  );
-
-  return {
-    success: true,
-    newBalance: balanceAfter,
-    transactionId,
-  };
-}
-
-export function removeRexBucks(
-  userId: string,
-  amount: number,
-  metadata?: Record<string, any>,
-): { success: boolean; newBalance: number; transactionId: string; error?: string } {
-  if (amount <= 0) {
-    return { success: false, newBalance: 0, transactionId: "", error: "Amount must be positive" };
-  }
-
-  const balances = loadBalances();
-  const transactions = loadTransactions();
-
-  const userData = getUserRexBuckData(userId);
-  const balanceBefore = userData.balance;
-
-  if (balanceBefore < amount) {
     return {
       success: false,
-      newBalance: balanceBefore,
+      newBalance: 0,
       transactionId: "",
-      error: "Insufficient RexBucks balance",
+      error: "Amount must be positive",
     };
   }
 
-  const balanceAfter = balanceBefore - amount;
+  try {
+    return await db.transaction(async (tx: any) => {
+      const existingUser = await tx
+        .select({ userId: users.userId, username: users.username, rexBucks: users.rexBucks })
+        .from(users)
+        .where(eq(users.userId, userId))
+        .limit(1)
+        .for('update');
 
-  const transactionId = crypto.randomBytes(16).toString("hex");
-  const transaction: RexBuckTransaction = {
-    id: transactionId,
-    userId,
-    amount: -amount,
-    type: "admin_remove",
-    balanceBefore,
-    balanceAfter,
-    metadata,
-    timestamp: Date.now(),
-  };
+      let balanceBefore = 0;
 
-  userData.balance = balanceAfter;
-  userData.totalSpent += amount;
-  userData.lastUpdate = Date.now();
+      if (existingUser.length === 0) {
+        const [newUser] = await tx.insert(users).values({
+          userId,
+          username,
+          rexBucks: amount,
+        }).returning();
+        balanceBefore = 0;
+      } else {
+        balanceBefore = existingUser[0].rexBucks;
+        await tx
+          .update(users)
+          .set({ rexBucks: balanceBefore + amount })
+          .where(eq(users.userId, userId));
+      }
 
-  balances[userId] = userData;
-  transactions[transactionId] = transaction;
+      const balanceAfter = balanceBefore + amount;
 
-  saveBalances(balances);
-  saveTransactions(transactions);
+      const transactionId = crypto.randomBytes(16).toString("hex");
 
-  console.log(
-    `💵 RexBucks removed: ${amount} from user ${userId} (${balanceBefore} → ${balanceAfter})`,
-  );
+      await tx.insert(rexBuckTransactions).values({
+        id: transactionId,
+        userId,
+        amount,
+        type,
+        redemptionCode,
+        balanceBefore,
+        balanceAfter,
+        metadata: metadata ? JSON.parse(JSON.stringify(metadata)) : null,
+      });
 
-  return {
-    success: true,
-    newBalance: balanceAfter,
-    transactionId,
-  };
+      console.log(
+        `💵 RexBucks added: +${amount} to user ${userId} (${balanceBefore} → ${balanceAfter})`,
+      );
+
+      return {
+        success: true,
+        newBalance: balanceAfter,
+        transactionId,
+      };
+    });
+  } catch (error) {
+    console.error(`Error adding RexBucks for ${userId}:`, error);
+    return {
+      success: false,
+      newBalance: 0,
+      transactionId: "",
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
 }
 
-export function getUserTransactionHistory(
+export async function removeRexBucks(
   userId: string,
-  limit = 10,
-): RexBuckTransaction[] {
-  const transactions = loadTransactions();
-  return Object.values(transactions)
-    .filter((t) => t.userId === userId)
-    .sort((a, b) => b.timestamp - a.timestamp)
-    .slice(0, limit);
+  amount: number,
+  metadata?: Record<string, any>,
+): Promise<RexBuckResult> {
+  if (amount <= 0) {
+    return {
+      success: false,
+      newBalance: 0,
+      transactionId: "",
+      error: "Amount must be positive",
+    };
+  }
+
+  try {
+    return await db.transaction(async (tx: any) => {
+      const user = await tx
+        .select({ rexBucks: users.rexBucks })
+        .from(users)
+        .where(eq(users.userId, userId))
+        .limit(1)
+        .for('update');
+
+      if (user.length === 0 || user[0].rexBucks < amount) {
+        throw new Error("Insufficient RexBucks balance");
+      }
+
+      const balanceBefore = user[0].rexBucks;
+      const balanceAfter = balanceBefore - amount;
+
+      await tx
+        .update(users)
+        .set({ rexBucks: balanceAfter })
+        .where(eq(users.userId, userId));
+
+      const transactionId = crypto.randomBytes(16).toString("hex");
+
+      await tx.insert(rexBuckTransactions).values({
+        id: transactionId,
+        userId,
+        amount: -amount,
+        type: "admin_remove",
+        balanceBefore,
+        balanceAfter,
+        metadata: metadata ? JSON.parse(JSON.stringify(metadata)) : null,
+      });
+
+      console.log(
+        `💵 RexBucks removed: -${amount} from user ${userId} (${balanceBefore} → ${balanceAfter})`,
+      );
+
+      return {
+        success: true,
+        newBalance: balanceAfter,
+        transactionId,
+      };
+    });
+  } catch (error) {
+    console.error(`Error removing RexBucks from ${userId}:`, error);
+    return {
+      success: false,
+      newBalance: 0,
+      transactionId: "",
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
 }
 
-export function getAllTransactions(): RexBuckTransaction[] {
-  const transactions = loadTransactions();
-  return Object.values(transactions).sort((a, b) => b.timestamp - a.timestamp);
+export async function getUserTransactionHistory(userId: string, limit = 10) {
+  try {
+    const transactions = await db
+      .select()
+      .from(rexBuckTransactions)
+      .where(eq(rexBuckTransactions.userId, userId))
+      .orderBy(desc(rexBuckTransactions.timestamp))
+      .limit(limit);
+
+    return transactions;
+  } catch (error) {
+    console.error(`Error getting transaction history for ${userId}:`, error);
+    return [];
+  }
 }
 
-export function getTransactionById(transactionId: string): RexBuckTransaction | null {
-  const transactions = loadTransactions();
-  return transactions[transactionId] || null;
+export async function getAllTransactions(limit = 100) {
+  try {
+    return await db.select().from(rexBuckTransactions).orderBy(desc(rexBuckTransactions.timestamp)).limit(limit);
+  } catch (error) {
+    console.error("Error getting all transactions:", error);
+    return [];
+  }
 }
 
-export function getRexBucksLeaderboard(limit = 10): UserRexBucks[] {
-  const balances = loadBalances();
-  return Object.values(balances)
-    .sort((a, b) => b.balance - a.balance)
-    .slice(0, limit);
+export async function getTransactionById(transactionId: string) {
+  try {
+    const tx = await db
+      .select()
+      .from(rexBuckTransactions)
+      .where(eq(rexBuckTransactions.id, transactionId))
+      .limit(1);
+
+    return tx[0] || null;
+  } catch (error) {
+    console.error(`Error getting transaction ${transactionId}:`, error);
+    return null;
+  }
+}
+
+export async function getRexBucksLeaderboard(limit = 10) {
+  try {
+    return await db
+      .select({
+        userId: users.userId,
+        username: users.username,
+        balance: users.rexBucks,
+      })
+      .from(users)
+      .where(gt(users.rexBucks, 0))
+      .orderBy(desc(users.rexBucks))
+      .limit(limit);
+  } catch (error) {
+    console.error("Error getting RexBucks leaderboard:", error);
+    return [];
+  }
 }

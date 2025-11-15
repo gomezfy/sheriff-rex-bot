@@ -46,7 +46,7 @@ export default {
 
     try {
       if (subcommand === "balance") {
-        const userData = getUserRexBuckData(userId);
+        const userData = await getUserRexBuckData(userId);
 
         const embed = new EmbedBuilder()
           .setColor(0x2ecc71)
@@ -58,8 +58,7 @@ export default {
             {
               name: "📊 Statistics",
               value: [
-                `**Total Earned:** ${userData.totalEarned.toLocaleString()} RexBucks`,
-                `**Total Spent:** ${userData.totalSpent.toLocaleString()} RexBucks`,
+                `**Total Transactions:** ${userData.totalTransactions}`,
               ].join("\n"),
               inline: false,
             },
@@ -82,7 +81,7 @@ export default {
         await interaction.editReply({ embeds: [embed] });
       } else if (subcommand === "history") {
         const limit = interaction.options.getInteger("limit") || 10;
-        const transactions = getUserTransactionHistory(userId, limit);
+        const transactions = await getUserTransactionHistory(userId, limit);
 
         if (transactions.length === 0) {
           const embed = new EmbedBuilder()
@@ -99,7 +98,7 @@ export default {
         }
 
         const transactionList = transactions
-          .map((tx, index) => {
+          .map((tx: any, index: number) => {
             const typeEmoji = tx.amount > 0 ? "+" : "-";
             const typeLabel =
               tx.type === "redeem"
