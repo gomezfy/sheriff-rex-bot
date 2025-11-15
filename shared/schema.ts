@@ -128,6 +128,18 @@ export const logs = pgTable('logs', {
   details: jsonb('details').notNull(),
 });
 
+export const rexBuckTransactions = pgTable('rex_buck_transactions', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.userId, { onDelete: 'cascade' }),
+  amount: integer('amount').notNull(),
+  type: text('type').notNull(),
+  redemptionCode: text('redemption_code'),
+  balanceBefore: integer('balance_before').notNull(),
+  balanceAfter: integer('balance_after').notNull(),
+  metadata: jsonb('metadata'),
+  timestamp: timestamp('timestamp').notNull().defaultNow(),
+});
+
 export const welcomeSettings = pgTable('welcome_settings', {
   guildId: text('guild_id').primaryKey(),
   channelId: text('channel_id'),
@@ -144,6 +156,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   punishments: many(punishments),
   guildMemberships: many(guildMembers),
   guildJoinRequests: many(guildJoinRequests),
+  rexBuckTransactions: many(rexBuckTransactions),
 }));
 
 export const inventoryItemsRelations = relations(inventoryItems, ({ one }) => ({
@@ -218,6 +231,13 @@ export const guildJoinRequestsRelations = relations(guildJoinRequests, ({ one })
   }),
 }));
 
+export const rexBuckTransactionsRelations = relations(rexBuckTransactions, ({ one }) => ({
+  user: one(users, {
+    fields: [rexBuckTransactions.userId],
+    references: [users.userId],
+  }),
+}));
+
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 export type InventoryItem = typeof inventoryItems.$inferSelect;
@@ -234,3 +254,5 @@ export type GuildMember = typeof guildMembers.$inferSelect;
 export type InsertGuildMember = typeof guildMembers.$inferInsert;
 export type WelcomeSetting = typeof welcomeSettings.$inferSelect;
 export type InsertWelcomeSetting = typeof welcomeSettings.$inferInsert;
+export type RexBuckTransaction = typeof rexBuckTransactions.$inferSelect;
+export type InsertRexBuckTransaction = typeof rexBuckTransactions.$inferInsert;
