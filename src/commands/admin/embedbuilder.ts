@@ -226,7 +226,7 @@ function buildComponents(
   const row1 = new ActionRowBuilder<ButtonBuilder>().addComponents(
     new ButtonBuilder()
       .setCustomId(`eb_basic_${sessionId}`)
-      .setLabel(`📄 ${t(interaction, "eb_btn_basic")}`)
+      .setLabel(t(interaction, "eb_btn_basic"))
       .setStyle(ButtonStyle.Secondary)
       .setEmoji("📝"),
     new ButtonBuilder()
@@ -417,11 +417,11 @@ async function handleBasicModal(
 
   const modal = new ModalBuilder()
     .setCustomId(`eb_basic_modal_${sessionId}`)
-    .setTitle("📝 " + t(interaction, "eb_modal_basic_title"));
+    .setTitle(t(interaction, "eb_modal_basic_title"));
 
   const titleInput = new TextInputBuilder()
     .setCustomId("title")
-    .setLabel("📌 " + t(interaction, "eb_modal_basic_title_label"))
+    .setLabel(t(interaction, "eb_modal_basic_title_label"))
     .setStyle(TextInputStyle.Short)
     .setRequired(false)
     .setMaxLength(256)
@@ -431,17 +431,17 @@ async function handleBasicModal(
 
   const descriptionInput = new TextInputBuilder()
     .setCustomId("description")
-    .setLabel("📄 " + t(interaction, "eb_modal_basic_desc_label"))
+    .setLabel(t(interaction, "eb_modal_basic_desc_label"))
     .setStyle(TextInputStyle.Paragraph)
     .setRequired(false)
     .setMaxLength(4000)
-    .setPlaceholder(t(interaction, "eb_modal_basic_desc_placeholder") + " \\n para quebra de linha");
+    .setPlaceholder(t(interaction, "eb_modal_basic_desc_placeholder") + " (use \\n para quebra de linha)");
 
   if (embedData.description) descriptionInput.setValue(embedData.description);
 
   const urlInput = new TextInputBuilder()
     .setCustomId("url")
-    .setLabel("🔗 " + t(interaction, "eb_modal_basic_url_label"))
+    .setLabel(t(interaction, "eb_modal_basic_url_label"))
     .setStyle(TextInputStyle.Short)
     .setRequired(false)
     .setPlaceholder("https://example.com");
@@ -497,11 +497,11 @@ async function handleAuthorModal(
 
   const modal = new ModalBuilder()
     .setCustomId(`eb_author_modal_${sessionId}`)
-    .setTitle("👤 " + t(interaction, "eb_modal_author_title"));
+    .setTitle(t(interaction, "eb_modal_author_title"));
 
   const nameInput = new TextInputBuilder()
     .setCustomId("name")
-    .setLabel("✍️ " + t(interaction, "eb_modal_author_name_label"))
+    .setLabel(t(interaction, "eb_modal_author_name_label"))
     .setStyle(TextInputStyle.Short)
     .setRequired(false)
     .setMaxLength(256)
@@ -572,11 +572,11 @@ async function handleImagesModal(
 
   const modal = new ModalBuilder()
     .setCustomId(`eb_images_modal_${sessionId}`)
-    .setTitle("🖼️ " + t(interaction, "eb_modal_images_title"));
+    .setTitle(t(interaction, "eb_modal_images_title"));
 
   const thumbnailInput = new TextInputBuilder()
     .setCustomId("thumbnail")
-    .setLabel("🖼️ " + t(interaction, "eb_modal_images_thumbnail_label"))
+    .setLabel(t(interaction, "eb_modal_images_thumbnail_label"))
     .setStyle(TextInputStyle.Short)
     .setRequired(false)
     .setPlaceholder("https://example.com/image.png ou attachment://file.png");
@@ -585,7 +585,7 @@ async function handleImagesModal(
 
   const imageInput = new TextInputBuilder()
     .setCustomId("image")
-    .setLabel("🎨 " + t(interaction, "eb_modal_images_image_label"))
+    .setLabel(t(interaction, "eb_modal_images_image_label"))
     .setStyle(TextInputStyle.Short)
     .setRequired(false)
     .setPlaceholder("https://example.com/image.png ou attachment://file.png");
@@ -653,11 +653,11 @@ async function handleFooterModal(
 
   const modal = new ModalBuilder()
     .setCustomId(`eb_footer_modal_${sessionId}`)
-    .setTitle("📌 " + t(interaction, "eb_modal_footer_title"));
+    .setTitle(t(interaction, "eb_modal_footer_title"));
 
   const textInput = new TextInputBuilder()
     .setCustomId("text")
-    .setLabel("📝 " + t(interaction, "eb_modal_footer_text_label"))
+    .setLabel(t(interaction, "eb_modal_footer_text_label"))
     .setStyle(TextInputStyle.Short)
     .setRequired(false)
     .setMaxLength(2048)
@@ -724,11 +724,11 @@ async function handleFieldModal(
 
   const modal = new ModalBuilder()
     .setCustomId(`eb_field_modal_${sessionId}`)
-    .setTitle("➕ " + t(interaction, "eb_modal_field_title"));
+    .setTitle(t(interaction, "eb_modal_field_title"));
 
   const nameInput = new TextInputBuilder()
     .setCustomId("name")
-    .setLabel("📌 " + t(interaction, "eb_modal_field_name_label"))
+    .setLabel(t(interaction, "eb_modal_field_name_label"))
     .setStyle(TextInputStyle.Short)
     .setRequired(true)
     .setMaxLength(256)
