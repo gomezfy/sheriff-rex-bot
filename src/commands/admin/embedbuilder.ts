@@ -228,22 +228,22 @@ function buildComponents(
       .setCustomId(`eb_basic_${sessionId}`)
       .setLabel(t(interaction, "eb_btn_basic"))
       .setStyle(ButtonStyle.Secondary)
-      .setEmoji("📝"),
+      .setEmoji("📄"),
     new ButtonBuilder()
       .setCustomId(`eb_author_${sessionId}`)
       .setLabel(t(interaction, "eb_btn_author"))
       .setStyle(ButtonStyle.Secondary)
-      .setEmoji("👤"),
+      .setEmoji("👥"),
     new ButtonBuilder()
       .setCustomId(`eb_images_${sessionId}`)
       .setLabel(t(interaction, "eb_btn_images"))
       .setStyle(ButtonStyle.Secondary)
-      .setEmoji("🖼️"),
+      .setEmoji("🖼"),
     new ButtonBuilder()
       .setCustomId(`eb_footer_${sessionId}`)
       .setLabel(t(interaction, "eb_btn_footer"))
       .setStyle(ButtonStyle.Secondary)
-      .setEmoji("📌"),
+      .setEmoji("⬇"),
   );
 
   // Row 2: Personalização
@@ -257,7 +257,7 @@ function buildComponents(
       .setCustomId(`eb_managefields_${sessionId}`)
       .setLabel(`${t(interaction, "eb_btn_manage_fields")} (${embedData.fields.length})`)
       .setStyle(ButtonStyle.Secondary)
-      .setEmoji("✏️")
+      .setEmoji("📝")
       .setDisabled(embedData.fields.length === 0),
     new ButtonBuilder()
       .setCustomId(`eb_color_${sessionId}`)
@@ -272,7 +272,7 @@ function buildComponents(
           : t(interaction, "eb_btn_timestamp"),
       )
       .setStyle(ButtonStyle.Secondary)
-      .setEmoji(embedData.timestamp ? "🕐" : "⏰"),
+      .setEmoji(embedData.timestamp ? "⏱" : "🕐"),
   );
 
   // Row 3: Gerenciamento
@@ -281,7 +281,7 @@ function buildComponents(
       .setCustomId(`eb_template_${sessionId}`)
       .setLabel(t(interaction, "eb_btn_templates"))
       .setStyle(ButtonStyle.Primary)
-      .setEmoji("📋"),
+      .setEmoji("📑"),
     new ButtonBuilder()
       .setCustomId(`eb_import_${sessionId}`)
       .setLabel(t(interaction, "eb_btn_import"))
@@ -296,7 +296,7 @@ function buildComponents(
       .setCustomId(`eb_clear_${sessionId}`)
       .setLabel(t(interaction, "eb_btn_clear"))
       .setStyle(ButtonStyle.Danger)
-      .setEmoji("🗑️"),
+      .setEmoji("🗑"),
   );
 
   // Row 4: Ações Finais
