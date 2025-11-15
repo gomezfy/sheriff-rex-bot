@@ -167,6 +167,38 @@ export const redemptionCodes = pgTable('redemption_codes', {
   redeemedAt: timestamp('redeemed_at'),
 });
 
+export const rexBuckPackages = pgTable('rex_buck_packages', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  description: text('description').notNull(),
+  amountRexBucks: integer('amount_rexbucks').notNull(),
+  bonusRexBucks: integer('bonus_rexbucks').notNull().default(0),
+  priceCents: integer('price_cents').notNull(),
+  currency: text('currency').notNull().default('BRL'),
+  active: boolean('active').notNull().default(true),
+  displayOrder: integer('display_order').notNull().default(0),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+export const mercadoPagoPayments = pgTable('mercadopago_payments', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.userId, { onDelete: 'cascade' }),
+  packageId: text('package_id').notNull().references(() => rexBuckPackages.id),
+  externalReference: text('external_reference').notNull().unique(),
+  preferenceId: text('preference_id'),
+  mpPaymentId: text('mp_payment_id').unique(),
+  status: text('status').notNull().default('pending'),
+  amount: integer('amount').notNull(),
+  currency: text('currency').notNull().default('BRL'),
+  paidAt: timestamp('paid_at'),
+  rawPayload: jsonb('raw_payload'),
+  processed: boolean('processed').notNull().default(false),
+  rexBuckTransactionId: text('rex_buck_transaction_id'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
 export const usersRelations = relations(users, ({ many }) => ({
   inventoryItems: many(inventoryItems),
   issuedBounties: many(bounties, { relationName: 'issuer' }),
