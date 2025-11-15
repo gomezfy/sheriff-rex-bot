@@ -37,13 +37,19 @@ export function validateURL(url: string): ValidationResult {
 }
 
 export function validateImageURL(url: string): ValidationResult {
+  if (!url || url.trim() === "") {
+    return { valid: true };
+  }
+
+  const trimmed = url.trim();
+
+  if (trimmed.startsWith("attachment://")) {
+    return { valid: true };
+  }
+
   const basicValidation = validateURL(url);
   if (!basicValidation.valid) {
     return basicValidation;
-  }
-
-  if (!url || url.trim() === "") {
-    return { valid: true };
   }
 
   const imageExtensions = [
@@ -54,22 +60,28 @@ export function validateImageURL(url: string): ValidationResult {
     ".webp",
     ".svg",
     ".bmp",
+    ".apng",
   ];
   const lowerUrl = url.toLowerCase();
 
   const hasImageExtension = imageExtensions.some((ext) =>
     lowerUrl.includes(ext),
   );
-  const isDiscordCDN = lowerUrl.includes("cdn.discordapp.com");
+  const isDiscordCDN = 
+    lowerUrl.includes("cdn.discordapp.com") ||
+    lowerUrl.includes("media.discordapp.net") ||
+    lowerUrl.includes("cdn.discord.com");
   const isImgur = lowerUrl.includes("imgur.com");
   const isCommonImageHost =
     lowerUrl.includes("i.redd.it") ||
-    lowerUrl.includes("media.discordapp.net") ||
-    lowerUrl.includes("images");
+    lowerUrl.includes("images") ||
+    lowerUrl.includes("tenor.com") ||
+    lowerUrl.includes("giphy.com");
 
   if (!hasImageExtension && !isDiscordCDN && !isImgur && !isCommonImageHost) {
     return {
-      valid: true,
+      valid: false,
+      error: "URL must be a valid image (png, jpg, gif, webp, etc.) or from a trusted image host (Discord CDN, Imgur, Tenor, Giphy, etc.)",
     };
   }
 

@@ -62,18 +62,26 @@ interface SessionData {
 }
 
 const COLOR_PRESETS: Record<string, { name: string; hex: string }> = {
-  blue: { name: "🔵 Blue", hex: "#5865F2" },
-  green: { name: "🟢 Green", hex: "#57F287" },
-  red: { name: "🔴 Red", hex: "#ED4245" },
-  yellow: { name: "🟡 Yellow", hex: "#FEE75C" },
+  blue: { name: "🔵 Discord Blue", hex: "#5865F2" },
+  green: { name: "🟢 Success Green", hex: "#57F287" },
+  red: { name: "🔴 Danger Red", hex: "#ED4245" },
+  yellow: { name: "🟡 Warning Yellow", hex: "#FEE75C" },
   purple: { name: "🟣 Purple", hex: "#9B59B6" },
   orange: { name: "🟠 Orange", hex: "#E67E22" },
+  pink: { name: "💗 Pink", hex: "#EB459E" },
+  cyan: { name: "🩵 Cyan", hex: "#00D9FF" },
+  lime: { name: "💚 Lime", hex: "#00FF7F" },
   brown: { name: "🟤 Brown (Western)", hex: "#8B4513" },
-  gold: { name: "🟡 Gold (Western)", hex: "#D4A017" },
-  crimson: { name: "🔴 Crimson (Western)", hex: "#8B0000" },
-  tan: { name: "🟤 Tan (Western)", hex: "#D2B48C" },
-  darkgreen: { name: "🟢 Dark Green", hex: "#2F4F2F" },
+  gold: { name: "🏆 Gold (Western)", hex: "#D4A017" },
+  crimson: { name: "❤️ Crimson (Western)", hex: "#8B0000" },
+  tan: { name: "🎨 Tan (Western)", hex: "#D2B48C" },
+  darkgreen: { name: "🌲 Dark Green", hex: "#2F4F2F" },
   gray: { name: "⚫ Gray", hex: "#99AAB5" },
+  white: { name: "⚪ White", hex: "#FFFFFF" },
+  black: { name: "⬛ Black", hex: "#000000" },
+  navy: { name: "🔷 Navy", hex: "#000080" },
+  teal: { name: "🩵 Teal", hex: "#008080" },
+  magenta: { name: "💜 Magenta", hex: "#FF00FF" },
 };
 
 const embedSessions = new Map<string, SessionData>();
@@ -184,13 +192,13 @@ export default {
 
     // Reply ephemeral simples
     await interaction.reply({
-      content: `✅ **${t(interaction, "eb_title")}**\n📝 Editor iniciado abaixo. Esta sessão expira após 30 minutos de inatividade.`,
+      content: `✨ **${t(interaction, "eb_title")}**\n\n📝 **Editor Avançado de Embeds**\nUse os botões abaixo para criar seu embed personalizado.\n\n⏰ Sessão expira em 30 minutos de inatividade\n💡 Suporta imagens, campos, cores personalizadas e mais!`,
       flags: MessageFlags.Ephemeral,
     });
 
     // FollowUp não-ephemeral com preview (pode ser editado indefinidamente)
     const previewMessage = await interaction.followUp({
-      content: `**${t(interaction, "eb_preview")}** - Canal destino: ${channel}`,
+      content: `🔍 **${t(interaction, "eb_preview")}** | Canal de destino: ${channel}\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
       embeds: [previewEmbed],
       components,
     });
@@ -218,37 +226,44 @@ function buildComponents(
   const row1 = new ActionRowBuilder<ButtonBuilder>().addComponents(
     new ButtonBuilder()
       .setCustomId(`eb_basic_${sessionId}`)
-      .setLabel(t(interaction, "eb_btn_basic"))
-      .setStyle(ButtonStyle.Secondary),
+      .setLabel(`📄 ${t(interaction, "eb_btn_basic")}`)
+      .setStyle(ButtonStyle.Secondary)
+      .setEmoji("📝"),
     new ButtonBuilder()
       .setCustomId(`eb_author_${sessionId}`)
       .setLabel(t(interaction, "eb_btn_author"))
-      .setStyle(ButtonStyle.Secondary),
+      .setStyle(ButtonStyle.Secondary)
+      .setEmoji("👤"),
     new ButtonBuilder()
       .setCustomId(`eb_images_${sessionId}`)
       .setLabel(t(interaction, "eb_btn_images"))
-      .setStyle(ButtonStyle.Secondary),
+      .setStyle(ButtonStyle.Secondary)
+      .setEmoji("🖼️"),
     new ButtonBuilder()
       .setCustomId(`eb_footer_${sessionId}`)
       .setLabel(t(interaction, "eb_btn_footer"))
-      .setStyle(ButtonStyle.Secondary),
+      .setStyle(ButtonStyle.Secondary)
+      .setEmoji("📌"),
   );
 
   // Row 2: Personalização
   const row2 = new ActionRowBuilder<ButtonBuilder>().addComponents(
     new ButtonBuilder()
       .setCustomId(`eb_addfield_${sessionId}`)
-      .setLabel(`➕ ${t(interaction, "eb_btn_add_field")}`)
-      .setStyle(ButtonStyle.Secondary),
+      .setLabel(t(interaction, "eb_btn_add_field"))
+      .setStyle(ButtonStyle.Secondary)
+      .setEmoji("➕"),
     new ButtonBuilder()
       .setCustomId(`eb_managefields_${sessionId}`)
-      .setLabel(`📝 ${t(interaction, "eb_btn_manage_fields")} (${embedData.fields.length})`)
+      .setLabel(`${t(interaction, "eb_btn_manage_fields")} (${embedData.fields.length})`)
       .setStyle(ButtonStyle.Secondary)
+      .setEmoji("✏️")
       .setDisabled(embedData.fields.length === 0),
     new ButtonBuilder()
       .setCustomId(`eb_color_${sessionId}`)
       .setLabel(t(interaction, "eb_btn_color"))
-      .setStyle(ButtonStyle.Secondary),
+      .setStyle(ButtonStyle.Secondary)
+      .setEmoji("🎨"),
     new ButtonBuilder()
       .setCustomId(`eb_timestamp_${sessionId}`)
       .setLabel(
@@ -256,27 +271,32 @@ function buildComponents(
           ? t(interaction, "eb_btn_remove_timestamp")
           : t(interaction, "eb_btn_timestamp"),
       )
-      .setStyle(ButtonStyle.Secondary),
+      .setStyle(ButtonStyle.Secondary)
+      .setEmoji(embedData.timestamp ? "🕐" : "⏰"),
   );
 
   // Row 3: Gerenciamento
   const row3 = new ActionRowBuilder<ButtonBuilder>().addComponents(
     new ButtonBuilder()
       .setCustomId(`eb_template_${sessionId}`)
-      .setLabel(`📋 ${t(interaction, "eb_btn_templates")}`)
-      .setStyle(ButtonStyle.Primary),
+      .setLabel(t(interaction, "eb_btn_templates"))
+      .setStyle(ButtonStyle.Primary)
+      .setEmoji("📋"),
     new ButtonBuilder()
       .setCustomId(`eb_import_${sessionId}`)
       .setLabel(t(interaction, "eb_btn_import"))
-      .setStyle(ButtonStyle.Secondary),
+      .setStyle(ButtonStyle.Secondary)
+      .setEmoji("📥"),
     new ButtonBuilder()
       .setCustomId(`eb_export_${sessionId}`)
       .setLabel(t(interaction, "eb_btn_export"))
-      .setStyle(ButtonStyle.Secondary),
+      .setStyle(ButtonStyle.Secondary)
+      .setEmoji("📤"),
     new ButtonBuilder()
       .setCustomId(`eb_clear_${sessionId}`)
       .setLabel(t(interaction, "eb_btn_clear"))
-      .setStyle(ButtonStyle.Danger),
+      .setStyle(ButtonStyle.Danger)
+      .setEmoji("🗑️"),
   );
 
   // Row 4: Ações Finais
@@ -284,11 +304,13 @@ function buildComponents(
     new ButtonBuilder()
       .setCustomId(`eb_send_${sessionId}`)
       .setLabel(t(interaction, "eb_btn_send"))
-      .setStyle(ButtonStyle.Success),
+      .setStyle(ButtonStyle.Success)
+      .setEmoji("✅"),
     new ButtonBuilder()
       .setCustomId(`eb_cancel_${sessionId}`)
       .setLabel(t(interaction, "eb_btn_cancel"))
-      .setStyle(ButtonStyle.Secondary),
+      .setStyle(ButtonStyle.Secondary)
+      .setEmoji("❌"),
   );
 
   return [row1, row2, row3, row4];
@@ -302,7 +324,9 @@ async function updatePreview(sessionId: string): Promise<void> {
   const previewEmbed = buildPreviewEmbed(embedData, interaction);
   const components = buildComponents(sessionId, embedData, interaction);
 
-  const content = `**${t(interaction, "eb_preview")}** - Canal destino: ${channel}`;
+  const statsEmoji = embedData.fields.length > 0 ? "✏️" : "📝";
+  const imageEmoji = (embedData.image || embedData.thumbnail) ? "🖼️" : "";
+  const content = `🔍 **${t(interaction, "eb_preview")}** | Canal de destino: ${channel}\n${statsEmoji} ${embedData.fields.length} campos ${imageEmoji}\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
 
   try {
     // Edita mensagem followUp não-ephemeral diretamente (funciona indefinidamente)
@@ -393,11 +417,11 @@ async function handleBasicModal(
 
   const modal = new ModalBuilder()
     .setCustomId(`eb_basic_modal_${sessionId}`)
-    .setTitle(t(interaction, "eb_modal_basic_title"));
+    .setTitle("📝 " + t(interaction, "eb_modal_basic_title"));
 
   const titleInput = new TextInputBuilder()
     .setCustomId("title")
-    .setLabel(t(interaction, "eb_modal_basic_title_label"))
+    .setLabel("📌 " + t(interaction, "eb_modal_basic_title_label"))
     .setStyle(TextInputStyle.Short)
     .setRequired(false)
     .setMaxLength(256)
@@ -407,20 +431,20 @@ async function handleBasicModal(
 
   const descriptionInput = new TextInputBuilder()
     .setCustomId("description")
-    .setLabel(t(interaction, "eb_modal_basic_desc_label"))
+    .setLabel("📄 " + t(interaction, "eb_modal_basic_desc_label"))
     .setStyle(TextInputStyle.Paragraph)
     .setRequired(false)
     .setMaxLength(4000)
-    .setPlaceholder(t(interaction, "eb_modal_basic_desc_placeholder"));
+    .setPlaceholder(t(interaction, "eb_modal_basic_desc_placeholder") + " \\n para quebra de linha");
 
   if (embedData.description) descriptionInput.setValue(embedData.description);
 
   const urlInput = new TextInputBuilder()
     .setCustomId("url")
-    .setLabel(t(interaction, "eb_modal_basic_url_label"))
+    .setLabel("🔗 " + t(interaction, "eb_modal_basic_url_label"))
     .setStyle(TextInputStyle.Short)
     .setRequired(false)
-    .setPlaceholder(t(interaction, "eb_modal_basic_url_placeholder"));
+    .setPlaceholder("https://example.com");
 
   if (embedData.url) urlInput.setValue(embedData.url);
 
@@ -473,11 +497,11 @@ async function handleAuthorModal(
 
   const modal = new ModalBuilder()
     .setCustomId(`eb_author_modal_${sessionId}`)
-    .setTitle(t(interaction, "eb_modal_author_title"));
+    .setTitle("👤 " + t(interaction, "eb_modal_author_title"));
 
   const nameInput = new TextInputBuilder()
     .setCustomId("name")
-    .setLabel(t(interaction, "eb_modal_author_name_label"))
+    .setLabel("✍️ " + t(interaction, "eb_modal_author_name_label"))
     .setStyle(TextInputStyle.Short)
     .setRequired(false)
     .setMaxLength(256)
@@ -548,23 +572,23 @@ async function handleImagesModal(
 
   const modal = new ModalBuilder()
     .setCustomId(`eb_images_modal_${sessionId}`)
-    .setTitle(t(interaction, "eb_modal_images_title"));
+    .setTitle("🖼️ " + t(interaction, "eb_modal_images_title"));
 
   const thumbnailInput = new TextInputBuilder()
     .setCustomId("thumbnail")
-    .setLabel(t(interaction, "eb_modal_images_thumbnail_label"))
+    .setLabel("🖼️ " + t(interaction, "eb_modal_images_thumbnail_label"))
     .setStyle(TextInputStyle.Short)
     .setRequired(false)
-    .setPlaceholder(t(interaction, "eb_modal_images_thumbnail_placeholder"));
+    .setPlaceholder("https://example.com/image.png ou attachment://file.png");
 
   if (embedData.thumbnail) thumbnailInput.setValue(embedData.thumbnail);
 
   const imageInput = new TextInputBuilder()
     .setCustomId("image")
-    .setLabel(t(interaction, "eb_modal_images_image_label"))
+    .setLabel("🎨 " + t(interaction, "eb_modal_images_image_label"))
     .setStyle(TextInputStyle.Short)
     .setRequired(false)
-    .setPlaceholder(t(interaction, "eb_modal_images_image_placeholder"));
+    .setPlaceholder("https://example.com/image.png ou attachment://file.png");
 
   if (embedData.image) imageInput.setValue(embedData.image);
 
@@ -629,11 +653,11 @@ async function handleFooterModal(
 
   const modal = new ModalBuilder()
     .setCustomId(`eb_footer_modal_${sessionId}`)
-    .setTitle(t(interaction, "eb_modal_footer_title"));
+    .setTitle("📌 " + t(interaction, "eb_modal_footer_title"));
 
   const textInput = new TextInputBuilder()
     .setCustomId("text")
-    .setLabel(t(interaction, "eb_modal_footer_text_label"))
+    .setLabel("📝 " + t(interaction, "eb_modal_footer_text_label"))
     .setStyle(TextInputStyle.Short)
     .setRequired(false)
     .setMaxLength(2048)
@@ -700,11 +724,11 @@ async function handleFieldModal(
 
   const modal = new ModalBuilder()
     .setCustomId(`eb_field_modal_${sessionId}`)
-    .setTitle(t(interaction, "eb_modal_field_title"));
+    .setTitle("➕ " + t(interaction, "eb_modal_field_title"));
 
   const nameInput = new TextInputBuilder()
     .setCustomId("name")
-    .setLabel(t(interaction, "eb_modal_field_name_label"))
+    .setLabel("📌 " + t(interaction, "eb_modal_field_name_label"))
     .setStyle(TextInputStyle.Short)
     .setRequired(true)
     .setMaxLength(256)
