@@ -19,8 +19,19 @@ import {
   ButtonInteraction,
   ModalSubmitInteraction,
   StringSelectMenuInteraction,
+  Message,
 } from "discord.js";
 import { t } from "../../utils/i18n";
+import {
+  EMBED_TEMPLATES,
+  getTemplateById,
+  getTemplateName,
+} from "../../utils/embeds/embedTemplates";
+import {
+  validateURL,
+  validateImageURL,
+  validateEmbedLimits,
+} from "./embedbuilder/validation";
 
 interface EmbedData {
   title?: string;
@@ -57,9 +68,12 @@ const COLOR_PRESETS: Record<string, { name: string; hex: string }> = {
   yellow: { name: "🟡 Yellow", hex: "#FEE75C" },
   purple: { name: "🟣 Purple", hex: "#9B59B6" },
   orange: { name: "🟠 Orange", hex: "#E67E22" },
+  brown: { name: "🟤 Brown (Western)", hex: "#8B4513" },
+  gold: { name: "🟡 Gold (Western)", hex: "#D4A017" },
+  crimson: { name: "🔴 Crimson (Western)", hex: "#8B0000" },
+  tan: { name: "🟤 Tan (Western)", hex: "#D2B48C" },
+  darkgreen: { name: "🟢 Dark Green", hex: "#2F4F2F" },
   gray: { name: "⚫ Gray", hex: "#99AAB5" },
-  white: { name: "⚪ White", hex: "#FFFFFF" },
-  black: { name: "⚫ Black", hex: "#23272A" },
 };
 
 const embedSessions = new Map<string, SessionData>();
@@ -223,9 +237,14 @@ function buildComponents(
   // Row 2: Personalização
   const row2 = new ActionRowBuilder<ButtonBuilder>().addComponents(
     new ButtonBuilder()
-      .setCustomId(`eb_fields_${sessionId}`)
-      .setLabel(t(interaction, "eb_btn_fields"))
+      .setCustomId(`eb_addfield_${sessionId}`)
+      .setLabel(`➕ ${t(interaction, "eb_btn_add_field")}`)
       .setStyle(ButtonStyle.Secondary),
+    new ButtonBuilder()
+      .setCustomId(`eb_managefields_${sessionId}`)
+      .setLabel(`📝 ${t(interaction, "eb_btn_manage_fields")} (${embedData.fields.length})`)
+      .setStyle(ButtonStyle.Secondary)
+      .setDisabled(embedData.fields.length === 0),
     new ButtonBuilder()
       .setCustomId(`eb_color_${sessionId}`)
       .setLabel(t(interaction, "eb_btn_color"))
@@ -242,6 +261,10 @@ function buildComponents(
 
   // Row 3: Gerenciamento
   const row3 = new ActionRowBuilder<ButtonBuilder>().addComponents(
+    new ButtonBuilder()
+      .setCustomId(`eb_template_${sessionId}`)
+      .setLabel(`📋 ${t(interaction, "eb_btn_templates")}`)
+      .setStyle(ButtonStyle.Primary),
     new ButtonBuilder()
       .setCustomId(`eb_import_${sessionId}`)
       .setLabel(t(interaction, "eb_btn_import"))
@@ -324,8 +347,12 @@ async function setupCollectors(sessionId: string): Promise<void> {
       await handleImagesModal(i, sessionId);
     } else if (action === "footer") {
       await handleFooterModal(i, sessionId);
-    } else if (action === "fields") {
+    } else if (action === "addfield") {
       await handleFieldModal(i, sessionId);
+    } else if (action === "managefields") {
+      await handleManageFieldsMenu(i, sessionId);
+    } else if (action === "template") {
+      await handleTemplateMenu(i, sessionId);
     } else if (action === "color") {
       await handleColorMenu(i, sessionId);
     } else if (action === "timestamp") {
@@ -563,6 +590,25 @@ async function handleImagesModal(
       const thumbnail = submitted.fields.getTextInputValue("thumbnail").trim();
       const image = submitted.fields.getTextInputValue("image").trim();
 
+      const thumbnailValidation = validateImageURL(thumbnail);
+      const imageValidation = validateImageURL(image);
+
+      if (!thumbnailValidation.valid) {
+        await submitted.followUp({
+          content: `❌ Invalid thumbnail URL: ${thumbnailValidation.error}`,
+          flags: MessageFlags.Ephemeral,
+        });
+        return;
+      }
+
+      if (!imageValidation.valid) {
+        await submitted.followUp({
+          content: `❌ Invalid image URL: ${imageValidation.error}`,
+          flags: MessageFlags.Ephemeral,
+        });
+        return;
+      }
+
       session.embedData.thumbnail = thumbnail || undefined;
       session.embedData.image = image || undefined;
 
@@ -772,6 +818,285 @@ async function handleColorMenu(
     }
     collector.stop();
   });
+}
+
+async function handleTemplateMenu(
+  interaction: ButtonInteraction,
+  sessionId: string,
+): Promise<void> {
+  const selectMenu = new StringSelectMenuBuilder()
+    .setCustomId(`eb_template_select_${sessionId}`)
+    .setPlaceholder("📋 Choose a template to load")
+    .addOptions(
+      EMBED_TEMPLATES.map((template) =>
+        new StringSelectMenuOptionBuilder()
+          .setLabel(getTemplateName(template, "pt-BR"))
+          .setValue(template.id)
+          .setDescription(template.description)
+          .setEmoji(template.emoji),
+      ),
+    );
+
+  const row = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
+    selectMenu,
+  );
+
+  await interaction.reply({
+    content: `📋 **Escolha um Template**\n\nSelecione um template pré-definido para começar rapidamente. Você pode editar todos os campos depois.`,
+    components: [row],
+    flags: MessageFlags.Ephemeral,
+  });
+
+  const collector = interaction.channel?.createMessageComponentCollector({
+    componentType: ComponentType.StringSelect,
+    time: 60000,
+    filter: (i: StringSelectMenuInteraction) =>
+      i.user.id === interaction.user.id &&
+      i.customId === `eb_template_select_${sessionId}`,
+  });
+
+  if (!collector) return;
+
+  collector.on("collect", async (i: StringSelectMenuInteraction) => {
+    const templateId = i.values[0];
+    const template = getTemplateById(templateId);
+    const session = embedSessions.get(sessionId);
+    
+    if (session && template) {
+      session.embedData = {
+        ...template.data,
+        fields: [...template.data.fields],
+      };
+      
+      await i.update({
+        content: `✅ Template "${getTemplateName(template, "pt-BR")}" carregado com sucesso! Verifique o preview acima.`,
+        components: [],
+      });
+      
+      resetSessionTimeout(sessionId);
+      await updatePreview(sessionId);
+    }
+    collector.stop();
+  });
+}
+
+async function handleManageFieldsMenu(
+  interaction: ButtonInteraction,
+  sessionId: string,
+): Promise<void> {
+  const session = embedSessions.get(sessionId);
+  if (!session) return;
+
+  const { embedData } = session;
+
+  if (embedData.fields.length === 0) {
+    await interaction.reply({
+      content: `ℹ️ Nenhum field foi adicionado ainda. Use o botão "➕ Add Field" para adicionar fields.`,
+      flags: MessageFlags.Ephemeral,
+    });
+    return;
+  }
+
+  const selectMenu = new StringSelectMenuBuilder()
+    .setCustomId(`eb_fieldmanage_select_${sessionId}`)
+    .setPlaceholder(`📝 Select a field to edit or remove (${embedData.fields.length} fields)`)
+    .addOptions(
+      embedData.fields.map((field, index) =>
+        new StringSelectMenuOptionBuilder()
+          .setLabel(`${index + 1}. ${field.name.substring(0, 80)}`)
+          .setValue(String(index))
+          .setDescription(
+            `${field.value.substring(0, 80)} ${field.value.length > 80 ? "..." : ""}`,
+          ),
+      ),
+    );
+
+  const row = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
+    selectMenu,
+  );
+
+  await interaction.reply({
+    content: `📝 **Gerenciar Fields**\n\nSelecione um field para editar ou remover:`,
+    components: [row],
+    flags: MessageFlags.Ephemeral,
+  });
+
+  const collector = interaction.channel?.createMessageComponentCollector({
+    componentType: ComponentType.StringSelect,
+    time: 60000,
+    filter: (i: StringSelectMenuInteraction) =>
+      i.user.id === interaction.user.id &&
+      i.customId === `eb_fieldmanage_select_${sessionId}`,
+  });
+
+  if (!collector) return;
+
+  collector.on("collect", async (i: StringSelectMenuInteraction) => {
+    const fieldIndex = parseInt(i.values[0]);
+    const sess = embedSessions.get(sessionId);
+    
+    if (!sess) {
+      collector.stop();
+      return;
+    }
+
+    const field = sess.embedData.fields[fieldIndex];
+
+    const editBtn = new ButtonBuilder()
+      .setCustomId(`eb_editfield_${sessionId}_${fieldIndex}`)
+      .setLabel("✏️ Edit")
+      .setStyle(ButtonStyle.Primary);
+
+    const removeBtn = new ButtonBuilder()
+      .setCustomId(`eb_removefield_${sessionId}_${fieldIndex}`)
+      .setLabel("🗑️ Remove")
+      .setStyle(ButtonStyle.Danger);
+
+    const cancelBtn = new ButtonBuilder()
+      .setCustomId(`eb_cancelfield_${sessionId}`)
+      .setLabel("❌ Cancel")
+      .setStyle(ButtonStyle.Secondary);
+
+    const actionRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
+      editBtn,
+      removeBtn,
+      cancelBtn,
+    );
+
+    await i.update({
+      content: `**Field ${fieldIndex + 1}:**\n**Name:** ${field.name}\n**Value:** ${field.value}\n**Inline:** ${field.inline ? "Yes" : "No"}\n\nWhat would you like to do?`,
+      components: [actionRow],
+    });
+
+    const btnCollector = i.message.createMessageComponentCollector({
+      componentType: ComponentType.Button,
+      time: 60000,
+      filter: (btnI: ButtonInteraction) =>
+        btnI.user.id === i.user.id &&
+        btnI.customId.startsWith(`eb_`) &&
+        btnI.customId.includes(sessionId),
+    });
+
+    btnCollector.on("collect", async (btnI: ButtonInteraction) => {
+      const btnAction = btnI.customId.split("_")[1];
+
+      if (btnAction === "editfield") {
+        await handleEditField(btnI, sessionId, fieldIndex);
+      } else if (btnAction === "removefield") {
+        await handleRemoveField(btnI, sessionId, fieldIndex);
+      } else if (btnAction === "cancelfield") {
+        await btnI.update({
+          content: `❌ Cancelled field management.`,
+          components: [],
+        });
+      }
+
+      btnCollector.stop();
+      collector.stop();
+    });
+  });
+}
+
+async function handleEditField(
+  interaction: ButtonInteraction,
+  sessionId: string,
+  fieldIndex: number,
+): Promise<void> {
+  const session = embedSessions.get(sessionId);
+  if (!session) return;
+
+  const field = session.embedData.fields[fieldIndex];
+  if (!field) return;
+
+  const modal = new ModalBuilder()
+    .setCustomId(`eb_editfield_modal_${sessionId}_${fieldIndex}`)
+    .setTitle(`Edit Field ${fieldIndex + 1}`);
+
+  const nameInput = new TextInputBuilder()
+    .setCustomId("name")
+    .setLabel("Field Name")
+    .setStyle(TextInputStyle.Short)
+    .setRequired(true)
+    .setMaxLength(256)
+    .setValue(field.name);
+
+  const valueInput = new TextInputBuilder()
+    .setCustomId("value")
+    .setLabel("Field Value")
+    .setStyle(TextInputStyle.Paragraph)
+    .setRequired(true)
+    .setMaxLength(1024)
+    .setValue(field.value);
+
+  const inlineInput = new TextInputBuilder()
+    .setCustomId("inline")
+    .setLabel("Inline? (yes/no)")
+    .setStyle(TextInputStyle.Short)
+    .setRequired(false)
+    .setMaxLength(3)
+    .setValue(field.inline ? "yes" : "no");
+
+  modal.addComponents(
+    new ActionRowBuilder<TextInputBuilder>().addComponents(nameInput),
+    new ActionRowBuilder<TextInputBuilder>().addComponents(valueInput),
+    new ActionRowBuilder<TextInputBuilder>().addComponents(inlineInput),
+  );
+
+  await interaction.showModal(modal);
+
+  const submitted = await interaction
+    .awaitModalSubmit({
+      time: 300000,
+      filter: (i: ModalSubmitInteraction) =>
+        i.customId === `eb_editfield_modal_${sessionId}_${fieldIndex}`,
+    })
+    .catch(() => null);
+
+  if (submitted) {
+    const sess = embedSessions.get(sessionId);
+    if (sess) {
+      const name = submitted.fields.getTextInputValue("name");
+      const value = submitted.fields.getTextInputValue("value");
+      const inlineStr = submitted.fields
+        .getTextInputValue("inline")
+        .toLowerCase();
+      const inline =
+        inlineStr === "yes" ||
+        inlineStr === "y" ||
+        inlineStr === "sim" ||
+        inlineStr === "s" ||
+        inlineStr === "true";
+
+      sess.embedData.fields[fieldIndex] = { name, value, inline };
+
+      await submitted.reply({
+        content: `✅ Field ${fieldIndex + 1} edited successfully!`,
+        flags: MessageFlags.Ephemeral,
+      });
+
+      resetSessionTimeout(sessionId);
+      await updatePreview(sessionId);
+    }
+  }
+}
+
+async function handleRemoveField(
+  interaction: ButtonInteraction,
+  sessionId: string,
+  fieldIndex: number,
+): Promise<void> {
+  const session = embedSessions.get(sessionId);
+  if (!session) return;
+
+  session.embedData.fields.splice(fieldIndex, 1);
+
+  await interaction.update({
+    content: `✅ Field ${fieldIndex + 1} removed successfully!`,
+    components: [],
+  });
+
+  resetSessionTimeout(sessionId);
+  await updatePreview(sessionId);
 }
 
 async function handleTimestamp(
