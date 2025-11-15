@@ -56,6 +56,14 @@ export const ITEMS: Record<string, Item> = {
     stackable: true,
     description: "Rare diamond found in mining and bank robberies",
   },
+  pickaxe: {
+    name: "Pickaxe",
+    emoji: EMOJI_TEXT.PICKAXE,
+    customEmoji: "pickaxe",
+    weight: 2,
+    stackable: false,
+    description: "A sturdy pickaxe that doubles your gold mining output in solo mining (2-6 bars instead of 1-3)",
+  },
   honey: {
     name: "Honey",
     emoji: "🍯",

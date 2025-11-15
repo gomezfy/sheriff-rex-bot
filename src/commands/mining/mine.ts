@@ -41,6 +41,7 @@ const {
   getInventory,
   removeItem,
   transferItem,
+  getItem,
 } = require("../../utils/inventoryManager");
 const {
   addUserSilver,
@@ -85,20 +86,36 @@ function startMining(
     duration = Math.floor(duration * 0.5); // 50% faster = 50% of original time
   }
 
+  // Check if user has a pickaxe for double mining output (only for solo)
+  const hasPickaxe = type === "solo" && getItem(userId, "pickaxe") > 0;
+
   const now = Date.now();
+
+  // Calculate base gold amount
+  let calculatedGold: number;
+  if (goldAmount !== undefined) {
+    // Use provided goldAmount (for coop)
+    calculatedGold = goldAmount;
+  } else {
+    // Calculate for solo mining
+    const baseGold = Math.floor(Math.random() * 3) + 1; // 1-3 bars
+    calculatedGold = hasPickaxe ? baseGold * 2 : baseGold; // 2-6 bars with pickaxe
+  }
 
   data[userId] = {
     type,
     startTime: now,
     endTime: now + duration,
     claimed: false,
-    goldAmount:
-      goldAmount || (type === "solo" ? Math.floor(Math.random() * 3) + 1 : 0),
+    goldAmount: calculatedGold,
     partnerId: partnerId || null,
     boosted: hasGoldMineShares, // Track if this session had the boost
+    pickaxeBonus: hasPickaxe, // Track if user had pickaxe bonus
   };
 
   saveMiningData(data);
+  
+  return { goldAmount: calculatedGold, hasPickaxe };
 }
 
 function claimMining(userId: string) {
@@ -660,21 +677,21 @@ ${t(i, "mine_pending_gold")}: ${stats.totalGoldPending} ${goldEmoji}
           });
         }
 
-        const goldAmount = Math.floor(Math.random() * 3) + 1;
         const hasBoost = ownsTerritory(userId, "gold_mine_shares");
-        startMining(userId, "solo", undefined, goldAmount);
+        const miningResult = startMining(userId, "solo");
 
         const durationText = hasBoost
           ? t(i, "mine_duration_1h30_boosted")
           : t(i, "mine_duration_1h30");
         const boostBadge = hasBoost ? t(i, "mine_boost_badge") : "";
+        const pickaxeBadge = miningResult.hasPickaxe ? `\n⛏️ **${t(i, "mine_pickaxe_bonus")}** (+100% ${t(i, "gold")})` : "";
 
         await i.update({
           embeds: [
             {
               color: 0xffd700,
               title: `${getPickaxeEmoji()} ${t(i, "mine_solo_started")}`,
-              description: `${t(i, "mine_started_mining")}\n\n${getTimerEmoji()} **${t(i, "mine_duration")}:** ${durationText}\n${getDiamondEmoji()} **${t(i, "mine_expected")}:** ${goldAmount} ${goldEmoji} ${t(i, "gold_bars")}${boostBadge}\n\n${t(i, "mine_automatic")}\n**${t(i, "mine_come_back_in")}**`,
+              description: `${t(i, "mine_started_mining")}\n\n${getTimerEmoji()} **${t(i, "mine_duration")}:** ${durationText}\n${getDiamondEmoji()} **${t(i, "mine_expected")}:** ${miningResult.goldAmount} ${goldEmoji} ${t(i, "gold_bars")}${boostBadge}${pickaxeBadge}\n\n${t(i, "mine_automatic")}\n**${t(i, "mine_come_back_in")}**`,
               footer: {
                 text: `${getPickaxeEmoji()} ${t(i, "mine_check_progress")}`,
               },
