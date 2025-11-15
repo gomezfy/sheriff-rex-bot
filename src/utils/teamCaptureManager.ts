@@ -173,7 +173,7 @@ class TeamCaptureManager {
     for (const team of this.teams.values()) {
       if (
         team.targetId === targetId &&
-        team.status === "recruiting" &&
+        (team.status === "recruiting" || team.status === "ready") &&
         team.members.some((m) => m.id === userId)
       ) {
         return true;

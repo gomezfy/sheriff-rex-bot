@@ -279,5 +279,11 @@ export default {
       message.id,
       maxTeamSize,
     );
+
+    // Record cooldown timestamp
+    teamCaptureData[leader.id] = Date.now();
   },
 };
+
+// Export for use in button handlers
+export { teamCaptureData, TEAM_CAPTURE_COOLDOWN };

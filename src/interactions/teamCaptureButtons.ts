@@ -25,6 +25,15 @@ import {
   getPartyEmoji,
 } from "../utils/customEmojis";
 
+// Import cooldown data from team-capture command
+let teamCaptureData: { [userId: string]: number };
+try {
+  const teamCaptureModule = require("../commands/bounty/teamcapture");
+  teamCaptureData = teamCaptureModule.teamCaptureData || {};
+} catch (error) {
+  teamCaptureData = {};
+}
+
 interface Bounty {
   targetId: string;
   targetTag: string;
@@ -319,6 +328,12 @@ async function handleStartHunt(
     embeds: [embed],
     components: [],
   });
+
+  // Update cooldown for all team members
+  const now = Date.now();
+  for (const member of team.members) {
+    teamCaptureData[member.id] = now;
+  }
 
   teamCaptureManager.completeTeam(teamId);
 }
