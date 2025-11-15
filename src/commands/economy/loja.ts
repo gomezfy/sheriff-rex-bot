@@ -48,7 +48,6 @@ export default {
           `⚡ Crédito **instantâneo** após aprovação do pagamento\n\n` +
           `**📦 Pacotes Disponíveis:**`
         )
-        .setThumbnail('attachment://rexbucks-stack.png')
         .setFooter({
           text: "Clique em um pacote para comprar • Pagamento via Mercado Pago",
         })
@@ -87,14 +86,9 @@ export default {
         rows.push(currentRow);
       }
 
-      const rexbucksImage = new AttachmentBuilder(
-        path.join(process.cwd(), 'assets/currency/rexbucks-stack.png')
-      ).setName('rexbucks-stack.png');
-
       const response = await interaction.editReply({
         embeds: [embed],
         components: rows,
-        files: [rexbucksImage],
       });
 
       const collector = response.createMessageComponentCollector({
