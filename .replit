@@ -1,4 +1,4 @@
-modules = ["nodejs-18", "web"]
+modules = ["nodejs-18"]
 [agent]
 expertMode = true
 
@@ -33,13 +33,13 @@ args = "npm run dev"
 name = "website"
 author = "agent"
 
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "node website/server.js"
-waitForPort = 5000
-
 [workflows.workflow.metadata]
 outputType = "webview"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run linked-roles"
+waitForPort = 5000
 
 [nix]
 channel = "stable-25_05"
@@ -50,7 +50,7 @@ localPort = 5000
 externalPort = 80
 
 [[ports]]
-localPort = 40925
+localPort = 39255
 externalPort = 3000
 
 [[ports]]
