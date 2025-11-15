@@ -100,11 +100,11 @@ export async function createPaymentPreference(
           email: `${userId}@discord.user`,
         },
         external_reference: externalReference,
-        notification_url: process.env.MERCADOPAGO_WEBHOOK_URL,
+        notification_url: process.env.WEBHOOK_URL ? `${process.env.WEBHOOK_URL}/webhook/mercadopago` : undefined,
         back_urls: {
-          success: `${process.env.REPLIT_DEV_DOMAIN || 'http://localhost:5000'}/payment/success`,
-          failure: `${process.env.REPLIT_DEV_DOMAIN || 'http://localhost:5000'}/payment/failure`,
-          pending: `${process.env.REPLIT_DEV_DOMAIN || 'http://localhost:5000'}/payment/pending`,
+          success: `${process.env.WEBHOOK_URL || 'http://localhost:5000'}/payment/success`,
+          failure: `${process.env.WEBHOOK_URL || 'http://localhost:5000'}/payment/failure`,
+          pending: `${process.env.WEBHOOK_URL || 'http://localhost:5000'}/payment/pending`,
         },
         auto_return: 'approved',
         payment_methods: {
