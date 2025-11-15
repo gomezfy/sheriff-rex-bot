@@ -28,7 +28,10 @@
     "lint:fix": "eslint src/**/*.ts --fix",
     "format": "prettier --write \"src/**/*.ts\"",
     "format:check": "prettier --check \"src/**/*.ts\"",
-    "validate": "npm run format && npm run lint:fix"
+    "validate": "npm run format && npm run lint:fix",
+    "icons:list": "ts-node -r tsconfig-paths/register -e \"require('./src/utils/iconManager').listAvailableIcons()\"",
+    "icons:convert": "ts-node -r tsconfig-paths/register scripts/convert-icons-to-png.ts",
+    "icons:upload": "ts-node -r tsconfig-paths/register scripts/upload-icons-to-discord.ts"
   },
   "keywords": [
     "discord",

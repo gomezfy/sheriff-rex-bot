@@ -32,6 +32,7 @@ import {
   validateImageURL,
   validateEmbedLimits,
 } from "./embedbuilder/validation";
+import { getIconEmoji } from "../../utils/iconManager";
 
 interface EmbedData {
   title?: string;
@@ -228,22 +229,22 @@ function buildComponents(
       .setCustomId(`eb_basic_${sessionId}`)
       .setLabel(t(interaction, "eb_btn_basic"))
       .setStyle(ButtonStyle.Secondary)
-      .setEmoji("📄"),
+      .setEmoji(getIconEmoji("eb_basic")),
     new ButtonBuilder()
       .setCustomId(`eb_author_${sessionId}`)
       .setLabel(t(interaction, "eb_btn_author"))
       .setStyle(ButtonStyle.Secondary)
-      .setEmoji("👥"),
+      .setEmoji(getIconEmoji("eb_author")),
     new ButtonBuilder()
       .setCustomId(`eb_images_${sessionId}`)
       .setLabel(t(interaction, "eb_btn_images"))
       .setStyle(ButtonStyle.Secondary)
-      .setEmoji("🖼"),
+      .setEmoji(getIconEmoji("eb_images")),
     new ButtonBuilder()
       .setCustomId(`eb_footer_${sessionId}`)
       .setLabel(t(interaction, "eb_btn_footer"))
       .setStyle(ButtonStyle.Secondary)
-      .setEmoji("⬇"),
+      .setEmoji(getIconEmoji("eb_footer")),
   );
 
   // Row 2: Personalização
@@ -252,18 +253,18 @@ function buildComponents(
       .setCustomId(`eb_addfield_${sessionId}`)
       .setLabel(t(interaction, "eb_btn_add_field"))
       .setStyle(ButtonStyle.Secondary)
-      .setEmoji("➕"),
+      .setEmoji(getIconEmoji("eb_addfield")),
     new ButtonBuilder()
       .setCustomId(`eb_managefields_${sessionId}`)
       .setLabel(`${t(interaction, "eb_btn_manage_fields")} (${embedData.fields.length})`)
       .setStyle(ButtonStyle.Secondary)
-      .setEmoji("📝")
+      .setEmoji(getIconEmoji("eb_managefields"))
       .setDisabled(embedData.fields.length === 0),
     new ButtonBuilder()
       .setCustomId(`eb_color_${sessionId}`)
       .setLabel(t(interaction, "eb_btn_color"))
       .setStyle(ButtonStyle.Secondary)
-      .setEmoji("🎨"),
+      .setEmoji(getIconEmoji("eb_color")),
     new ButtonBuilder()
       .setCustomId(`eb_timestamp_${sessionId}`)
       .setLabel(
@@ -272,7 +273,7 @@ function buildComponents(
           : t(interaction, "eb_btn_timestamp"),
       )
       .setStyle(ButtonStyle.Secondary)
-      .setEmoji(embedData.timestamp ? "⏱" : "🕐"),
+      .setEmoji(getIconEmoji("eb_timestamp")),
   );
 
   // Row 3: Gerenciamento
@@ -281,22 +282,22 @@ function buildComponents(
       .setCustomId(`eb_template_${sessionId}`)
       .setLabel(t(interaction, "eb_btn_templates"))
       .setStyle(ButtonStyle.Primary)
-      .setEmoji("📑"),
+      .setEmoji(getIconEmoji("eb_template")),
     new ButtonBuilder()
       .setCustomId(`eb_import_${sessionId}`)
       .setLabel(t(interaction, "eb_btn_import"))
       .setStyle(ButtonStyle.Secondary)
-      .setEmoji("📥"),
+      .setEmoji(getIconEmoji("eb_import")),
     new ButtonBuilder()
       .setCustomId(`eb_export_${sessionId}`)
       .setLabel(t(interaction, "eb_btn_export"))
       .setStyle(ButtonStyle.Secondary)
-      .setEmoji("📤"),
+      .setEmoji(getIconEmoji("eb_export")),
     new ButtonBuilder()
       .setCustomId(`eb_clear_${sessionId}`)
       .setLabel(t(interaction, "eb_btn_clear"))
       .setStyle(ButtonStyle.Danger)
-      .setEmoji("🗑"),
+      .setEmoji(getIconEmoji("eb_clear")),
   );
 
   // Row 4: Ações Finais
@@ -305,12 +306,12 @@ function buildComponents(
       .setCustomId(`eb_send_${sessionId}`)
       .setLabel(t(interaction, "eb_btn_send"))
       .setStyle(ButtonStyle.Success)
-      .setEmoji("✅"),
+      .setEmoji(getIconEmoji("eb_send")),
     new ButtonBuilder()
       .setCustomId(`eb_cancel_${sessionId}`)
       .setLabel(t(interaction, "eb_btn_cancel"))
       .setStyle(ButtonStyle.Secondary)
-      .setEmoji("❌"),
+      .setEmoji(getIconEmoji("eb_cancel")),
   );
 
   return [row1, row2, row3, row4];
