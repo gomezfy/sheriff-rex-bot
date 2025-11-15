@@ -115,8 +115,11 @@ export async function createPaymentPreference(
       },
     });
 
+    // Persist payment record immediately after creating preference
+    // This ensures webhook can find the record even if it arrives quickly
+    const paymentId = crypto.randomBytes(16).toString('hex');
     await db.insert(mercadoPagoPayments).values({
-      id: crypto.randomBytes(16).toString('hex'),
+      id: paymentId,
       userId,
       packageId,
       externalReference,
@@ -124,7 +127,11 @@ export async function createPaymentPreference(
       status: 'pending',
       amount: pkg.priceCents,
       currency: pkg.currency,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     });
+
+    console.log(`💳 Payment preference created: ${externalReference} for user ${userId}`);
 
     return {
       success: true,
@@ -139,21 +146,29 @@ export async function createPaymentPreference(
   }
 }
 
-export async function processPaymentNotification(paymentId: string): Promise<void> {
+export async function processPaymentNotification(paymentId: string): Promise<{ success: boolean; error?: string }> {
   if (!payment) {
     console.error('Mercado Pago client not initialized');
-    return;
+    return { success: false, error: 'Mercado Pago not configured' };
   }
 
   try {
+    // SECURITY: Fetch payment details directly from Mercado Pago API
+    // This validates that the payment actually exists and prevents basic spoofing
     const paymentData = await payment.get({ id: paymentId });
 
-    const externalReference = paymentData.external_reference;
-    if (!externalReference) {
-      console.error('Payment without external reference');
-      return;
+    if (!paymentData) {
+      console.error(`Payment ${paymentId} not found in Mercado Pago API`);
+      return { success: false, error: 'Payment not found in Mercado Pago' };
     }
 
+    const externalReference = paymentData.external_reference;
+    if (!externalReference || !externalReference.startsWith('rexbucks_')) {
+      console.error(`Invalid external reference: ${externalReference}`);
+      return { success: false, error: 'Invalid external reference format' };
+    }
+
+    // SECURITY: Find payment record by external_reference and verify it exists
     const existingPayments = await db
       .select()
       .from(mercadoPagoPayments)
@@ -161,15 +176,22 @@ export async function processPaymentNotification(paymentId: string): Promise<voi
       .limit(1);
 
     if (existingPayments.length === 0) {
-      console.error(`Payment not found for external reference: ${externalReference}`);
-      return;
+      console.error(`No pending payment found for reference: ${externalReference}`);
+      return { success: false, error: 'Payment record not found - may be fraudulent' };
     }
 
     const paymentRecord = existingPayments[0];
 
+    // SECURITY: Verify payment wasn't already processed to prevent double-credit exploits
     if (paymentRecord.processed) {
-      console.log(`Payment ${paymentId} already processed`);
-      return;
+      console.log(`Payment ${paymentId} already processed - preventing double credit`);
+      return { success: true }; // Not an error, idempotency check passed
+    }
+
+    // SECURITY: Store the MP payment ID and verify it matches if already set
+    if (paymentRecord.mpPaymentId && paymentRecord.mpPaymentId !== paymentId) {
+      console.error(`Payment ID mismatch: stored=${paymentRecord.mpPaymentId}, received=${paymentId}`);
+      return { success: false, error: 'Payment ID mismatch - potential fraud' };
     }
 
     await db
@@ -192,7 +214,7 @@ export async function processPaymentNotification(paymentId: string): Promise<voi
 
       if (packages.length === 0) {
         console.error(`Package ${paymentRecord.packageId} not found`);
-        return;
+        return { success: false, error: 'Package not found' };
       }
 
       const pkg = packages[0];
@@ -226,12 +248,18 @@ export async function processPaymentNotification(paymentId: string): Promise<voi
         console.log(
           `✅ Payment processed: ${paymentId} - ${totalRexBucks} RexBucks credited to user ${paymentRecord.userId}`
         );
+        return { success: true };
       } else {
         console.error(`Failed to credit RexBucks: ${result.error}`);
+        return { success: false, error: result.error };
       }
     }
+
+    return { success: true };
   } catch (error) {
     console.error('Error processing payment notification:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return { success: false, error: errorMessage };
   }
 }
 

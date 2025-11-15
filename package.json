@@ -24,6 +24,7 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:migrate": "ts-node -r tsconfig-paths/register scripts/migrate-to-postgres.ts",
+    "db:seed-packages": "ts-node -r tsconfig-paths/register scripts/seed-rexbuck-packages.ts",
     "lint": "eslint src/**/*.ts --max-warnings=0",
     "lint:fix": "eslint src/**/*.ts --fix",
     "format": "prettier --write \"src/**/*.ts\"",

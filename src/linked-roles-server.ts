@@ -11,6 +11,7 @@ import session from "express-session";
 import axios from "axios";
 import crypto from "crypto";
 import { readData } from "./utils/database";
+import { processPaymentNotification } from "./utils/mercadoPagoService";
 
 const app = express();
 const PORT = parseInt(process.env.LINKED_ROLES_PORT || "5000");
@@ -499,6 +500,223 @@ app.post(
     }
   },
 );
+
+/**
+ * Mercado Pago Webhook Handler
+ * Processes payment notifications from Mercado Pago
+ * 
+ * SECURITY: This endpoint validates payments by fetching them directly from
+ * Mercado Pago's API, preventing spoofing attacks. Only verified payments
+ * are processed.
+ */
+app.post("/webhook/mercadopago", async (req: Request, res: Response) => {
+  try {
+    const { type, data } = req.body;
+
+    console.log("📥 Mercado Pago Webhook received:", { type, data });
+
+    // Validate required fields
+    if (!type || !data || !data.id) {
+      console.error("❌ Invalid webhook payload - missing required fields");
+      return res.status(400).json({ 
+        error: "Invalid webhook payload",
+        success: false 
+      });
+    }
+
+    if (type === "payment") {
+      const paymentId = data.id;
+      
+      // Process payment - this internally validates by fetching from MP API
+      const result = await processPaymentNotification(paymentId);
+      
+      if (!result.success) {
+        console.error(`❌ Payment processing failed: ${result.error}`);
+        // Return 200 to prevent retries for business logic errors
+        // Return 4xx for validation errors to trigger retries
+        if (result.error?.includes('not found') || result.error?.includes('not configured')) {
+          return res.status(404).json({ 
+            error: result.error,
+            success: false 
+          });
+        }
+        return res.status(200).json({ 
+          error: result.error,
+          success: false 
+        });
+      }
+      
+      console.log(`✅ Payment ${paymentId} processed successfully`);
+      return res.status(200).json({ success: true });
+    }
+
+    // Unknown event type - acknowledge but don't process
+    return res.status(200).json({ success: true, message: 'Event type not handled' });
+
+  } catch (error) {
+    console.error("❌ Error processing Mercado Pago webhook:", error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    
+    // Return 500 to trigger Mercado Pago retries for unexpected errors
+    return res.status(500).json({ 
+      error: errorMessage,
+      success: false 
+    });
+  }
+});
+
+/**
+ * Payment success page
+ */
+app.get("/payment/success", (req: Request, res: Response) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Pagamento Aprovado - Sheriff Rex</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          min-height: 100vh;
+          margin: 0;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .container {
+          background: white;
+          padding: 40px;
+          border-radius: 10px;
+          box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+          text-align: center;
+          max-width: 500px;
+        }
+        h1 { color: #2ecc71; margin-bottom: 10px; }
+        p { color: #555; line-height: 1.6; }
+        .emoji { font-size: 64px; margin-bottom: 20px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="emoji">✅</div>
+        <h1>Pagamento Aprovado!</h1>
+        <p>Seus RexBucks foram creditados automaticamente!</p>
+        <p>Verifique seu saldo no Discord com o comando <code>/rexbucks balance</code></p>
+        <p style="margin-top: 30px; font-size: 14px; color: #999;">
+          Você pode fechar esta janela
+        </p>
+      </div>
+    </body>
+    </html>
+  `);
+});
+
+/**
+ * Payment pending page
+ */
+app.get("/payment/pending", (req: Request, res: Response) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Pagamento Pendente - Sheriff Rex</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          min-height: 100vh;
+          margin: 0;
+          background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        .container {
+          background: white;
+          padding: 40px;
+          border-radius: 10px;
+          box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+          text-align: center;
+          max-width: 500px;
+        }
+        h1 { color: #f39c12; margin-bottom: 10px; }
+        p { color: #555; line-height: 1.6; }
+        .emoji { font-size: 64px; margin-bottom: 20px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="emoji">⏳</div>
+        <h1>Pagamento Pendente</h1>
+        <p>Seu pagamento está sendo processado.</p>
+        <p>Assim que for aprovado, seus RexBucks serão creditados automaticamente!</p>
+        <p style="margin-top: 30px; font-size: 14px; color: #999;">
+          Você pode fechar esta janela
+        </p>
+      </div>
+    </body>
+    </html>
+  `);
+});
+
+/**
+ * Payment failure page
+ */
+app.get("/payment/failure", (req: Request, res: Response) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Pagamento Falhou - Sheriff Rex</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          min-height: 100vh;
+          margin: 0;
+          background: linear-gradient(135deg, #f2709c 0%, #ff9472 100%);
+        }
+        .container {
+          background: white;
+          padding: 40px;
+          border-radius: 10px;
+          box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+          text-align: center;
+          max-width: 500px;
+        }
+        h1 { color: #e74c3c; margin-bottom: 10px; }
+        p { color: #555; line-height: 1.6; }
+        .emoji { font-size: 64px; margin-bottom: 20px; }
+        a {
+          display: inline-block;
+          margin-top: 20px;
+          padding: 12px 24px;
+          background: #3498db;
+          color: white;
+          text-decoration: none;
+          border-radius: 5px;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="emoji">❌</div>
+        <h1>Pagamento Falhou</h1>
+        <p>Não foi possível processar seu pagamento.</p>
+        <p>Tente novamente usando o comando <code>/loja</code> no Discord.</p>
+      </div>
+    </body>
+    </html>
+  `);
+});
 
 // Start server
 if (require.main === module) {
