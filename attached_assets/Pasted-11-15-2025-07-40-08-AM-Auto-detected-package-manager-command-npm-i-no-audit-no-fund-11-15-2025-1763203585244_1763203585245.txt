@@ -1,0 +1,201 @@
+11/15/2025, 07:40:08 AM Auto-detected package manager command: npm i --no-audit --no-fund
+11/15/2025, 07:40:08 AM Installing dependencies using command: npm i --no-audit --no-fund
+11/15/2025, 07:40:09 AM 
+11/15/2025, 07:40:09 AM up to date in 1s
+11/15/2025, 07:40:09 AM Dependencies installed successfully
+11/15/2025, 07:40:09 AM Dependencies cached successfully
+11/15/2025, 07:40:09 AM Executing: exec tsx src/index.ts
+11/15/2025, 07:40:11 AM ✅ Cache system initialized with auto-sync!
+11/15/2025, 07:40:11 AM 
+11/15/2025, 07:40:11 AM [1m[36m┌─────────────────────────────────────────┐[0m
+11/15/2025, 07:40:11 AM [1m[36m│  🤠  SHERIFF REX BOT                    │[0m
+11/15/2025, 07:40:11 AM [1m[36m└─────────────────────────────────────────┘[0m
+11/15/2025, 07:40:11 AM 
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [34mℹ️  INFO [0m Initializing Sheriff Rex Bot
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [34mℹ️  INFO [0m Using system environment variables (production mode)
+11/15/2025, 07:40:11 AM 
+11/15/2025, 07:40:11 AM [1m[35m━━━ Environment Check ━━━[0m
+11/15/2025, 07:40:11 AM [90m┌───────────────────────────────────────────────┐[0m
+11/15/2025, 07:40:11 AM [90m│[0m ✅ [37mDISCORD_TOKEN    [0m [32mtrue[0m [90m│[0m
+11/15/2025, 07:40:11 AM [90m│[0m ✅ [37mDISCORD_CLIENT_ID[0m [32mtrue[0m [90m│[0m
+11/15/2025, 07:40:11 AM [90m│[0m ❌ [37mCLIENT_ID        [0m [31mfalse[0m [90m│[0m
+11/15/2025, 07:40:11 AM [90m│[0m ❌ [37mDATABASE_URL     [0m [31mfalse[0m [90m│[0m
+11/15/2025, 07:40:11 AM [90m│[0m ℹ️ [37mNODE_ENV         [0m [36mdevelopment[0m [90m│[0m
+11/15/2025, 07:40:11 AM [90m└───────────────────────────────────────────────┘[0m
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [34mℹ️  INFO [0m Validating environment variables
+11/15/2025, 07:40:11 AM ✅ Environment variables validated successfully
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [32m✅ SUCCESS[0m Environment validation passed
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Environment info: {"nodeVersion":"v22.17.1","platform":"linux","hasToken":true,"hasClientId":true,"hasOwnerId":true,"hasStripe":false,"hasHotmart":false,"nodeEnv":"development"}
+11/15/2025, 07:40:11 AM 
+11/15/2025, 07:40:11 AM [1m[35m━━━ Database Initialization ━━━[0m
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [34mℹ️  INFO [0m Initializing database system
+11/15/2025, 07:40:11 AM 📁 Data directory: /app/src/data
+11/15/2025, 07:40:11 AM ✅ Sistema de dados pronto!
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [32m✅ SUCCESS[0m Database system ready
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [34mℹ️  INFO [0m Memory mode: PRODUCTION
+11/15/2025, 07:40:11 AM 
+11/15/2025, 07:40:11 AM [1m[35m━━━ Loading Commands ━━━[0m
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /addreward (commands/admin)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /addsilverwarehouse (commands/admin)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /admin (commands/admin)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /clear (commands/admin)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /clearwarns (commands/admin)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /criaservidor (commands/admin)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /embedbuilder (commands/admin)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /mute (commands/admin)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /setlogs (commands/admin)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /unmute (commands/admin)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /warn (commands/admin)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /warnings (commands/admin)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /welcome (commands/admin)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /ai (commands/ai)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /models (commands/ai)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /bounties (commands/bounty)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /capture (commands/bounty)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /clearbounty (commands/bounty)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /wanted (commands/bounty)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /addbackpack (commands/economy)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /addgold (commands/economy)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /addseal (commands/economy)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /addsilver (commands/economy)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /addtokens (commands/economy)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /armazem (commands/economy)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /daily (commands/economy)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /expedition (commands/economy)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /give (commands/economy)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /leaderboard (commands/economy)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /middleman (commands/economy)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /redeem (commands/economy)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /removegold (commands/economy)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /setuptoken (commands/economy)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /territories (commands/economy)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /bankrob (commands/gambling)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /dice (commands/gambling)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /duel (commands/gambling)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /roubo (commands/gambling)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /roulette (commands/gambling)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /guilda (commands/guild)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /mine (commands/mining)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /inventory (commands/profile)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /profile (commands/profile)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /help (commands/utility)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /ping (commands/utility)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /poll (commands/utility)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /expedition (features/expedition)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded command: /guilda (features/guilds)
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [32m✅ SUCCESS[0m Loaded 48 total commands
+11/15/2025, 07:40:11 AM 
+11/15/2025, 07:40:11 AM [1m[35m━━━ Loading Events ━━━[0m
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded event: guildBanAdd
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded event: guildMemberAdd
+11/15/2025, 07:40:11 AM [90m[10:40:11][0m [90m🔍 DEBUG[0m Loaded event: guildMemberRemove
+11/15/2025, 07:40:12 AM [90m[10:40:12][0m [90m🔍 DEBUG[0m Loaded event: interactionCreate
+11/15/2025, 07:40:12 AM [90m[10:40:12][0m [90m🔍 DEBUG[0m Loaded event: messageCreate
+11/15/2025, 07:40:12 AM [90m[10:40:12][0m [90m🔍 DEBUG[0m Loaded event: messageDelete
+11/15/2025, 07:40:12 AM [90m[10:40:12][0m [90m🔍 DEBUG[0m Loaded event: messageUpdate
+11/15/2025, 07:40:12 AM [90m[10:40:12][0m [90m🔍 DEBUG[0m Loaded event: clientReady (once)
+11/15/2025, 07:40:12 AM [90m[10:40:12][0m [90m🔍 DEBUG[0m Loaded event: messageCreate
+11/15/2025, 07:40:12 AM [90m[10:40:12][0m [32m✅ SUCCESS[0m Loaded 9 events
+11/15/2025, 07:40:12 AM [90m[10:40:12][0m [34mℹ️  INFO [0m Token found, attempting login...
+11/15/2025, 07:40:12 AM 
+11/15/2025, 07:40:12 AM [1m[35m━━━ Production Optimizations ━━━[0m
+11/15/2025, 07:40:12 AM 
+11/15/2025, 07:40:12 AM [1m[35m━━━ Bot Systems ━━━[0m
+11/15/2025, 07:40:12 AM [90m[10:40:12][0m [34mℹ️  INFO [0m Starting territory income system
+11/15/2025, 07:40:12 AM 🏛️ Starting automatic territory income system (23-hour cycle)
+11/15/2025, 07:40:12 AM [90m[10:40:12][0m [34mℹ️  INFO [0m Starting mining notification system
+11/15/2025, 07:40:12 AM ⛏️ Starting automatic mining notification system
+11/15/2025, 07:40:12 AM [90m[10:40:12][0m [34mℹ️  INFO [0m Starting expedition checker system
+11/15/2025, 07:40:12 AM 🗺️ Iniciando verificador automático de expedições
+11/15/2025, 07:40:12 AM ✅ Verificador de expedições ativo - verifica a cada 1 minuto
+11/15/2025, 07:40:12 AM [90m[10:40:12][0m [34mℹ️  INFO [0m Starting warehouse stats reset
+11/15/2025, 07:40:12 AM 📊 Starting warehouse statistics hourly reset system
+11/15/2025, 07:40:12 AM [90m[10:40:12][0m [34mℹ️  INFO [0m Starting daily rewards scheduler
+11/15/2025, 07:40:12 AM [90m[10:40:12][0m [34mℹ️  INFO [0m Starting daily rewards scheduler: 0 21 * * * (America/Sao_Paulo)
+11/15/2025, 07:40:12 AM [90m[10:40:12][0m [32m✅ SUCCESS[0m Daily rewards scheduler started successfully (runs at 21:00 America/Sao_Paulo)
+11/15/2025, 07:40:12 AM [90m[10:40:12][0m [34mℹ️  INFO [0m Starting mute expiration checker
+11/15/2025, 07:40:12 AM [90m[10:40:12][0m [32m✅ SUCCESS[0m All systems operational!
+11/15/2025, 07:40:12 AM 
+11/15/2025, 07:40:12 AM [1m[32m╔════════════════════════════════════════╗[0m
+11/15/2025, 07:40:12 AM [1m[32m║  ✅  BOT READY                         ║[0m
+11/15/2025, 07:40:12 AM [1m[32m╠════════════════════════════════════════╣[0m
+11/15/2025, 07:40:12 AM [1m[32m║  [0mTag:     [36mSheriff Rex#5281           [32m║[0m
+11/15/2025, 07:40:12 AM [1m[32m║  [0mServers: [33m18                         [32m║[0m
+11/15/2025, 07:40:12 AM [1m[32m║  [0mUsers:   [33m1                          [32m║[0m
+11/15/2025, 07:40:12 AM [1m[32m╚════════════════════════════════════════╝[0m
+11/15/2025, 07:40:12 AM 
+11/15/2025, 07:40:12 AM [90m[10:40:12][0m [34mℹ️  INFO [0m Registering component handlers
+11/15/2025, 07:40:12 AM ✅ Component handlers registered: 8 buttons, 1 select menus
+11/15/2025, 07:40:12 AM [90m[10:40:12][0m [34mℹ️  INFO [0m Starting automatic backup system
+11/15/2025, 07:40:12 AM 🗑️  Deleted old backup: backup-2025-11-14T15-45-40.zip
+11/15/2025, 07:40:12 AM 💾 Backup created: backup-2025-11-15T10-40-12.zip (4.55 KB, 14 files)
+11/15/2025, 07:40:12 AM 💾 Next automatic backup in 16 hours
+11/15/2025, 07:40:12 AM ✅ Automatic daily backups enabled
+11/15/2025, 07:40:12 AM [90m[10:40:12][0m [32m✅ SUCCESS[0m Backup system initialized
+11/15/2025, 07:40:12 AM [90m[10:40:12][0m [34mℹ️  INFO [0m Status rotation active (changes every 60 seconds)
+11/15/2025, 07:40:12 AM [90m──────────────────────────────────────────────────[0m
+11/15/2025, 07:40:15 AM 💰 Territory income processed: 0 users paid, 3 skipped
+11/15/2025, 07:40:42 AM ⚠️  High memory usage: 91.1% (31.78MB / 34.89MB)
+11/15/2025, 07:41:12 AM ⚠️  High memory usage: 91.3% (31.86MB / 34.89MB)
+11/15/2025, 07:41:42 AM ⚠️  High memory usage: 91.7% (31.98MB / 34.89MB)
+11/15/2025, 07:42:06 AM (node:40) Warning: Supplying "ephemeral" for interaction response options is deprecated. Utilize flags instead.
+11/15/2025, 07:42:06 AM (Use `node --trace-warnings ...` to show where the warning was created)
+11/15/2025, 07:42:09 AM ⚠️  Slow command: profile took 3068ms
+11/15/2025, 07:42:12 AM ⚠️  High memory usage: 86.3% (30.99MB / 35.89MB)
+11/15/2025, 07:42:29 AM ✅ Poll created by gomezfy_: "h"
+11/15/2025, 07:42:42 AM ⚠️  High memory usage: 87.5% (31.41MB / 35.89MB)
+11/15/2025, 07:42:47 AM ✅ Quick poll created by gomezfy_: "g"
+11/15/2025, 07:43:12 AM ⚠️  High memory usage: 86.7% (31.11MB / 35.89MB)
+11/15/2025, 07:43:15 AM (node:40) Warning: Supplying "fetchReply" for interaction response options is deprecated. Utilize "withResponse" instead or fetch the response after using the method.
+11/15/2025, 07:43:19 AM [90m[10:43:19][0m [31m❌ ERROR[0m [UNHANDLED REJECTION]
+11/15/2025, 07:43:19 AM [31m   └─ Unknown interaction[0m
+11/15/2025, 07:43:19 AM ❌ Unhandled Rejection at: Promise {
+11/15/2025, 07:43:19 AM <rejected> DiscordAPIError[10062]: Unknown interaction
+11/15/2025, 07:43:19 AM at handleErrors (/app/node_modules/@discordjs/rest/src/lib/handlers/Shared.ts:148:10)
+11/15/2025, 07:43:19 AM at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+11/15/2025, 07:43:19 AM at async BurstHandler.runRequest (/app/node_modules/@discordjs/rest/src/lib/handlers/BurstHandler.ts:144:20)
+11/15/2025, 07:43:19 AM at async _REST.request (/app/node_modules/@discordjs/rest/src/lib/REST.ts:210:20)
+11/15/2025, 07:43:19 AM at async ButtonInteraction.deferReply (/app/node_modules/discord.js/src/structures/interfaces/InteractionResponses.js:122:22)
+11/15/2025, 07:43:19 AM at async InteractionCollector.<anonymous> (/app/src/features/guilds/guilda.ts:141:13) {
+11/15/2025, 07:43:19 AM requestBody: { files: undefined, json: [Object] },
+11/15/2025, 07:43:19 AM rawError: { message: 'Unknown interaction', code: 10062 },
+11/15/2025, 07:43:19 AM code: 10062,
+11/15/2025, 07:43:19 AM status: 404,
+11/15/2025, 07:43:19 AM method: 'POST',
+11/15/2025, 07:43:19 AM url: 'https://discord.com/api/v10/interactions/1439204113047879790/aW50ZXJhY3Rpb246MTQzOTIwNDExMzA0Nzg3OTc5MDp0aVdLcndFNklYekZlY1pDQW42cjk3bGpKTlVhM2JtMjlUS3J0MEM2dHdmOHRjQ1o5VDBueU00dnU1SzJCTnd2SUxzMWRTUXBaejlQSWlvTlp4TWhTUUNrc3pQWjJYckZReG5Jb0MwMEFZRFVHTUdjY0xGaDJFUTk4MndkUWw1Yg/callback?with_response=false'
+11/15/2025, 07:43:19 AM }
+11/15/2025, 07:43:19 AM } reason: DiscordAPIError[10062]: Unknown interaction
+11/15/2025, 07:43:19 AM at handleErrors (/app/node_modules/@discordjs/rest/src/lib/handlers/Shared.ts:148:10)
+11/15/2025, 07:43:19 AM at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+11/15/2025, 07:43:19 AM at async BurstHandler.runRequest (/app/node_modules/@discordjs/rest/src/lib/handlers/BurstHandler.ts:144:20)
+11/15/2025, 07:43:19 AM at async _REST.request (/app/node_modules/@discordjs/rest/src/lib/REST.ts:210:20)
+11/15/2025, 07:43:19 AM at async ButtonInteraction.deferReply (/app/node_modules/discord.js/src/structures/interfaces/InteractionResponses.js:122:22)
+11/15/2025, 07:43:19 AM at async InteractionCollector.<anonymous> (/app/src/features/guilds/guilda.ts:141:13) {
+11/15/2025, 07:43:19 AM requestBody: { files: undefined, json: { type: 5, data: [Object] } },
+11/15/2025, 07:43:19 AM rawError: { message: 'Unknown interaction', code: 10062 },
+11/15/2025, 07:43:19 AM code: 10062,
+11/15/2025, 07:43:19 AM status: 404,
+11/15/2025, 07:43:19 AM method: 'POST',
+11/15/2025, 07:43:19 AM url: 'https://discord.com/api/v10/interactions/1439204113047879790/aW50ZXJhY3Rpb246MTQzOTIwNDExMzA0Nzg3OTc5MDp0aVdLcndFNklYekZlY1pDQW42cjk3bGpKTlVhM2JtMjlUS3J0MEM2dHdmOHRjQ1o5VDBueU00dnU1SzJCTnd2SUxzMWRTUXBaejlQSWlvTlp4TWhTUUNrc3pQWjJYckZReG5Jb0MwMEFZRFVHTUdjY0xGaDJFUTk4MndkUWw1Yg/callback?with_response=false'
+11/15/2025, 07:43:19 AM }
+11/15/2025, 07:43:42 AM ⚠️  High memory usage: 88.7% (32.29MB / 36.39MB)
+11/15/2025, 07:44:12 AM ⚠️  High memory usage: 89.0% (32.39MB / 36.39MB)
+11/15/2025, 07:44:42 AM ⚠️  High memory usage: 89.2% (32.45MB / 36.39MB)
+11/15/2025, 07:45:12 AM 
+11/15/2025, 07:45:12 AM 📊 Performance Stats:
+11/15/2025, 07:45:12 AM ⏱️  Uptime: 0h 5m
+11/15/2025, 07:45:12 AM 💾 Memory: RSS: 177.64MB | Heap: 32.51MB / 36.39MB
+11/15/2025, 07:45:12 AM 🏰 Guilds: 18
+11/15/2025, 07:45:12 AM 👥 Cached Users: 1
+11/15/2025, 07:45:12 AM 📝 Cached Members: 21
+11/15/2025, 07:45:12 AM 
+11/15/2025, 07:45:12 AM ⚡ Slowest Commands:
+11/15/2025, 07:45:12 AM profile: 3068.00ms (1 executions)
+11/15/2025, 07:45:12 AM embedbuilder: 790.00ms (1 executions)
+11/15/2025, 07:45:12 AM inventory: 594.00ms (1 executions)
+11/15/2025, 07:45:12 AM guilda: 401.00ms (1 executions)
+11/15/2025, 07:45:12 AM poll: 237.50ms (2 executions)
+11/15/2025, 07:45:12 AM 
+11/15/2025, 07:45:12 AM ⚠️  High memory usage: 89.4% (32.54MB / 36.39MB)
+11/15/2025, 07:45:42 AM ⚠️  High memory usage: 89.0% (32.59MB / 36.64MB)
+11/15/2025, 07:46:12 AM ⚠️  High memory usage: 89.2% (32.69MB / 36.64MB)
